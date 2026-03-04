@@ -1,0 +1,247 @@
+﻿.pricing-section {
+    background: linear-gradient(180deg, #140f19 0%, #0a0a0f 100%);
+    color: #fff;
+    padding: 5rem 0;
+}
+
+.pricing-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* ===== КАРТОЧКА АБОНЕМЕНТА ===== */
+.pricing-card {
+    position: relative;
+    background: linear-gradient(145deg, #1a1520 0%, #0f0a10 100%);
+    border: 1px solid rgba(255, 61, 61, 0.2);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+    .pricing-card:hover {
+        border-color: rgba(255, 61, 61, 0.6);
+        box-shadow: 0 10px 40px rgba(255, 61, 61, 0.2);
+        transform: translateY(-5px);
+    }
+
+    /* Карточка "Популярно" — выделена */
+    .pricing-card.popular {
+        border: 2px solid #ff3d3d;
+        box-shadow: 0 0 30px rgba(255, 61, 61, 0.3);
+    }
+
+        .pricing-card.popular:hover {
+            box-shadow: 0 0 50px rgba(255, 61, 61, 0.5);
+        }
+
+/* Бейдж "Популярно" */
+.popular-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 1.5rem;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Заголовок карточки */
+.pricing-header {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.pricing-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.05em;
+}
+
+.pricing-desc {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #aaa;
+    margin: 0.5rem 0 0;
+}
+
+/* Список опций */
+.pricing-features {
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+    .pricing-features li {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.9rem;
+        color: #e0e0e0;
+        padding: 0.6rem 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li.disabled {
+            color: #666;
+        }
+
+.check-icon {
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.pricing-features li:not(.disabled) .check-icon {
+    color: #ff3d3d;
+}
+
+.pricing-features li.disabled .check-icon {
+    color: #444;
+}
+
+/* Футер карточки */
+.pricing-footer {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.price-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.price-currency {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    color: #aaa;
+    align-self: flex-start;
+    margin-top: 0.5rem;
+}
+
+.price-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.price-period {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 0.25rem;
+}
+
+.price-save {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #ff6b6b;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Кнопка */
+.btn-pricing {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+
+    .btn-pricing.btn-outline-light {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+    }
+
+        .btn-pricing.btn-outline-light:hover {
+            background: #ff3d3d;
+            border-color: #ff3d3d;
+            box-shadow: 0 0 20px rgba(255, 61, 61, 0.4);
+        }
+
+    .btn-pricing.btn-danger {
+        background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+        border: none;
+        box-shadow: 0 4px 15px rgba(255, 61, 61, 0.4);
+    }
+
+        .btn-pricing.btn-danger:hover {
+            background: linear-gradient(90deg, #ff1a1a, #ff3d3d);
+            box-shadow: 0 6px 25px rgba(255, 61, 61, 0.6);
+            transform: translateY(-2px);
+        }
+
+.pricing-card,
+.trainer-card {
+    width: 100%;
+    max-width: 320px; /* Оптимальная ширина для чтения */
+    margin: 0 auto; /* Центрирование, если карточка уже колонки */
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    .pricing-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .pricing-name {
+        font-size: 1.3rem;
+    }
+
+    .price-value {
+        font-size: 2rem;
+    }
+
+    .pricing-features li {
+        font-size: 0.85rem;
+        padding: 0.5rem 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .pricing-card {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .popular-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 1.2rem;
+    }
+}

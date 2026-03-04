@@ -4,7 +4,577 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div class="hero-container d-flex flex-column justify-content-center align-items-center text-center">
+    <h1 class="hero-title line-1 pb-5 d-flex align-items-center"><span class="pains">Pains</span> — <span class="subtitle gy-4">временно</span></h1>
+    <h1 class="hero-title line-2 pb-5 d-flex align-items-center"><span class="gains">Gains</span> — <span class="subtitle gy-4">навсегда</span></h1>
+    <h1 class="hero-title line-3">
+        <span class="gains">Gains</span> & <span class="pains">Pains</span>:
+        <span class="tagline">Честный фитнес</span>
+    </h1>
 </div>
+<section class="philosophy-section py-5 py-lg-6">
+    <h2 class="philosophy-main-title text-center text-uppercase mb-5">
+        <span class="gains">Gains</span> & <span class="pains">Pains</span> —
+        это не просто зал.<br class="d-none d-md-block">Это философия
+    </h2>
+
+    <div class="philosophy-grid-wrapper">
+        <div class="row g-0 philosophy-grid">
+            <!-- Левая карточка -->
+            <div class="col-md-6 philosophy-card left-card reveal-left">
+                <div class="card-overlay"></div>
+                <div class="card-body card-content p-4 p-md-5">
+                    <div class="card-text">
+                        <p>Здесь нет места для легких путей. Сюда приходят за настоящими изменениями.</p>
+                        <p>
+                            Каждый грамм силы и сантиметр прогресса оплачен решимостью —
+                            <span class="highlight">сдаться или прорваться</span>.
+                        </p>
+                        <p>
+                            Мы не верим в волшебные таблетки. Мы верим в пот, характер и
+                            <span class="highlight">последнее повторение</span>, сделанное на пределе.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая карточка -->
+            <div class="col-md-6 philosophy-card right-card reveal-right">
+                <div class="card-overlay"></div>
+                <div class="card-body card-content p-4 p-md-5">
+                    <div class="card-text">
+                        <p>Наша истина проста:</p>
+                        <p class="truth-statement"><span class="gains">Боль</span> — это валюта роста.</p>
+                        <p class="truth-statement"><span class="pains">Усталость</span> — плата за выносливость.</p>
+                        <p class="truth-statement"><span class="gains">Дискомфорт</span> — фундамент новой уверенности.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="zones-section py-5 py-lg-6">
+    <div class="container">
+        <h2 class="zones-title text-center text-uppercase mb-5">
+            И мы создали пространство,<br class="d-none d-md-block">где эта философия <span class="gains">оживает</span>
+        </h2>
+
+        <div id="zonesCarousel" class="carousel carousel-fade slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                <!-- Слайд 1: Профессиональное железо -->
+                <div class="carousel-item active">
+                    <div class="zone-slide" style="background-image: url('/Images/zone-iron.png');">
+                        <div class="zone-overlay"></div>
+                        <div class="zone-content container">
+                            <div class="zone-text-wrapper">
+                                <h3 class="zone-title-item text-uppercase">
+                                    <span class="gains">Профессиональное железо</span>
+                                </h3>
+                                <p class="zone-description">
+                                    Наши грифы и тренажеры — это инструменты, которые задают тебе тот самый вопрос:
+                                    <span class="highlight">«Насколько ты этого хочешь?»</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Слайд 2: Зоны для настоящей работы -->
+                <div class="carousel-item">
+                    <div class="zone-slide" style="background-image: url('/Images/zone-work.png');">
+                        <div class="zone-overlay"></div>
+                        <div class="zone-content container">
+                            <div class="zone-text-wrapper">
+                                <h3 class="zone-title-item text-uppercase">
+                                    <span class="pains">Зоны для настоящей работы</span>
+                                </h3>
+                                <p class="zone-description">
+                                    Просторные кардио- и силовые залы, где нет места лишним словам.
+                                    <span class="highlight">Только ты и твоя работа.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Слайд 3: Команда, которая понимает -->
+                <div class="carousel-item">
+                    <div class="zone-slide" style="background-image: url('/Images/zone-team.jpg');">
+                        <div class="zone-overlay"></div>
+                        <div class="zone-content container">
+                            <div class="zone-text-wrapper">
+                                <h3 class="zone-title-item text-uppercase">
+                                    <span class="gains">Команда, которая понимает</span>
+                                </h3>
+                                <p class="zone-description">
+                                    Наши тренеры прошли через это сами. Они не будут тебя жалеть.
+                                    Они будут грамотно направлять твою боль в рост, помогая превращать
+                                    <span class="highlight">Pains в твои личные Gains.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Слайд 4: Атмосфера поддержки -->
+                <div class="carousel-item">
+                    <div class="zone-slide" style="background-image: url('/Images/zone-atmosphere.png');">
+                        <div class="zone-overlay"></div>
+                        <div class="zone-content container">
+                            <div class="zone-text-wrapper">
+                                <h3 class="zone-title-item text-uppercase">
+                                    <span class="pains">Атмосфера поддержки</span>
+                                </h3>
+                                <p class="zone-description">
+                                    Ты окружишь себя такими же целеустремленными людьми. Здесь не ждут легких путей.
+                                    <span class="highlight">Здесь ценят не слова, а пот на полу.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Управление: стрелки -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#zonesCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Предыдущая зона</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#zonesCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Следующая зона</span>
+            </button>
+        </div>
+
+        <!-- Финальные заголовки -->
+        <div class="zones-final text-center mt-5 pt-4">
+            <h2 class="zones-final-title text-uppercase mb-4">
+                Прими свой вызов.<br class="d-none d-md-block">
+                Уважай свой путь.<br class="d-none d-md-block">
+                <span class="gains">Заработай свой результат</span><br class="d-none d-md-block">
+                в месте, созданном для преодоления.
+            </h2>
+            <h3 class="zones-final-slogan text-uppercase">
+                <span class="gains">Gains</span> & <span class="pains">Pains</span> —
+                честный фитнес для сильных духом.
+            </h3>
+        </div>
+    </div>
+</section>
+<section class="trainers-section py-5 py-lg-6">
+    <div class="container">
+        <h2 class="trainers-title text-center text-uppercase mb-5">
+            Команда, которая <span class="gains">направляет</span>
+        </h2>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Тренер 1: Максим -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="trainer-card">
+                    <div class="trainer-card-front">
+                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-maxim.jpg');"></div>
+                        <div class="trainer-overlay-front"></div>
+                        <div class="trainer-info-front">
+                            <h3 class="trainer-name text-uppercase">
+                                Максим <span class="trainer-nickname gains">«Скала»</span>
+                            </h3>
+                            <div class="trainer-words">
+                                <span>Сила</span> · <span>Основа</span> · <span>Контроль</span>
+                            </div>
+                            <p class="trainer-direction text-uppercase">Фундаментальная сила</p>
+                            <p class="trainer-motto">ЕГО ПРИНЦИП: «Железо не лжёт. Или ты можешь, или нет. Я научу тебя МОЧЬ.»</p>
+                        </div>
+                    </div>
+                    <div class="trainer-card-back">
+                        <div class="trainer-info-back">
+                            <div class="trainer-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏆</span>
+                                    <p><strong>КМС по пауэрлифтингу</strong><br>Сертифицированный тренер (IPF)</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">💪</span>
+                                    <p><strong>5 лет стажа</strong><br>Специализация: жим, присед, тяга</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <p><strong>Результат:</strong><br>Сила, которая останется навсегда</p>
+                                </div>
+                            </div>
+                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тренер 2: Кирилл -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="trainer-card">
+                    <div class="trainer-card-front">
+                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-kirill.png');"></div>
+                        <div class="trainer-overlay-front"></div>
+                        <div class="trainer-info-front">
+                            <h3 class="trainer-name text-uppercase">
+                                Кирилл <span class="trainer-nickname pains">«Движ»</span>
+                            </h3>
+                            <div class="trainer-words">
+                                <span>Выносливость</span> · <span>Взрыв</span> · <span>Адреналин</span>
+                            </div>
+                            <p class="trainer-direction text-uppercase">Функционал и выносливость</p>
+                            <p class="trainer-motto">ЕГО ДЕВИЗ: «Усталость начинается в голове. Тело может больше. Заставь его работать.»</p>
+                        </div>
+                    </div>
+                    <div class="trainer-card-back">
+                        <div class="trainer-info-back">
+                            <div class="trainer-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏆</span>
+                                    <p><strong>Мастер спорта</strong><br>Лёгкая атлетика</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">⚡</span>
+                                    <p><strong>HIIT-тренер</strong><br>Высокоинтенсивные тренировки</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <p><strong>Результат:</strong><br>Вызов пределам каждый день</p>
+                                </div>
+                            </div>
+                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тренер 3: Артем -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="trainer-card">
+                    <div class="trainer-card-front">
+                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-artem.jpg');"></div>
+                        <div class="trainer-overlay-front"></div>
+                        <div class="trainer-info-front">
+                            <h3 class="trainer-name text-uppercase">
+                                Артем <span class="trainer-nickname gains">«Тесла»</span>
+                            </h3>
+                            <div class="trainer-words">
+                                <span>Деталь</span> · <span>Объём</span> · <span>Эстетика</span>
+                            </div>
+                            <p class="trainer-direction text-uppercase">Построение тела</p>
+                            <p class="trainer-motto">ЕГО ФИЛОСОФИЯ: «Каждая капля пота — это кирпичик в скульптуре твоего тела. Будь архитектором себя.»</p>
+                        </div>
+                    </div>
+                    <div class="trainer-card-back">
+                        <div class="trainer-info-back">
+                            <div class="trainer-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏆</span>
+                                    <p><strong>Призёр чемпионата</strong><br>Классический бодибилдинг</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">📐</span>
+                                    <p><strong>7 лет в спорте</strong><br>Масса, рельеф, изоляция</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <p><strong>Результат:</strong><br>Идеальная форма</p>
+                                </div>
+                            </div>
+                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тренер 4: Анна -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="trainer-card">
+                    <div class="trainer-card-front">
+                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-anna.jpg');"></div>
+                        <div class="trainer-overlay-front"></div>
+                        <div class="trainer-info-front">
+                            <h3 class="trainer-name text-uppercase">
+                                Анна <span class="trainer-nickname pains">«Сталь»</span>
+                            </h3>
+                            <div class="trainer-words">
+                                <span>Мощь</span> · <span>Техника</span> · <span>Воля</span>
+                            </div>
+                            <p class="trainer-direction text-uppercase">Техничная сила</p>
+                            <p class="trainer-motto">ЕЁ ПРАВИЛО: «Сила не имеет пола. Имеет только результат.»</p>
+                        </div>
+                    </div>
+                    <div class="trainer-card-back">
+                        <div class="trainer-info-back">
+                            <div class="trainer-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏆</span>
+                                    <p><strong>КМС по тяжёлой атлетике</strong><br>Сертифицированный тренер FPA</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏋️</span>
+                                    <p><strong>6 лет стажа</strong><br>Техника базы, работа со штангой</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <p><strong>Результат:</strong><br>Реальная сила без страха</p>
+                                </div>
+                            </div>
+                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тренер 5: Алиса -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="trainer-card">
+                    <div class="trainer-card-front">
+                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-alisa.jpg');"></div>
+                        <div class="trainer-overlay-front"></div>
+                        <div class="trainer-info-front">
+                            <h3 class="trainer-name text-uppercase">
+                                Алиса <span class="trainer-nickname gains">«Феникс»</span>
+                            </h3>
+                            <div class="trainer-words">
+                                <span>Дисциплина</span> · <span>Цель</span> · <span>Преображение</span>
+                            </div>
+                            <p class="trainer-direction text-uppercase">Трансформация</p>
+                            <p class="trainer-motto">
+                                ЕЁ ИСТОРИЯ: «Самый сложный поединок — с самим собой. Я прошла этот путь от нуля до пьедестала. Проведу и тебя.»
+                            </p>
+                        </div>
+                    </div>
+                    <div class="trainer-card-back">
+                        <div class="trainer-info-back">
+                            <div class="trainer-details">
+                                <div class="detail-item">
+                                    <span class="detail-icon">🏆</span>
+                                    <p><strong>Чемпионка региона по</strong><br>Фитнес-бикини</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🥗</span>
+                                    <p><strong>Нутрициолог</strong><br>Сушка, рельеф, диетология</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-icon">🎯</span>
+                                    <p><strong>Результат:</strong><br>100% трансформация</p>
+                                </div>
+                            </div>
+                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="pricing-section py-5 py-lg-6">
+    <div class="container">
+        <h2 class="pricing-title text-center text-uppercase mb-5">
+            Выбери свой <span class="gains">путь</span>
+        </h2>
+
+        <div class="row g-4 justify-content-center">
+
+            <!-- Гостевой визит -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name text-uppercase">Гостевой визит</h3>
+                        <p class="pricing-desc">Попробуй перед решением</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features list-unstyled">
+                            <li><span class="check-icon">✓</span> Доступ в зал на 1 день</li>
+                            <li><span class="check-icon">✓</span> Инструктаж по технике</li>
+                            <li><span class="check-icon">✓</span> Душ и раздевалка</li>
+                            <li class="disabled"><span class="check-icon">✗</span> Групповые занятия</li>
+                            <li class="disabled"><span class="check-icon">✗</span> Заморозка</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <div class="price-block">
+                            <span class="price-currency">₽</span>
+                            <span class="price-value">500</span>
+                            <span class="price-period">/раз</span>
+                        </div>
+                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Попробовать</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1 месяц -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name text-uppercase">1 месяц</h3>
+                        <p class="pricing-desc">Отличный старт</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features list-unstyled">
+                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li><span class="check-icon">✓</span> Фитнес-тестирование</li>
+                            <li><span class="check-icon">✓</span> Заморозка до 3 дней</li>
+                            <li class="disabled"><span class="check-icon">✗</span> Персональная тренировка</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <div class="price-block">
+                            <span class="price-currency">₽</span>
+                            <span class="price-value">3 900</span>
+                            <span class="price-period">/мес</span>
+                        </div>
+                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 месяца (ПОПУЛЯРНО) -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Популярно</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name text-uppercase">3 месяца</h3>
+                        <p class="pricing-desc">Для тех, кто настроен серьёзно</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features list-unstyled">
+                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li><span class="check-icon">✓</span> Фитнес-тестирование + план</li>
+                            <li><span class="check-icon">✓</span> Заморозка до 10 дней</li>
+                            <li><span class="check-icon">✓</span> Скидка 10% на персоналки</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <div class="price-block">
+                            <span class="price-currency">₽</span>
+                            <span class="price-value">10 500</span>
+                            <span class="price-period">/3 мес</span>
+                        </div>
+                        <span class="price-save">Экономия 1 200 ₽</span>
+                        <a href="#contact" class="btn-pricing btn btn-danger text-uppercase">Выбрать</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 месяцев -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name text-uppercase">6 месяцев</h3>
+                        <p class="pricing-desc">Для тех, кто строит результат</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features list-unstyled">
+                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li><span class="check-icon">✓</span> Персональный план тренировок</li>
+                            <li><span class="check-icon">✓</span> Заморозка до 21 дня</li>
+                            <li><span class="check-icon">✓</span> Скидка 15% на персоналки</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <div class="price-block">
+                            <span class="price-currency">₽</span>
+                            <span class="price-value">19 900</span>
+                            <span class="price-period">/6 мес</span>
+                        </div>
+                        <span class="price-save">Экономия 3 500 ₽</span>
+                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1 год -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name text-uppercase">1 год</h3>
+                        <p class="pricing-desc">Максимальная выгода</p>
+                    </div>
+                    <div class="pricing-body">
+                        <ul class="pricing-features list-unstyled">
+                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li><span class="check-icon">✓</span> Персональный план + контроль</li>
+                            <li><span class="check-icon">✓</span> Заморозка до 45 дней</li>
+                            <li><span class="check-icon">✓</span> Скидка 20% на персоналки</li>
+                            <li><span class="check-icon">✓</span> Бесплатная консультация нутрициолога</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-footer">
+                        <div class="price-block">
+                            <span class="price-currency">₽</span>
+                            <span class="price-value">35 900</span>
+                            <span class="price-period">/год</span>
+                        </div>
+                        <span class="price-save">Экономия 10 900 ₽</span>
+                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="contact-section py-5 py-lg-6">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+
+                <div class="contact-wrapper text-center mb-5">
+                    <h2 class="contact-title text-uppercase mb-3">
+                        Готов начать <span class="gains">сейчас</span>?
+                    </h2>
+                    <p class="contact-subtitle">
+                        Оставь заявку — мы свяжемся в течение 15 минут.
+                        Никаких звонков «просто так». Только дело.
+                    </p>
+                </div>
+
+                <form class="contact-form" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group mb-4">
+                        <label for="name" class="form-label text-start text-uppercase small fw-bold">
+                            Твоё имя
+                        </label>
+                        <input type="text"
+                               id="name"
+                               name="Name"
+                               class="form-control form-control-lg"
+                               placeholder="Максим"
+                               required>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="phone" class="form-label text-start text-uppercase small fw-bold">
+                            Телефон для связи
+                        </label>
+                        <input type="tel"
+                               id="phone"
+                               name="Phone"
+                               class="form-control form-control-lg"
+                               placeholder="+7 (___) ___-__-__"
+                               required>
+                        <small class="form-text text-muted">Формат: +7 (999) 999-99-99</small>
+                    </div>
+
+                    <div class="form-check mb-4 text-start">
+                        <input class="form-check-input" type="checkbox" id="consent" required>
+                        <label class="form-check-label small" for="consent">
+                            Согласен на обработку персональных данных и хочу стать сильнее
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-submit btn btn-danger btn-lg w-100 text-uppercase fw-bold">
+                        Отправить заявку
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>

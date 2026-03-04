@@ -1,0 +1,341 @@
+﻿/* ===== ОБЩИЕ СТИЛИ ДЛЯ ХЕДЕРОВ/ФУТЕРА ===== */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #0a0a0f;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .nav-link, .btn, .modal-title, .offcanvas-title {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+main {
+    background: linear-gradient(135deg, rgba(10, 10, 15, 0.95), rgba(20, 15, 25, 0.9)), url('/Images/fitGiri.png') center/cover no-repeat;
+    background-attachment: fixed, fixed;
+}
+
+/* ===== ВЕРХНИЙ ХЕДЕР ===== */
+.top-header {
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 1030;
+}
+
+.brand-logo {
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+    .brand-logo:hover {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+    }
+
+.brand-name {
+    font-size: 1.2rem;
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+    .brand-name .text-danger {
+        font-weight: 700;
+    }
+
+.navbar-brand:hover .brand-logo {
+    transform: scale(1.05);
+}
+
+/* Телефон в хедере */
+.header-phone {
+    color: #ccc;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+    .header-phone i {
+        color: #ff3d3d;
+        font-size: 1.1rem;
+    }
+
+    .header-phone:hover {
+        color: #fff;
+    }
+
+        .header-phone:hover i {
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 61, 61, 0.5);
+        }
+
+/* Соцсети */
+.social-links {
+    gap: 0.5rem;
+}
+
+.social-icon {
+    /* Размер и форма */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    /* Позиционирование фона */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    /* Стили по умолчанию */
+    background-color: #ccc;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    /* Для доступности: скрыть пустой текст */
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+/* ===== RUTUBE ===== */
+.social-rutube {
+    background-image: url('/Images/IconsSocial/Icon_RUTUBE_dark_mono.png');
+}
+
+    .social-rutube:hover {
+        background-image: url('/Images/IconsSocial/Icon_RUTUBE_dark_color.png');
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px white;
+        border-color: none;
+    }
+
+/* ===== TELEGRAM ===== */
+.social-telegram {
+    background-image: url('/Images/IconsSocial/telegram_black_logo_icon.png');
+}
+
+    .social-telegram:hover {
+        background-image: url('/Images/IconsSocial/telegram_color_logo_icon.png');
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px white;
+    }
+
+/* ===== VK ===== */
+.social-vk {
+    background-image: url('/Images/IconsSocial/vk_logo_icon_black.png');
+}
+
+    .social-vk:hover {
+        background-image: url('/Images/IconsSocial/vk_logo_icon_color.png');
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px white;
+    }
+
+/* ===== НИЖНЕЕ МЕНЮ (НАВИГАЦИЯ) ===== */
+.main-nav {
+    background: rgba(15, 10, 20, 0.98);
+    padding: 0.5rem 0;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.8)' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Ссылки навигации */
+.gp-link {
+    color: #ccc !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+    .gp-link:hover {
+        color: #fff !important;
+        background: rgba(255, 61, 61, 0.15);
+    }
+
+    .gp-link.active {
+        color: #ff3d3d !important;
+        font-weight: 700;
+    }
+
+        .gp-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: #ff3d3d;
+            box-shadow: 0 0 10px rgba(255, 61, 61, 0.5);
+        }
+
+/* Кнопка входа */
+.gp-btn-login {
+    border-color: rgba(255, 61, 61, 0.5);
+    color: #ff3d3d;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    transition: all 0.3s ease;
+}
+
+    .gp-btn-login:hover {
+        background: #ff3d3d;
+        color: #fff;
+        border-color: #ff3d3d;
+        box-shadow: 0 0 20px rgba(255, 61, 61, 0.4);
+    }
+
+/* Кнопка админа */
+.gp-btn-admin {
+    color: #888;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+}
+
+    .gp-btn-admin:hover {
+        color: #ff3d3d;
+        transform: rotate(30deg);
+    }
+
+/* ===== ФУТЕР ===== */
+.footer {
+    background: rgba(10, 10, 15, 0.98);
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.hover-red {
+    transition: color 0.2s ease;
+}
+
+    .hover-red:hover {
+        color: #ff6b6b !important;
+    }
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.gp-modal .modal-content {
+    background: linear-gradient(145deg, #1a1520, #0f0a10);
+    border: 1px solid rgba(255, 61, 61, 0.3);
+    border-radius: 12px;
+    color: #fff;
+}
+
+.gp-modal .modal-title {
+    color: #ff6b6b;
+}
+
+.gp-input {
+    background: rgba(10, 10, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+    .gp-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .gp-input:focus {
+        background: rgba(10, 10, 15, 0.95);
+        border-color: #ff3d3d;
+        box-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25);
+        color: #fff;
+    }
+
+.gp-modal label {
+    color: #aaa;
+}
+
+.gp-btn-eye {
+    color: #888;
+    transition: color 0.2s ease;
+}
+
+    .gp-btn-eye:hover {
+        color: #ff6b6b;
+    }
+
+.gp-btn-submit {
+    background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+    border: none;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+    .gp-btn-submit:hover {
+        background: linear-gradient(90deg, #ff1a1a, #ff3d3d);
+        box-shadow: 0 6px 25px rgba(255, 61, 61, 0.5);
+        transform: translateY(-2px);
+    }
+
+/* ===== OFFCANVAS АДМИН-ПАНЕЛЬ ===== */
+.gp-offcanvas {
+    background: linear-gradient(180deg, #140f19, #0a0a0f);
+    border-right: 1px solid rgba(255, 61, 61, 0.2);
+}
+
+    .gp-offcanvas .offcanvas-title {
+        color: #ff6b6b;
+    }
+
+    .gp-offcanvas .nav-link {
+        color: #ccc;
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+        .gp-offcanvas .nav-link:hover {
+            background: rgba(255, 61, 61, 0.15);
+            color: #fff;
+            padding-left: 1.25rem; /* Микро-анимация сдвига */
+        }
+
+        .gp-offcanvas .nav-link i {
+            color: #ff3d3d;
+            width: 20px;
+            text-align: center;
+        }
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 768px) {
+    .top-header .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .top-header .col:first-child {
+        margin-bottom: 0.5rem;
+    }
+
+    .main-nav .navbar-collapse {
+        padding-top: 1rem;
+    }
+
+    .gp-link {
+        text-align: center;
+    }
+
+        .gp-link.active::after {
+            left: 50%;
+        }
+}
+
+/* ===== УТИЛИТЫ ===== */
+.text-gains {
+    background: linear-gradient(90deg, #ff3d3d, #ff8a3d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.text-pains {
+    background: linear-gradient(90deg, #8a0000, #ff1a1a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

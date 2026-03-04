@@ -1,0 +1,193 @@
+﻿/* ===== БАЗОВЫЕ НАСТРОЙКИ ===== */
+.hero-container {
+    min-height: 83.5vh;
+    padding: 2rem 1rem;
+    background: transparent;
+    color: #fff;
+    font-family: 'Oswald', 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    overflow: hidden;
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+.hero-title {
+    font-size: clamp(2rem, 5vw, 4.5rem); /* Адаптивный размер */
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0.5rem 0;
+    opacity: 0; /* Скрыто до начала анимации */
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+    /* Подзаголовки ("временно", "навсегда") */
+    .hero-title .subtitle {
+        font-size: 0.7em;
+        font-weight: 400;
+        color: #ccc;
+        letter-spacing: 0.15em;
+        text-transform: lowercase;
+    }
+
+    /* Слоган "Честный фитнес" */
+    .hero-title .tagline {
+        display: block;
+        font-size: 0.5em;
+        font-weight: 300;
+        color: #ff6b6b;
+        letter-spacing: 0.3em;
+        margin-top: 0.3em;
+        text-shadow: 0 0 20px rgba(255, 42, 42, 0.5);
+    }
+
+/* ===== ЦВЕТОВЫЕ АКЦЕНТЫ ===== */
+.gains {
+    background: linear-gradient(90deg, #ff3d3d, #ff8a3d, #ff3d3d);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s linear infinite;
+    text-shadow: 0 0 30px rgba(255, 61, 61, 0.4);
+}
+
+.pains {
+    background: linear-gradient(90deg, #8a0000, #ff1a1a, #8a0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s linear infinite reverse;
+    text-shadow: 0 0 30px rgba(138, 0, 0, 0.5);
+}
+
+/* Анимация переливания градиента */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% center;
+    }
+
+    50% {
+        background-position: 100% center;
+    }
+
+    100% {
+        background-position: 0% center;
+    }
+}
+
+/* ===== АНИМАЦИИ ПОЯВЛЕНИЯ ===== */
+.line-1 {
+    animation: slamInLeft 0.6s cubic-bezier(0.7, 0, 0.3, 1) 0.2s forwards;
+}
+
+.line-2 {
+    animation: slamInRight 0.6s cubic-bezier(0.7, 0, 0.3, 1) 0.5s forwards;
+}
+
+.line-3 {
+    animation: powerFadeIn 1s ease-out 1.2s forwards;
+}
+
+/* "Ударное" появление слева */
+@keyframes slamInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-150%) scale(0.8);
+        filter: blur(10px);
+    }
+
+    70% {
+        transform: translateX(20%) scale(1.05);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* "Ударное" появление справа */
+@keyframes slamInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(150%) scale(0.8);
+        filter: blur(10px);
+    }
+
+    70% {
+        transform: translateX(-20%) scale(1.05);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* Мощное появление по центру */
+@keyframes powerFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+        filter: brightness(0.5);
+    }
+
+    60% {
+        transform: scale(1.02) translateY(-5px);
+        filter: brightness(1.1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: brightness(1);
+    }
+}
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ===== */
+/* Свечение при наведении на ключевые слова */
+.gains, .pains {
+    transition: filter 0.3s ease;
+    cursor: default;
+}
+
+    .gains:hover {
+        filter: drop-shadow(0 0 15px rgba(255, 61, 61, 0.8));
+    }
+
+    .pains:hover {
+        filter: drop-shadow(0 0 15px rgba(138, 0, 0, 0.8));
+    }
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: clamp(1.8rem, 6vw, 3rem);
+        letter-spacing: 0.02em;
+    }
+
+        .hero-title .subtitle {
+            font-size: 0.7em;
+            display: block;
+            margin-top: 0.2em;
+        }
+
+        .hero-title .tagline {
+            font-size: 0.6em;
+            letter-spacing: 0.2em;
+        }
+}
+
+@media (max-width: 480px) {
+    .hero-container {
+        padding: 1rem;
+        min-height: 70vh;
+    }
+
+    .hero-title {
+        margin: 0.3rem 0;
+    }
+}

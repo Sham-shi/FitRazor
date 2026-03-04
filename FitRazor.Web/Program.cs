@@ -1,4 +1,5 @@
 using FitRazor.Data;
+using FitRazor.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,13 @@ builder.Services.AddDataServices(builder.Configuration);
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
+
+// Прямая инициализация БД — просто и ясно
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<FitRazorContext>();
+    await SeedData.InitializeAsync(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

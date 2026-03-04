@@ -1,0 +1,145 @@
+﻿.contact-section {
+    background: transparent;
+    color: #fff;
+    padding: 4rem 0;
+}
+
+.contact-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+}
+
+.contact-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.05rem;
+    color: #ccc;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ===== ФОРМА ===== */
+.contact-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(20, 15, 25, 0.6);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 61, 61, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.form-label {
+    font-family: 'Oswald', sans-serif;
+    color: #ff6b6b;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.form-control {
+    background: rgba(10, 10, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    padding: 0.85rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .form-control:focus {
+        background: rgba(10, 10, 15, 0.95);
+        border-color: #ff3d3d;
+        box-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25);
+        color: #fff;
+    }
+
+.form-text {
+    font-size: 0.8rem;
+    color: #888 !important;
+}
+
+.form-check-input {
+    background-color: rgba(10, 10, 15, 0.8);
+    border-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+    .form-check-input:checked {
+        background-color: #ff3d3d;
+        border-color: #ff3d3d;
+    }
+
+.form-check-label {
+    color: #ccc;
+    cursor: pointer;
+}
+
+    .form-check-label a {
+        color: #ff6b6b;
+        text-decoration: none;
+    }
+
+        .form-check-label a:hover {
+            color: #ff3d3d;
+        }
+
+.btn-submit {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    padding: 1rem 2rem;
+    background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(255, 61, 61, 0.4);
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+    .btn-submit:hover {
+        background: linear-gradient(90deg, #ff1a1a, #ff3d3d);
+        box-shadow: 0 6px 30px rgba(255, 61, 61, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .contact-form {
+        padding: 1.5rem;
+    }
+
+    .contact-title {
+        font-size: 1.8rem;
+    }
+
+    .btn-submit {
+        font-size: 1rem;
+        padding: 0.85rem 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-section {
+        padding: 3rem 0;
+    }
+
+    .contact-form {
+        padding: 1.25rem;
+    }
+}
