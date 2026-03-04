@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FitRazor.Data/FitRazor.Data.csproj" Id="52370788-54b6-44d1-9574-7d2b9ce8cc63" />
+  <Project Path="FitRazor.Web/FitRazor.Web.csproj">
+    <BuildDependency Project="FitRazor.Data/FitRazor.Data.csproj" />
+  </Project>
+</Solution>
