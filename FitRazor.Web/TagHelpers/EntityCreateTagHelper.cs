@@ -12,6 +12,15 @@ namespace FitRazor.Web.TagHelpers
     {
         private readonly FitRazorContext _context;
 
+        private static readonly Dictionary<string, Type> EntityTypes = new()
+        {
+            { "Trainers", typeof(Trainer) },
+            { "Clients", typeof(Client) },
+            { "Services", typeof(Service) },
+            { "Bookings", typeof(Booking) },
+            { "TrainerServices", typeof(TrainerService) }
+        };
+
         [HtmlAttributeName("entity-name")]
         public string EntityName { get; set; } = "Trainers";
 

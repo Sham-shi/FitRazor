@@ -10,15 +10,13 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form method="post">
-                <input type="hidden" asp-for="EntityName" />
+            <input type="hidden" asp-for="EntityName" />
 
-                @* Вызов тег-хелпера формы *@
-                <entity-create-form entity-name="@Model.EntityName"
-                                    submit-text="Создать запись"
-                                    cancel-page="/Entities/Index">
-                </entity-create-form>
-            </form>
+            @* Вызов тег-хелпера формы *@
+            <entity-create-form entity-name="@Model.EntityName"
+                                submit-text="Создать запись"
+                                cancel-page="/Entities/Index">
+            </entity-create-form>
         </div>
     </div>
 </div>

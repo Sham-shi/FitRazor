@@ -32,7 +32,6 @@ public partial class Client
     [Display(Name = "День рождения")]
     public DateOnly? BirthDate { get; set; }
 
-    [Required]
     [Display(Name = "Дата регистрации")]
     public DateOnly RegistrationDate { get; set; }
 

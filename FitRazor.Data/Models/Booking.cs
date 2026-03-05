@@ -48,7 +48,6 @@ public partial class Booking
     [Display(Name = "Комментарии")]
     public string? Notes { get; set; }
 
-    [Required]
     [Display(Name = "Дата записи")]
     public DateTime CreatedDate { get; set; }
 

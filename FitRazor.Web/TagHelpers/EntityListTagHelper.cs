@@ -162,7 +162,10 @@ namespace FitRazor.Web.TagHelpers
                 {
                     var id = GetIdValue(item);
                     var modalId = $"deleteModal_{EntityName}_{id}";
-                    html.Append($"<delete-modal entity-name='{EntityName}' entity-id='{id}' modal-id='{modalId}'></delete-modal>");
+                    var displayName = GetDisplayNameForModal(item, EntityName);
+
+                    // ✅ Генерируем HTML модального окна напрямую
+                    html.Append(GenerateModalHtml(EntityName, id, modalId, displayName));
                 }
                 html.Append("</div>");
             }
@@ -198,7 +201,7 @@ namespace FitRazor.Web.TagHelpers
             </div>
             <div class=""modal-body"">
                 <p>Вы уверены, что хотите удалить запись?</p>
-                <p class=""text-muted small""><strong>{displayName}</strong></p>
+                <p class=""small""><strong>{displayName}</strong></p>
                 <div class=""alert alert-warning mb-0"">
                     <i class=""bi bi-exclamation-triangle""></i>
                     Это действие нельзя отменить!
