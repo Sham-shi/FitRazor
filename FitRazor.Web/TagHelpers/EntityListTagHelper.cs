@@ -1,4 +1,5 @@
 ﻿using FitRazor.Data.Models;
+using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +68,7 @@ namespace FitRazor.Web.TagHelpers
             }
 
             var firstItem = items.First();
-            var properties = GetDisplayableProperties(firstItem.GetType());
+            var properties = Helper.GetFormProperties(firstItem.GetType());
 
             var html = new System.Text.StringBuilder();
 
@@ -113,10 +114,17 @@ namespace FitRazor.Web.TagHelpers
                     var value = prop.GetValue(item);
                     html.Append("<td>");
 
-                    if (value != null)
+                    // 🔹 Для фото — передаём даже null, чтобы FormatValue показал заглушку
+                    if (prop.Name.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                        prop.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                        prop.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
+                    {
+                        html.Append(FormatValue(value, prop.PropertyType, prop.Name));
+                    }
+                    else if (value != null)
                     {
                         // Простое форматирование по типу
-                        html.Append(FormatValue(value, prop.PropertyType));
+                        html.Append(FormatValue(value, prop.PropertyType, prop.Name));
                     }
                     else
                     {
@@ -165,22 +173,32 @@ namespace FitRazor.Web.TagHelpers
             return nameProp?.GetValue(item)?.ToString() ?? $"{entityName} #{GetIdValue(item)}";
         }
 
-        private IEnumerable<PropertyInfo> GetDisplayableProperties(Type type)
+        private string FormatValue(object value, Type type, string propertyName = "")
         {
-            return type.GetProperties()
-                .Where(p =>
-                    p.CanRead &&
-                    !p.PropertyType.IsGenericType &&
-                    (p.PropertyType.Namespace == "System" ||
-                     p.PropertyType == typeof(string) ||
-                     p.PropertyType == typeof(decimal) ||
-                     p.PropertyType == typeof(DateTime) ||
-                     p.PropertyType == typeof(DateOnly) ||
-                     p.PropertyType == typeof(int)));
-        }
+            if (propertyName == nameof(Trainer.PhotoUrl) ||
+                propertyName.EndsWith("PhotoUrl") ||
+                propertyName.EndsWith("ImageUrl") ||
+                propertyName.EndsWith("AvatarUrl"))
+            {
+                if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+                {
+                    return "<img src='/Images/Trainers/no-photo.jpg' alt='Нет фото' style='min-width:100px;min-height:100px;object-fit:cover;' class='img-thumbnail rounded' />";
+                }
 
-        private string FormatValue(object value, Type type)
-        {
+                var url = value.ToString()!;
+                // Если путь относительный и не начинается с http/https — делаем его корректным
+                if (!url.StartsWith("http") && !url.StartsWith("/"))
+                {
+                    url = "/" + url.TrimStart('~', '/');
+                }
+
+                return $"<img src='{System.Web.HttpUtility.HtmlAttributeEncode(url)}' " +
+                       $"alt='Фото' " +
+                       $"style='min-width:100px;min-height:100px;object-fit:cover;' " +
+                       $"class='img-thumbnail rounded' " +
+                       $"onerror=\"this.onerror=null; this.src='/Images/Trainers/no-photo.jpg';this.alt='Фото отсутствует'\" />";
+            }
+
             if (type == typeof(decimal))
             {
                 return $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>";

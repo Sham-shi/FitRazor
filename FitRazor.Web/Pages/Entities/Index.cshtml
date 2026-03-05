@@ -46,7 +46,7 @@
             </div>
             <div class="modal-footer">
                 <form id="deleteConfirmForm" method="post">
-                    @Html.AntiForgeryToken()   <!-- ← здесь токен 100% правильный, потому что на Razor-странице -->
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="entityName" id="hiddenEntityName" />
                     <input type="hidden" name="id" id="hiddenEntityId" />
                     <button type="submit" class="btn btn-danger">🗑️ Да, удалить</button>

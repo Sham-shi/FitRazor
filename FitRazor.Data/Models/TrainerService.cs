@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FitRazor.Data.Models;
 
 [Index("TrainerId", "ServiceId", Name = "UQ_TrainerService", IsUnique = true)]
+[Display(Name = "Тренеры-Услуги")]
 public partial class TrainerService
 {
     [Key]

@@ -1,7 +1,6 @@
 ﻿using FitRazor.Data.Models;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -43,8 +42,10 @@ namespace FitRazor.Web.TagHelpers
                 .Where(p =>
                     p.CanRead &&
                     !p.PropertyType.IsGenericType &&
-                    !p.PropertyType.IsCollection() && // Убедитесь, что extension method доступен в этом файле
-                    p.Name != "Id")                 // Исключаем стандартный PK
+                    !p.PropertyType.IsCollection() &&
+                    p.Name != "Id" &&                 // Исключаем стандартный PK
+                    // 👇 Добавляем проверку на ScaffoldColumn
+                    p.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold != false)
                 .OrderBy(p =>
                 {
                     var displayAttr = p.GetCustomAttribute<DisplayAttribute>();
@@ -59,7 +60,7 @@ namespace FitRazor.Web.TagHelpers
                     html.Append("<div class='row mb-2'>");
                     html.Append($"<div class='col-md-4 fw-bold'>{displayName}:</div>");
                     html.Append("<div class='col-md-8'>");
-                    html.Append(FormatValue(value, prop.PropertyType));
+                    html.Append(FormatValue(value, prop.PropertyType, prop));
                     html.Append("</div></div>");
                 }
             }
@@ -87,8 +88,28 @@ namespace FitRazor.Web.TagHelpers
             };
         }
 
-        private string FormatValue(object value, Type type)
+        private string FormatValue(object value, Type type, PropertyInfo? prop = null)
         {
+            // Специальная обработка для полей с фото
+            if (prop != null &&
+                (prop.Name.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                 prop.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                 prop.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase)))
+            {
+                string url = value?.ToString() ?? "";
+
+                string displayUrl = string.IsNullOrWhiteSpace(url)
+                    ? "/Images/Trainers/no-photo.jpg"
+                    : (url.StartsWith("http") ? url : "/" + url.TrimStart('~', '/'));
+
+                return $@"
+                    <img src='{System.Web.HttpUtility.HtmlAttributeEncode(displayUrl)}'
+                         alt='Фото'
+                         class='img-fluid rounded shadow-sm'
+                         style='max-width: 320px; max-height: 320px; object-fit: contain;'
+                         onerror=""this.src='/Images/Trainers/no-photo.jpg'; this.alt='Фото отсутствует';"" />";
+            }
+
             if (type == typeof(decimal)) return $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>";
             if (type == typeof(DateTime)) return $"<span>{((DateTime)value):dd.MM.yyyy HH:mm}</span>";
             if (type == typeof(DateOnly)) return $"<span>{((DateOnly)value):dd.MM.yyyy}</span>";

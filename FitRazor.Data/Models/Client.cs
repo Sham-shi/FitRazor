@@ -10,6 +10,7 @@ namespace FitRazor.Data.Models;
 
 [Index("Phone", Name = "UQ__Clients__5C7E359E994E93F2", IsUnique = true)]
 [Index("Email", Name = "UQ__Clients__A9D10534F7334286", IsUnique = true)]
+[Display(Name = "Клиенты")]
 public partial class Client
 {
     [Key]

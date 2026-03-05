@@ -5,7 +5,7 @@
     ViewData["Title"] = $"Создать: {Model.EntityName}";
 }
 
-<form method="post" class="entity-create-form">
+<form method="post" class="entity-create-form" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <input type="hidden" name="EntityName" value="@Model.EntityName" />
     <div class="container mt-4">

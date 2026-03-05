@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Data.Models;
 
+[Display(Name = "Услуги")]
 public partial class Service
 {
     [Key]

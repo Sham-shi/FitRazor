@@ -10,10 +10,18 @@ namespace FitRazor.Web.Pages.Entities
     public class CreateModel : PageModel
     {
         private readonly FitRazorContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public CreateModel(FitRazorContext context) => _context = context;
+        public CreateModel(FitRazorContext context, IWebHostEnvironment env)
+        {
+            _context = context;
+            _env = env;
+        }
 
         [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
+
+        // Для фото (Trainer.PhotoUrl)
+        [BindProperty] public IFormFile? PhotoUrl { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -35,6 +43,30 @@ namespace FitRazor.Web.Pages.Entities
 
                 // Применяем значения из формы
                 Helper.ApplyFormValuesToEntity(entity, Request.Form);
+
+                // Специальная обработка фото (для Trainers)
+                if (EntityName == "Trainers" && entity is Trainer trainer && PhotoUrl != null && PhotoUrl.Length > 0)
+                {
+                    try
+                    {
+                        var newPhotoPath = await Helper.SaveImageAsync(
+                            file: PhotoUrl,
+                            env: _env,
+                            subfolder: "Trainers"
+                        // oldPath не передаём → null
+                        );
+
+                        if (newPhotoPath != null)
+                        {
+                            trainer.PhotoUrl = newPhotoPath;
+                        }
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        TempData["ErrorMessage"] = ex.Message;
+                        return Page();
+                    }
+                }
 
                 // Специальная логика для отдельных сущностей
                 switch (EntityName) // ← этот switch можно тоже вынести в реестр позже

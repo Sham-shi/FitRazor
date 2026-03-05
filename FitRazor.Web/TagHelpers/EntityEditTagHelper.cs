@@ -1,4 +1,5 @@
 ﻿using FitRazor.Data.Models;
+using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -50,7 +51,7 @@ namespace FitRazor.Web.TagHelpers
             }
 
             var modelType = entity.GetType();
-            var properties = GetFormProperties(modelType);
+            var properties = Helper.GetFormProperties(modelType);
 
             var dropdownData = new Dictionary<string, IEnumerable<SelectListItem>>();
             foreach (var provider in meta.DropdownProviders)
@@ -61,25 +62,6 @@ namespace FitRazor.Web.TagHelpers
             output.Attributes.SetAttribute("class", "entity-edit-form");
             var html = GenerateHtml(entity, modelType, properties, dropdownData);
             output.Content.SetHtmlContent(html);
-        }
-
-        private IEnumerable<PropertyInfo> GetFormProperties(Type type)
-        {
-            return type.GetProperties()
-                .Where(p =>
-                    p.CanWrite &&
-                    p.CanRead &&
-                    !p.PropertyType.IsGenericType &&
-                    !p.PropertyType.IsCollection() &&
-                    p.Name != "Id" &&
-                    p.Name != $"{type.Name}Id" &&
-                    // 👇 Добавляем проверку на ScaffoldColumn
-                    p.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold != false)
-                .OrderBy(p =>
-                {
-                    var displayAttr = p.GetCustomAttribute<DisplayAttribute>();
-                    return displayAttr?.GetOrder() ?? 1000;
-                });
         }
 
         private string GenerateHtml(object entity, Type modelType, IEnumerable<PropertyInfo> properties,
@@ -134,6 +116,45 @@ namespace FitRazor.Web.TagHelpers
         {
             var propType = prop.PropertyType;
             var propName = prop.Name;
+
+            // ────────────────────────────────────────────────
+            // Блок для загрузки фото (PhotoUrl, ImageUrl, AvatarUrl...)
+            // ────────────────────────────────────────────────
+            bool isPhotoField = propName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                                propName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                                propName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase);
+
+            if (isPhotoField && propType == typeof(string))
+            {
+                string currentUrl = currentValue?.ToString() ?? "";
+                string displayUrl = string.IsNullOrWhiteSpace(currentUrl)
+                    ? "/Images/Trainers/no-photo.jpg"
+                    : (currentUrl.StartsWith("http") ? currentUrl : "/" + currentUrl.TrimStart('~', '/'));
+
+                var sb = new System.Text.StringBuilder();
+
+                sb.Append("<div class='current-photo mb-2'>");
+                sb.Append("<label class='form-label d-block'>Текущее фото:</label>");
+                sb.Append($"  <img src='{System.Web.HttpUtility.HtmlAttributeEncode(displayUrl)}' " +
+                          "     alt='Текущее фото' " +
+                          "     style='max-width:240px; max-height:240px; object-fit:contain;' " +
+                          "     class='img-thumbnail mb-2 rounded' " +
+                          "     onerror=\"this.src='/Images/Trainers/no-photo.jpg';\" />");
+                sb.Append("</div>");
+
+                sb.Append("<div class='mb-3'>");
+                sb.Append("<label class='form-label'>Загрузить новое фото (jpg, png, до 5 МБ):</label><br />");
+                sb.Append($"<label class='btn btn-primary text-white' for='file_{propName}' id='file_label_{propName}>");
+                sb.Append("<i class='bi bi-upload me-2'></i>📁 Выбрать фото");
+                sb.Append("</label>");
+                sb.Append($"  <input type='file' name='{propName}' id='file_{propName}' accept='image/jpeg,image/png' class='d-none' onchange=\"document.getElementById('file_label_{propName}').textContent = this.files[0]?.name || 'Файл не выбран';\" />");
+                sb.Append("</div>");
+
+                // Скрытое поле — старый путь (чтобы знать, что оставить / удалить)
+                sb.Append($"<input type='hidden' name='Old{propName}' value='{System.Web.HttpUtility.HtmlAttributeEncode(currentUrl)}' />");
+
+                return sb.ToString();
+            }
 
             // Выпадающий список для foreign keys
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))

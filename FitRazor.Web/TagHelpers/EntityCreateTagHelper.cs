@@ -1,4 +1,5 @@
 ﻿using FitRazor.Data.Models;
+using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -40,7 +41,7 @@ namespace FitRazor.Web.TagHelpers
             // Тип сущности
             var modelType = meta.EntityType;
 
-            var properties = GetFormProperties(modelType);
+            var properties = Helper.GetFormProperties(modelType);
 
             // Загрузка dropdown
             var dropdownData = new Dictionary<string, IEnumerable<SelectListItem>>();
@@ -52,26 +53,6 @@ namespace FitRazor.Web.TagHelpers
             output.Attributes.SetAttribute("class", "entity-create-form");
             var html = GenerateHtml(modelType, properties, dropdownData);
             output.Content.SetHtmlContent(html);
-        }
-
-        private IEnumerable<PropertyInfo> GetFormProperties(Type type)
-        {
-            return type.GetProperties()
-                .Where(p =>
-                    p.CanWrite &&
-                    p.CanRead &&
-                    !p.PropertyType.IsGenericType &&
-                    !p.PropertyType.IsCollection() &&
-                    // Исключаем только PK, но оставляем FK (ClientId, TrainerId...)
-                    p.Name != "Id" &&
-                    p.Name != $"{type.Name}Id" &&
-                    // 👇 Добавляем проверку на ScaffoldColumn
-                    p.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold != false)
-                .OrderBy(p =>
-                {
-                    var displayAttr = p.GetCustomAttribute<DisplayAttribute>();
-                    return displayAttr?.GetOrder() ?? 1000;
-                });
         }
 
         private string GenerateHtml(Type modelType, IEnumerable<PropertyInfo> properties,
@@ -121,6 +102,34 @@ namespace FitRazor.Web.TagHelpers
         {
             var propType = prop.PropertyType;
             var propName = prop.Name;
+
+            // ────────────────────────────────────────────────
+            // Блок для загрузки фото при создании
+            // ────────────────────────────────────────────────
+            bool isPhotoField = propName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                                propName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                                propName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase);
+
+            if (isPhotoField && (propType == typeof(string)))
+            {
+                var sb = new System.Text.StringBuilder();
+
+                sb.Append("<div class='mb-3'>");
+                sb.Append("<label class='form-label'>Фото (jpg, png, до 5 МБ)</label>");
+
+                // Стилизованная кнопка + скрытый input
+                sb.Append($"<label class='btn btn-primary text-white d-inline-block' for='file_{propName}'>");
+                sb.Append("<i class='bi bi-image me-2'></i>Выбрать фото");
+                sb.Append($"<input type='file' name='{propName}' id='file_{propName}' accept='image/jpeg,image/png' class='d-none' onchange=\"document.getElementById('file_label_{propName}').textContent = this.files[0]?.name || 'Файл не выбран';\" />");
+                sb.Append("</label>");
+
+                // Место для имени выбранного файла
+                sb.Append($"<div class='mt-2 text-muted small' id='selected-file-{propName}'>Файл не выбран</div>");
+
+                sb.Append("</div>");
+
+                return sb.ToString();
+            }
 
             // Выпадающий список для foreign keys
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))
