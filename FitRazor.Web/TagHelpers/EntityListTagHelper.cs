@@ -1,4 +1,5 @@
 ﻿using FitRazor.Data.Models;
+using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -51,21 +52,10 @@ namespace FitRazor.Web.TagHelpers
 
         private async Task<IEnumerable<object>> GetDataAsync()
         {
-            return EntityName switch
-            {
-                "Trainers" => await _context.Trainers.ToListAsync(),
-                "Clients" => await _context.Clients.ToListAsync(),
-                "Services" => await _context.Services.ToListAsync(),
-                "Bookings" => await _context.Bookings
-                    .Include(b => b.Client)
-                    .Include(b => b.TrainerService)
-                    .ToListAsync(),
-                "TrainerServices" => await _context.TrainerServices
-                    .Include(ts => ts.Trainer)
-                    .Include(ts => ts.Service)
-                    .ToListAsync(),
-                _ => Enumerable.Empty<object>()
-            };
+            var meta = EntityAdminRegistry.Get(EntityName);
+            if (meta == null) return Enumerable.Empty<object>();
+            var query = meta.QueryFactory(_context);
+            return await query.ToListAsync();
         }
 
         private string GenerateHtml(IEnumerable<object> data)
@@ -139,12 +129,19 @@ namespace FitRazor.Web.TagHelpers
                 if (ShowActions)
                 {
                     var id = GetIdValue(item);
-                    var modalId = $"deleteModal_{EntityName}_{id}";
+                    var displayName = GetDisplayNameForModal(item, EntityName);
 
                     html.Append("<td class='text-center'>");
                     html.Append($"<a href='{DetailsPage}/{EntityName}/{id}' class='btn btn-sm btn-info me-1'>📄</a>");
                     html.Append($"<a href='{EditPage}/{EntityName}/{id}' class='btn btn-sm btn-primary me-1'>✏️</a>");
-                    html.Append($"<button type='button' class='btn btn-sm btn-danger' data-bs-toggle='modal' data-bs-target='#{modalId}'>🗑️</button>");
+                    html.Append($@"
+                        <button type='button' class='btn btn-sm btn-danger'
+                                data-bs-toggle='modal' data-bs-target='#deleteModal'
+                                data-entity-name='{EntityName}'
+                                data-entity-id='{id}'
+                                data-entity-display='{System.Web.HttpUtility.HtmlAttributeEncode(displayName)}'>
+                            🗑️
+                        </button>");
                     html.Append("</td>");
                 }
 
@@ -155,24 +152,8 @@ namespace FitRazor.Web.TagHelpers
             html.Append("</table>");
             html.Append("</div>");
 
-            if (ShowActions)
-            {
-                html.Append("<div class='modals-container'>");
-                foreach (var item in items)
-                {
-                    var id = GetIdValue(item);
-                    var modalId = $"deleteModal_{EntityName}_{id}";
-                    var displayName = GetDisplayNameForModal(item, EntityName);
-
-                    // ✅ Генерируем HTML модального окна напрямую
-                    html.Append(GenerateModalHtml(EntityName, id, modalId, displayName));
-                }
-                html.Append("</div>");
-            }
-
             return html.ToString();
         }
-
 
         // Метод для получения имени (без запроса к БД!)
         private string GetDisplayNameForModal(object item, string entityName)
@@ -182,49 +163,6 @@ namespace FitRazor.Web.TagHelpers
                         ?? item.GetType().GetProperty("Name")
                         ?? item.GetType().GetProperty("ServiceName");
             return nameProp?.GetValue(item)?.ToString() ?? $"{entityName} #{GetIdValue(item)}";
-        }
-
-        private string GenerateModalHtml(string entityName, object id, string modalId, string displayName)
-        {
-            return $@"
-<div class=""modal fade"" id=""{modalId}"" tabindex=""-1"" 
-     aria-labelledby=""{modalId}Label"" aria-hidden=""true"" 
-     data-bs-backdrop=""static"">
-    <div class=""modal-dialog modal-dialog-centered"">
-        <div class=""modal-content"">
-            <div class=""modal-header"">
-                <h5 class=""modal-title"" id=""{modalId}Label"">
-                    ⚠️ Подтверждение удаления
-                </h5>
-                <button type=""button"" class=""btn-close"" 
-                        data-bs-dismiss=""modal"" aria-label=""Закрыть""></button>
-            </div>
-            <div class=""modal-body"">
-                <p>Вы уверены, что хотите удалить запись?</p>
-                <p class=""small""><strong>{displayName}</strong></p>
-                <div class=""alert alert-warning mb-0"">
-                    <i class=""bi bi-exclamation-triangle""></i>
-                    Это действие нельзя отменить!
-                </div>
-            </div>
-            <div class=""modal-footer"">
-                <form method=""post"" 
-                      asp-page=""/Entities/Index"" 
-                      asp-page-handler=""Delete"" 
-                      asp-route-entityName=""{entityName}"" 
-                      asp-route-id=""{id}"">
-                    <button type=""submit"" class=""btn btn-danger"">
-                        🗑️ Да, удалить
-                    </button>
-                    <button type=""button"" class=""btn btn-secondary"" 
-                            data-bs-dismiss=""modal"">
-                        ❌ Отмена
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>";
         }
 
         private IEnumerable<PropertyInfo> GetDisplayableProperties(Type type)

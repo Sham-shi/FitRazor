@@ -32,6 +32,7 @@ public partial class Service
     [Display(Name = "Описание")]
     public string? Description { get; set; }
 
+    [ScaffoldColumn(false)]
     [InverseProperty("Service")]
     public virtual ICollection<TrainerService> TrainerServices { get; set; } = new List<TrainerService>();
 }

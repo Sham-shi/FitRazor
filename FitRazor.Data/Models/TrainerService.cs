@@ -23,13 +23,16 @@ public partial class TrainerService
     [Display(Name = "Услуга")]
     public int ServiceId { get; set; }
 
+    [ScaffoldColumn(false)]
     [InverseProperty("TrainerService")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    [ScaffoldColumn(false)]
     [ForeignKey("ServiceId")]
     [InverseProperty("TrainerServices")]
     public virtual Service Service { get; set; } = null!;
 
+    [ScaffoldColumn(false)]
     [ForeignKey("TrainerId")]
     [InverseProperty("TrainerServices")]
     public virtual Trainer Trainer { get; set; } = null!;

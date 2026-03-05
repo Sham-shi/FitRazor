@@ -51,10 +51,12 @@ public partial class Booking
     [Display(Name = "Дата записи")]
     public DateTime CreatedDate { get; set; }
 
+    [ScaffoldColumn(false)]
     [ForeignKey("ClientId")]
     [InverseProperty("Bookings")]
     public virtual Client Client { get; set; } = null!;
 
+    [ScaffoldColumn(false)]
     [ForeignKey("TrainerServiceId")]
     [InverseProperty("Bookings")]
     public virtual TrainerService TrainerService { get; set; } = null!;

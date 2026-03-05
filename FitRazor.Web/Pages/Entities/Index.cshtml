@@ -28,3 +28,60 @@
         <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
     }
 </div>
+
+<!-- Общая модалка удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">⚠️ Подтверждение удаления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить запись?</p>
+                <p class="small"><strong id="deleteEntityDisplay">...</strong></p>
+                <div class="alert alert-warning mb-0">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Это действие нельзя отменить!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteConfirmForm" method="post">
+                    @Html.AntiForgeryToken()   <!-- ← здесь токен 100% правильный, потому что на Razor-странице -->
+                    <input type="hidden" name="entityName" id="hiddenEntityName" />
+                    <input type="hidden" name="id" id="hiddenEntityId" />
+                    <button type="submit" class="btn btn-danger">🗑️ Да, удалить</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Отмена</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalEl = document.getElementById('deleteModal');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('show.bs.modal', event => {
+                const btn = event.relatedTarget; // кнопка 🗑️
+
+                const entityName  = btn.dataset.entityName;
+                const entityId    = btn.dataset.entityId;
+                const displayName = btn.dataset.entityDisplay || `Запись #${entityId}`;
+
+                // Текст
+                document.getElementById('deleteEntityDisplay').textContent = displayName;
+
+                // Hidden поля
+                document.getElementById('hiddenEntityName').value = entityName;
+                document.getElementById('hiddenEntityId').value   = entityId;
+
+                // Action формы (важно!)
+                const form = document.getElementById('deleteConfirmForm');
+                const url = `@Url.Page("/Entities/Index")` + `?handler=Delete&entityName=${encodeURIComponent(entityName)}&id=${encodeURIComponent(entityId)}`;
+                form.action = url;
+            });
+        });
+    </script>
+}

@@ -71,6 +71,7 @@ public partial class Trainer
     [Display(Name = "Фото")]
     public string? PhotoUrl { get; set; }
 
+    [ScaffoldColumn(false)]
     [InverseProperty("Trainer")]
     public virtual ICollection<TrainerService> TrainerServices { get; set; } = new List<TrainerService>();
 }

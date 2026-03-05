@@ -35,6 +35,7 @@ public partial class Client
     [Display(Name = "Дата регистрации")]
     public DateOnly RegistrationDate { get; set; }
 
+    [ScaffoldColumn(false)]
     [InverseProperty("Client")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

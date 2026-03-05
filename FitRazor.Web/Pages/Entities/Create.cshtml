@@ -5,24 +5,23 @@
     ViewData["Title"] = $"Создать: {Model.EntityName}";
 }
 
-<div class="container mt-4">
-    <h1>@ViewData["Title"]</h1>
+<form method="post" class="entity-create-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="EntityName" value="@Model.EntityName" />
+    <div class="container mt-4">
+        <h1>@ViewData["Title"]</h1>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <input type="hidden" asp-for="EntityName" />
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <input type="hidden" asp-for="EntityName" />
 
-            @* Вызов тег-хелпера формы *@
-            <entity-create-form entity-name="@Model.EntityName"
-                                submit-text="Создать запись"
-                                cancel-page="/Entities/Index">
-            </entity-create-form>
+                @* Вызов тег-хелпера формы *@
+                <entity-create-form entity-name="@Model.EntityName"
+                                    submit-text="Создать запись"
+                                    cancel-page="/Entities/Index">
+                </entity-create-form>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+</form>

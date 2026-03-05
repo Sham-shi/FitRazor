@@ -1,4 +1,5 @@
 ﻿using FitRazor.Data.Models;
+using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +12,6 @@ namespace FitRazor.Web.TagHelpers
     public class EntityCreateTagHelper : TagHelper
     {
         private readonly FitRazorContext _context;
-
-        private static readonly Dictionary<string, Type> EntityTypes = new()
-        {
-            { "Trainers", typeof(Trainer) },
-            { "Clients", typeof(Client) },
-            { "Services", typeof(Service) },
-            { "Bookings", typeof(Booking) },
-            { "TrainerServices", typeof(TrainerService) }
-        };
 
         [HtmlAttributeName("entity-name")]
         public string EntityName { get; set; } = "Trainers";
@@ -37,29 +29,29 @@ namespace FitRazor.Web.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var modelType = GetEntityType();
+            var meta = EntityAdminRegistry.Get(EntityName);
+            if (meta == null)
+            {
+                output.TagName = "div";
+                output.Content.SetHtmlContent("<div class='alert alert-warning'>Неизвестная сущность</div>");
+                return;
+            }
+
+            // Тип сущности
+            var modelType = meta.EntityType;
+
             var properties = GetFormProperties(modelType);
-            var dropdownData = await GetDropdownDataAsync();
 
-            output.TagName = "form";
-            output.Attributes.SetAttribute("method", "post");
+            // Загрузка dropdown
+            var dropdownData = new Dictionary<string, IEnumerable<SelectListItem>>();
+            foreach (var provider in meta.DropdownProviders)
+            {
+                dropdownData[provider.Key] = await provider.Value(_context);
+            }
+
             output.Attributes.SetAttribute("class", "entity-create-form");
-
             var html = GenerateHtml(modelType, properties, dropdownData);
             output.Content.SetHtmlContent(html);
-        }
-
-        private Type GetEntityType()
-        {
-            return EntityName switch
-            {
-                "Trainers" => typeof(Trainer),
-                "Clients" => typeof(Client),
-                "Services" => typeof(Service),
-                "Bookings" => typeof(Booking),
-                "TrainerServices" => typeof(TrainerService),
-                _ => throw new ArgumentException($"Неизвестная сущность: {EntityName}")
-            };
         }
 
         private IEnumerable<PropertyInfo> GetFormProperties(Type type)
@@ -72,7 +64,9 @@ namespace FitRazor.Web.TagHelpers
                     !p.PropertyType.IsCollection() &&
                     // Исключаем только PK, но оставляем FK (ClientId, TrainerId...)
                     p.Name != "Id" &&
-                    p.Name != $"{type.Name}Id")
+                    p.Name != $"{type.Name}Id" &&
+                    // 👇 Добавляем проверку на ScaffoldColumn
+                    p.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold != false)
                 .OrderBy(p =>
                 {
                     var displayAttr = p.GetCustomAttribute<DisplayAttribute>();
@@ -80,55 +74,10 @@ namespace FitRazor.Web.TagHelpers
                 });
         }
 
-        private async Task<Dictionary<string, IEnumerable<SelectListItem>>> GetDropdownDataAsync()
-        {
-            var dropdowns = new Dictionary<string, IEnumerable<SelectListItem>>();
-
-            // Данные для выпадающих списков
-            dropdowns["ClientId"] = await _context.Clients
-                .Select(c => new SelectListItem
-                {
-                    Value = c.ClientId.ToString(),
-                    Text = c.FullName
-                })
-                .ToListAsync();
-
-            dropdowns["TrainerId"] = await _context.Trainers
-                .Select(t => new SelectListItem
-                {
-                    Value = t.TrainerId.ToString(),
-                    Text = t.FullName
-                })
-                .ToListAsync();
-
-            dropdowns["ServiceId"] = await _context.Services
-                .Select(s => new SelectListItem
-                {
-                    Value = s.ServiceId.ToString(),
-                    Text = s.ServiceName
-                })
-                .ToListAsync();
-
-            dropdowns["TrainerServiceId"] = await _context.TrainerServices
-                .Include(ts => ts.Trainer)
-                .Include(ts => ts.Service)
-                .Select(ts => new SelectListItem
-                {
-                    Value = ts.TrainerServiceId.ToString(),
-                    Text = $"{ts.Trainer.FullName} — {ts.Service.ServiceName}"
-                })
-                .ToListAsync();
-
-            return dropdowns;
-        }
-
         private string GenerateHtml(Type modelType, IEnumerable<PropertyInfo> properties,
             Dictionary<string, IEnumerable<SelectListItem>> dropdownData)
         {
             var html = new System.Text.StringBuilder();
-
-            // Скрытое поле для имени сущности (нужно для POST)
-            html.Append($"<input type='hidden' name='EntityName' value='{EntityName}' />");
 
             html.Append("<div class='row'>");
 

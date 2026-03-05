@@ -8,6 +8,8 @@ builder.Services.AddDataServices(builder.Configuration);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Прямая инициализация БД — просто и ясно
