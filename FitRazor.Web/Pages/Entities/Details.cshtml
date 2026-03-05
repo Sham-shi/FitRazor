@@ -1,0 +1,22 @@
+﻿@page "{entityName}/{id:int}"
+@model FitRazor.Web.Pages.Entities.DetailsModel
+
+@{
+    ViewData["Title"] = $"Детали: {Model.EntityName}";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    @* Карточка сущности одним тегом *@
+    <entity-card entity-name="@Model.EntityName" entity-id="@Model.Id"></entity-card>
+
+    <div class="mt-3">
+        <a asp-page="/Entities/Index" asp-route-entityName="@Model.EntityName" class="btn btn-secondary">
+            ← Назад к списку
+        </a>
+        <a asp-page="/Entities/Edit" asp-route-entityName="@Model.EntityName" asp-route-id="@Model.Id" class="btn btn-primary">
+            Редактировать
+        </a>
+    </div>
+</div>

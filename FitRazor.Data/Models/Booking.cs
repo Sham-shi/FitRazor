@@ -15,9 +15,11 @@ public partial class Booking
     public int BookingId { get; set; }
 
     [Column("ClientID")]
+    [Display(Name = "Клиент")]
     public int ClientId { get; set; }
 
     [Column("TrainerServiceID")]
+    [Display(Name = "Тренер - Услуга")]
     public int TrainerServiceId { get; set; }
 
     [Required]

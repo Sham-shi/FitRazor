@@ -235,21 +235,46 @@
                     </a>
                 </li>
                 <li class="nav-item mt-3 pt-3 border-top border-secondary-subtle">
-                    <small class="text-muted text-uppercase small fw-bold d-block mb-2">Управление</small>
+                    <small class="text-uppercase small fw-bold d-block mb-2">Управление</small>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link gp-link" href="#">
-                        <i class="bi bi-table me-2"></i>Таблица 1
+                    <a class="nav-link gp-link"
+                       asp-page="/Entities/Index"
+                       asp-route-entityName="Trainers">
+                        <i class="bi bi-people me-2"></i>Тренеры
                     </a>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link gp-link" href="#">
-                        <i class="bi bi-table me-2"></i>Таблица 2
+                    <a class="nav-link gp-link"
+                       asp-page="/Entities/Index"
+                       asp-route-entityName="Clients">
+                        <i class="bi bi-person-badge me-2"></i>Клиенты
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link gp-link" href="#">
-                        <i class="bi bi-table me-2"></i>Таблица 3
+                    <a class="nav-link gp-link"
+                       asp-page="/Entities/Index"
+                       asp-route-entityName="Services">
+                        <i class="bi bi-list-task me-2"></i>Услуги
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link gp-link"
+                       asp-page="/Entities/Index"
+                       asp-route-entityName="TrainerServices">
+                        <i class="bi bi-link-45deg me-2"></i>Тренеры-Услуги
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link gp-link"
+                       asp-page="/Entities/Index"
+                       asp-route-entityName="Bookings">
+                        <i class="bi bi-calendar-check me-2"></i>Записи
                     </a>
                 </li>
             </ul>

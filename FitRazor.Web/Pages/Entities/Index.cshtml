@@ -1,0 +1,30 @@
+﻿@page "{entityName?}"
+@model FitRazor.Web.Pages.Entities.IndexModel
+
+@{
+    ViewData["Title"] = $"Список: {Model.EntityName}";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-page="Create" asp-route-entityName="@Model.EntityName" class="btn btn-success">
+            + Добавить запись
+        </a>
+    </div>
+
+    @* Список сущностей *@
+    <entity-list entity-name="@Model.EntityName"
+                 show-actions="true">
+    </entity-list>
+
+    @* Сообщения об успехе/ошибке *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+    }
+</div>

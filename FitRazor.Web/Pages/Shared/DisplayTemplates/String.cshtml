@@ -1,0 +1,10 @@
+﻿@model string
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    <span>@Model</span>
+}
+else
+{
+    <span class="text-muted">—</span>
+}

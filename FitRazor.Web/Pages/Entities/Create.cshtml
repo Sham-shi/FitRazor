@@ -1,0 +1,30 @@
+﻿@page
+@model FitRazor.Web.Pages.Entities.CreateModel
+
+@{
+    ViewData["Title"] = $"Создать: {Model.EntityName}";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="EntityName" />
+
+                @* Вызов тег-хелпера формы *@
+                <entity-create-form entity-name="@Model.EntityName"
+                                    submit-text="Создать запись"
+                                    cancel-page="/Entities/Index">
+                </entity-create-form>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

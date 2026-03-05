@@ -1,0 +1,44 @@
+﻿@page "{entityName}/{id:int}"
+@model FitRazor.Web.Pages.Entities.EditModel
+
+@{
+    ViewData["Title"] = $"Редактировать: {Model.EntityName}";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (Model.EntityNotFound)
+    {
+        <div class="alert alert-warning">
+            Запись не найдена или была удалена.
+        </div>
+        <a asp-page="Index" asp-route-entityName="@Model.EntityName" class="btn btn-secondary">
+            ← Назад к списку
+        </a>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post">
+                    <input type="hidden" asp-for="EntityName" />
+                    <input type="hidden" asp-for="Id" />
+
+                    @* Вызов тег-хелпера формы *@
+                    <entity-edit-form entity-name="@Model.EntityName"
+                                      entity-id="@Model.Id"
+                                      submit-text="Сохранить изменения"
+                                      cancel-page="/Entities/Index">
+                    </entity-edit-form>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
