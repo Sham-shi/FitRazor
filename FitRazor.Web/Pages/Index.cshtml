@@ -169,202 +169,44 @@
         </h2>
 
         <div class="row g-4 justify-content-center">
-            <!-- Тренер 1: Максим -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="trainer-card">
-                    <div class="trainer-card-front">
-                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-maxim.jpg');"></div>
-                        <div class="trainer-overlay-front"></div>
-                        <div class="trainer-info-front">
-                            <h3 class="trainer-name text-uppercase">
-                                Максим <span class="trainer-nickname gains">«Скала»</span>
-                            </h3>
-                            <div class="trainer-words">
-                                <span>Сила</span> · <span>Основа</span> · <span>Контроль</span>
-                            </div>
-                            <p class="trainer-direction text-uppercase">Фундаментальная сила</p>
-                            <p class="trainer-motto">ЕГО ПРИНЦИП: «Железо не лжёт. Или ты можешь, или нет. Я научу тебя МОЧЬ.»</p>
-                        </div>
-                    </div>
-                    <div class="trainer-card-back">
-                        <div class="trainer-info-back">
-                            <div class="trainer-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏆</span>
-                                    <p><strong>КМС по пауэрлифтингу</strong><br>Сертифицированный тренер (IPF)</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">💪</span>
-                                    <p><strong>5 лет стажа</strong><br>Специализация: жим, присед, тяга</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎯</span>
-                                    <p><strong>Результат:</strong><br>Сила, которая останется навсегда</p>
-                                </div>
-                            </div>
-                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Тренер 2: Кирилл -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="trainer-card">
-                    <div class="trainer-card-front">
-                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-kirill.png');"></div>
-                        <div class="trainer-overlay-front"></div>
-                        <div class="trainer-info-front">
-                            <h3 class="trainer-name text-uppercase">
-                                Кирилл <span class="trainer-nickname pains">«Движ»</span>
-                            </h3>
-                            <div class="trainer-words">
-                                <span>Выносливость</span> · <span>Взрыв</span> · <span>Адреналин</span>
+            @foreach (var trainer in Model.Trainers)
+            {
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="trainer-card">
+                        <div class="trainer-card-front">
+                            <div class="trainer-photo" 
+                                style="background-image: url('@(!string.IsNullOrEmpty(trainer.PhotoUrl) ? trainer.PhotoUrl : "/Images/Trainers/no-photo.jpg")');">
                             </div>
-                            <p class="trainer-direction text-uppercase">Функционал и выносливость</p>
-                            <p class="trainer-motto">ЕГО ДЕВИЗ: «Усталость начинается в голове. Тело может больше. Заставь его работать.»</p>
+                            <div class="trainer-overlay-front"></div>
+                            <div class="trainer-info-front">
+                                <h3 class="trainer-name text-uppercase">
+                                    <span class="trainer-nickname gains">@trainer.FullName</span>
+                                </h3>
+                                <div class="trainer-words">
+                                    <span>@trainer.Slogan</span>
+                                </div>
+                                <p class="trainer-direction text-uppercase">@trainer.Specialization</p>
+                                <p class="trainer-motto">@trainer.Motto</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="trainer-card-back">
-                        <div class="trainer-info-back">
-                            <div class="trainer-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏆</span>
-                                    <p><strong>Мастер спорта</strong><br>Лёгкая атлетика</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">⚡</span>
-                                    <p><strong>HIIT-тренер</strong><br>Высокоинтенсивные тренировки</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎯</span>
-                                    <p><strong>Результат:</strong><br>Вызов пределам каждый день</p>
+                        <div class="trainer-card-back">
+                            <div class="trainer-info-back">
+                                <div class="trainer-details">
+                                    <div class="detail-item">
+                                        <span class="detail-icon">🏆</span>
+                                        <p><strong>@trainer.SportsAchievements</strong><br>@trainer.WorkExperience</p>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-icon">🎯</span>
+                                        <p><strong>@trainer.Specialization</strong><br>@trainer.SpecializationDescription</p>
+                                    </div>
                                 </div>
                             </div>
-                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Тренер 3: Артем -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="trainer-card">
-                    <div class="trainer-card-front">
-                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-artem.jpg');"></div>
-                        <div class="trainer-overlay-front"></div>
-                        <div class="trainer-info-front">
-                            <h3 class="trainer-name text-uppercase">
-                                Артем <span class="trainer-nickname gains">«Тесла»</span>
-                            </h3>
-                            <div class="trainer-words">
-                                <span>Деталь</span> · <span>Объём</span> · <span>Эстетика</span>
-                            </div>
-                            <p class="trainer-direction text-uppercase">Построение тела</p>
-                            <p class="trainer-motto">ЕГО ФИЛОСОФИЯ: «Каждая капля пота — это кирпичик в скульптуре твоего тела. Будь архитектором себя.»</p>
-                        </div>
-                    </div>
-                    <div class="trainer-card-back">
-                        <div class="trainer-info-back">
-                            <div class="trainer-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏆</span>
-                                    <p><strong>Призёр чемпионата</strong><br>Классический бодибилдинг</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">📐</span>
-                                    <p><strong>7 лет в спорте</strong><br>Масса, рельеф, изоляция</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎯</span>
-                                    <p><strong>Результат:</strong><br>Идеальная форма</p>
-                                </div>
-                            </div>
-                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Тренер 4: Анна -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="trainer-card">
-                    <div class="trainer-card-front">
-                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-anna.jpg');"></div>
-                        <div class="trainer-overlay-front"></div>
-                        <div class="trainer-info-front">
-                            <h3 class="trainer-name text-uppercase">
-                                Анна <span class="trainer-nickname pains">«Сталь»</span>
-                            </h3>
-                            <div class="trainer-words">
-                                <span>Мощь</span> · <span>Техника</span> · <span>Воля</span>
-                            </div>
-                            <p class="trainer-direction text-uppercase">Техничная сила</p>
-                            <p class="trainer-motto">ЕЁ ПРАВИЛО: «Сила не имеет пола. Имеет только результат.»</p>
-                        </div>
-                    </div>
-                    <div class="trainer-card-back">
-                        <div class="trainer-info-back">
-                            <div class="trainer-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏆</span>
-                                    <p><strong>КМС по тяжёлой атлетике</strong><br>Сертифицированный тренер FPA</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏋️</span>
-                                    <p><strong>6 лет стажа</strong><br>Техника базы, работа со штангой</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎯</span>
-                                    <p><strong>Результат:</strong><br>Реальная сила без страха</p>
-                                </div>
-                            </div>
-                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Тренер 5: Алиса -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="trainer-card">
-                    <div class="trainer-card-front">
-                        <div class="trainer-photo" style="background-image: url('/Images/Trainers/trainer-alisa.jpg');"></div>
-                        <div class="trainer-overlay-front"></div>
-                        <div class="trainer-info-front">
-                            <h3 class="trainer-name text-uppercase">
-                                Алиса <span class="trainer-nickname gains">«Феникс»</span>
-                            </h3>
-                            <div class="trainer-words">
-                                <span>Дисциплина</span> · <span>Цель</span> · <span>Преображение</span>
-                            </div>
-                            <p class="trainer-direction text-uppercase">Трансформация</p>
-                            <p class="trainer-motto">
-                                ЕЁ ИСТОРИЯ: «Самый сложный поединок — с самим собой. Я прошла этот путь от нуля до пьедестала. Проведу и тебя.»
-                            </p>
-                        </div>
-                    </div>
-                    <div class="trainer-card-back">
-                        <div class="trainer-info-back">
-                            <div class="trainer-details">
-                                <div class="detail-item">
-                                    <span class="detail-icon">🏆</span>
-                                    <p><strong>Чемпионка региона по</strong><br>Фитнес-бикини</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🥗</span>
-                                    <p><strong>Нутрициолог</strong><br>Сушка, рельеф, диетология</p>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-icon">🎯</span>
-                                    <p><strong>Результат:</strong><br>100% трансформация</p>
-                                </div>
-                            </div>
-                            <a href="#contact" class="btn-trainer btn btn-outline-light mt-3 text-uppercase">Записаться</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>

@@ -1,0 +1,162 @@
+﻿/* ========================================
+   CSS VARIABLES - FitGiri Project
+   Версия: 1.0
+   Подключать ПЕРВЫМ файлом перед всеми остальными
+   ======================================== */
+
+:root {
+    /* ===== ЦВЕТА ОСНОВНЫЕ ===== */
+    --color-primary: #ff3d3d;
+    --color-primary-light: #ff6b6b;
+    --color-primary-dark: #ff1a1a;
+    --color-primary-orange: #ff8a3d;
+    --color-primary-dark-red: #8a0000;
+    /* ===== ФОНОВЫЕ ЦВЕТА ===== */
+    --color-bg-dark: #0a0a0f;
+    --color-bg-medium: #140f19;
+    --color-bg-light: #1a1520;
+    --color-bg-darker: #0f0a10;
+    /* ===== ЦВЕТА ТЕКСТА ===== */
+    --color-text-main: #fff;
+    --color-text-muted: #ccc;
+    --color-text-dim: #888;
+    --color-text-light: #e0e0e0;
+    --color-text-disabled: #666;
+    --color-text-dark-disabled: #444;
+    /* ===== ШРИФТЫ ===== */
+    --font-heading: 'Oswald', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+    /* ===== ОТСТУПЫ СЕКЦИЙ ===== */
+    --spacing-section-desktop: 5rem 0;
+    --spacing-section-tablet: 3rem 0;
+    --spacing-section-mobile: 2rem 0;
+    /* ===== ОТСТУПЫ ВНУТРЕННИЕ ===== */
+    --padding-card-desktop: 2rem 1.5rem;
+    --padding-card-tablet: 1.5rem 1rem;
+    --padding-card-mobile: 1.25rem;
+    /* ===== РАДИУСЫ ===== */
+    --radius-xs: 6px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    /* ===== ТЕНИ ===== */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --shadow-card-hover: 0 20px 40px rgba(255, 61, 61, 0.3);
+    --shadow-glow: 0 0 30px rgba(255, 61, 61, 0.3);
+    --shadow-glow-strong: 0 0 50px rgba(255, 61, 61, 0.5);
+    --shadow-button: 0 4px 15px rgba(255, 61, 61, 0.4);
+    --shadow-button-hover: 0 6px 25px rgba(255, 61, 61, 0.6);
+    --shadow-text: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-text-strong: 0 2px 10px rgba(0, 0, 0, 0.8);
+    /* ===== ГРАДИЕНТЫ ===== */
+    --gradient-bg-main: linear-gradient(180deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
+    --gradient-bg-reverse: linear-gradient(180deg, var(--color-bg-medium) 0%, var(--color-bg-dark) 100%);
+    --gradient-card: linear-gradient(145deg, var(--color-bg-light) 0%, var(--color-bg-darker) 100%);
+    --gradient-primary: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    --gradient-primary-dark: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+    --gradient-primary-gains: linear-gradient(90deg, var(--color-primary), var(--color-primary-orange), var(--color-primary));
+    --gradient-primary-pains: linear-gradient(90deg, var(--color-primary-dark-red), var(--color-primary-dark), var(--color-primary-dark-red));
+    --gradient-overlay: linear-gradient(135deg, rgba(10, 10, 15, 0.85) 0%, rgba(20, 15, 25, 0.75) 100%);
+    --gradient-overlay-light: linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(20, 15, 25, 0.6) 100%);
+    --gradient-modal: linear-gradient(145deg, var(--color-bg-light), var(--color-bg-darker));
+    --gradient-offcanvas: linear-gradient(180deg, var(--color-bg-medium), var(--color-bg-dark));
+    /* ===== ПРОЗРАЧНОСТИ (RGBA) ===== */
+    --rgba-primary-light: rgba(255, 61, 61, 0.15);
+    --rgba-primary-medium: rgba(255, 61, 61, 0.2);
+    --rgba-primary-strong: rgba(255, 61, 61, 0.3);
+    --rgba-primary-hover: rgba(255, 61, 61, 0.4);
+    --rgba-primary-glow: rgba(255, 61, 61, 0.5);
+    --rgba-white-light: rgba(255, 255, 255, 0.05);
+    --rgba-white-medium: rgba(255, 255, 255, 0.1);
+    --rgba-white-strong: rgba(255, 255, 255, 0.2);
+    --rgba-white-dim: rgba(255, 255, 255, 0.4);
+    --rgba-bg-glass: rgba(20, 15, 25, 0.6);
+    --rgba-bg-glass-dark: rgba(10, 10, 15, 0.8);
+    --rgba-bg-glass-darker: rgba(10, 10, 15, 0.95);
+    /* ===== ПЕРЕХОДЫ (TRANSITIONS) ===== */
+    --transition-fast: 0.3s ease;
+    --transition-medium: 0.5s ease;
+    --transition-slow: 1s ease-out;
+    --transition-reveal: 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+    /* ===== РАЗМЕРЫ ===== */
+    --card-height-trainer: 450px;
+    --card-height-trainer-tablet: 400px;
+    --card-height-trainer-mobile: 380px;
+    --card-height-philosophy: 600px;
+    --card-height-philosophy-tablet: 500px;
+    --card-height-philosophy-mobile: 450px;
+    --card-height-zone: 500px;
+    --card-height-zone-tablet: 400px;
+    --card-height-zone-mobile: 350px;
+    --card-max-width: 320px;
+    --carousel-max-width: 1200px;
+    --form-max-width: 500px;
+    --contact-wrapper-max-width: 600px;
+    --grid-max-width: 1400px;
+    /* ===== РАЗМЕРЫ ШРИФТОВ ===== */
+    --font-size-title-hero: clamp(2rem, 5vw, 4.5rem);
+    --font-size-title-hero-mobile: clamp(1.8rem, 6vw, 3rem);
+    --font-size-title-section: clamp(2rem, 4vw, 3rem);
+    --font-size-title-section-mobile: 1.8rem;
+    --font-size-title-card: 1.5rem;
+    --font-size-title-card-mobile: 1.3rem;
+    --font-size-body: 1rem;
+    --font-size-body-small: 0.9rem;
+    --font-size-body-xs: 0.8rem;
+    --font-size-price: 2.5rem;
+    --font-size-price-mobile: 2rem;
+    /* ===== BORDER ===== */
+    --border-card: 1px solid var(--rgba-primary-medium);
+    --border-card-hover: 1px solid rgba(255, 61, 61, 0.6);
+    --border-card-popular: 2px solid var(--color-primary);
+    --border-input: 1px solid var(--rgba-white-strong);
+    --border-input-focus: 1px solid var(--color-primary);
+    --border-section: 1px solid var(--rgba-primary-medium);
+    /* ===== BREAKPOINTS (для справки в CSS) ===== */
+    --bp-xs: 576px;
+    --bp-sm: 768px;
+    --bp-md: 992px;
+    --bp-lg: 1200px;
+    --bp-xl: 1400px;
+    /* ===== Z-INDEX ===== */
+    --z-overlay: 1;
+    --z-content: 2;
+    --z-badge: 10;
+    --z-controls: 10;
+    --z-header: 1030;
+    /* ===== FOCUS ===== */
+    --focus-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25);
+    /* ===== BACKDROP FILTER ===== */
+    --backdrop-blur: blur(10px);
+    /* ===== TEXT SHADOW FOR HIGHLIGHT ===== */
+    --text-shadow-highlight: 0 0 10px rgba(255, 61, 61, 0.5);
+    --text-shadow-highlight-strong: 0 0 15px rgba(255, 61, 61, 0.5);
+    --text-shadow-highlight-glow: 0 0 20px rgba(255, 42, 42, 0.5);
+}
+
+/* ===== ТЕМНАЯ ТЕМА (по умолчанию) ===== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Можно переопределить переменные для темной темы */
+        /* Сейчас все значения уже оптимизированы под dark theme */
+    }
+}
+
+/* ===== ВЫСОКАЯ КОНТРАСТНОСТЬ (доступность) ===== */
+@media (prefers-contrast: high) {
+    :root {
+        --rgba-primary-medium: rgba(255, 61, 61, 0.4);
+        --rgba-white-strong: rgba(255, 255, 255, 0.4);
+        --border-card: 2px solid var(--color-primary);
+    }
+}
+
+/* ===== УМЕНЬШЕННОЕ ДВИЖЕНИЕ (доступность) ===== */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --transition-fast: 0.1s ease;
+        --transition-medium: 0.1s ease;
+        --transition-slow: 0.1s ease-out;
+        --transition-reveal: 0.1s cubic-bezier(0.7, 0, 0.3, 1);
+    }
+}
