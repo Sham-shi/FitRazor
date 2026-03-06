@@ -361,46 +361,6 @@
     }
 }
 
-/* ===== УМЕНЬШЕННОЕ ДВИЖЕНИЕ (Доступность) ===== */
-@media (prefers-reduced-motion: reduce) {
-    /* Отключаем все анимации */
-    .reveal-up,
-    .reveal-left,
-    .reveal-right,
-    .reveal-fade,
-    .reveal-slam-left,
-    .reveal-slam-right,
-    .reveal-power,
-    .philosophy-main-title,
-    .zones-title {
-        transition: none;
-        animation: none;
-        opacity: 1;
-        transform: none;
-    }
-
-    /* Отключаем hover-эффекты */
-    .card-dark,
-    .card-zone,
-    .philosophy-card,
-    .btn-primary-glow,
-    .nav-link-dark,
-    .social-icon,
-    .brand-logo {
-        transition: none;
-        transform: none;
-    }
-
-    /* Отключаем градиентные анимации */
-    .gains,
-    .pains,
-    .text-gains,
-    .text-pains {
-        animation: none;
-        background-size: 100% auto;
-    }
-}
-
 /* ===== ПЕЧАТНАЯ ВЕРСИЯ ===== */
 @media print {
     /* Скрываем навигацию и интерактивные элементы */

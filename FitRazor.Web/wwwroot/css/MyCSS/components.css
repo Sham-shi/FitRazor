@@ -842,7 +842,7 @@
 }
 
 /* ===== 16. ДОСТУПНОСТЬ ===== */
-@media (prefers-reduced-motion: reduce) {
+/*@media (prefers-reduced-motion: reduce) {
     .reveal-up,
     .reveal-left,
     .reveal-right,
@@ -854,7 +854,7 @@
         transition: none;
         animation: none;
     }
-}
+}*/
 
 @media (prefers-contrast: high) {
     .card-dark {

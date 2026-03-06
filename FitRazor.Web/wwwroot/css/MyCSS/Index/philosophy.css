@@ -25,7 +25,7 @@
 
 /* ===== СЕТКА С КАРТОЧКАМИ ===== */
 .philosophy-grid-wrapper {
-    overflow: visible;
+    overflow: hidden;
     padding: 1rem;
     width: 100%;
     position: relative;
