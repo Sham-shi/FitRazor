@@ -1,42 +1,49 @@
-﻿/* ===== ОБЩИЕ СТИЛИ ДЛЯ ХЕДЕРОВ/ФУТЕРА ===== */
+﻿/* ========================================
+   LAYOUT SECTION - FitRazor Project
+   Версия: 2.0 (оптимизированная)
+   ======================================== */
+
+/* ===== БАЗОВЫЕ НАСТРОЙКИ ===== */
 body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: #0a0a0f;
+    font-family: var(--font-body);
+    background-color: var(--color-bg-dark);
 }
 
-h1, h2, h3, h4, h5, h6, .navbar-brand, .nav-link, .btn, .modal-title, .offcanvas-title {
-    font-family: 'Oswald', sans-serif;
+h1, h2, h3, h4, h5, h6,
+.navbar-brand, .nav-link, .btn,
+.modal-title, .offcanvas-title {
+    font-family: var(--font-heading);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 main {
-    background: linear-gradient(135deg, rgba(10, 10, 15, 0.95), rgba(20, 15, 25, 0.9)), url('/Images/fitGiri.png') center/cover no-repeat;
+    background: var(--gradient-overlay), url('/Images/fitGiri.png') center/cover no-repeat;
     background-attachment: fixed, fixed;
 }
 
 /* ===== ВЕРХНИЙ ХЕДЕР ===== */
 .top-header {
-    background: rgba(10, 10, 15, 0.95);
-    backdrop-filter: blur(10px);
+    background: var(--rgba-bg-glass-darker);
+    backdrop-filter: var(--backdrop-blur);
     position: relative;
-    z-index: 1030;
+    z-index: var(--z-header);
 }
 
 .brand-logo {
-    transition: transform 0.3s ease;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+    transition: transform var(--transition-fast);
+    filter: drop-shadow(0 0 8px var(--rgba-white-strong));
 }
 
     .brand-logo:hover {
         transform: scale(1.05);
-        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+        filter: drop-shadow(0 0 12px var(--rgba-white-medium));
     }
 
 .brand-name {
     font-size: 1.2rem;
-    color: #fff;
-    transition: color 0.3s ease;
+    color: var(--color-text-main);
+    transition: color var(--transition-fast);
 }
 
     .brand-name .text-danger {
@@ -49,53 +56,34 @@ main {
 
 /* Телефон в хедере */
 .header-phone {
-    color: #ccc;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast);
 }
 
     .header-phone i {
-        color: #ff3d3d;
+        color: var(--color-primary);
         font-size: 1.1rem;
     }
 
     .header-phone:hover {
-        color: #fff;
+        color: var(--color-text-main);
     }
 
         .header-phone:hover i {
-            color: #ff6b6b;
-            text-shadow: 0 0 10px rgba(255, 61, 61, 0.5);
+            color: var(--color-primary-light);
+            text-shadow: var(--text-shadow-highlight);
         }
 
-/* Соцсети */
+/* ===== СОЦСЕТИ — используем компонент .social-icon ===== */
 .social-links {
     gap: 0.5rem;
 }
 
 .social-icon {
-    /* Размер и форма */
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid #ccc;
-    /* Позиционирование фона */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    /* Стили по умолчанию */
-    background-color: #ccc;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    /* Для доступности: скрыть пустой текст */
-    text-indent: -9999px;
-    overflow: hidden;
+    /* Базовые стили из .social-icon в components.css */
 }
 
-/* ===== RUTUBE ===== */
 .social-rutube {
     background-image: url('/Images/IconsSocial/Icon_RUTUBE_dark_mono.png');
 }
@@ -103,11 +91,10 @@ main {
     .social-rutube:hover {
         background-image: url('/Images/IconsSocial/Icon_RUTUBE_dark_color.png');
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px white;
-        border-color: none;
+        box-shadow: 0 4px 12px var(--color-text-main);
+        border-color: transparent;
     }
 
-/* ===== TELEGRAM ===== */
 .social-telegram {
     background-image: url('/Images/IconsSocial/telegram_black_logo_icon.png');
 }
@@ -115,10 +102,9 @@ main {
     .social-telegram:hover {
         background-image: url('/Images/IconsSocial/telegram_color_logo_icon.png');
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px white;
+        box-shadow: 0 4px 12px var(--color-text-main);
     }
 
-/* ===== VK ===== */
 .social-vk {
     background-image: url('/Images/IconsSocial/vk_logo_icon_black.png');
 }
@@ -126,216 +112,162 @@ main {
     .social-vk:hover {
         background-image: url('/Images/IconsSocial/vk_logo_icon_color.png');
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px white;
+        box-shadow: 0 4px 12px var(--color-text-main);
     }
 
 /* ===== НИЖНЕЕ МЕНЮ (НАВИГАЦИЯ) ===== */
 .main-nav {
-    background: rgba(15, 10, 20, 0.98);
+    background: var(--rgba-bg-glass-darker);
     padding: 0.5rem 0;
 }
 
 .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: var(--rgba-white-strong) !important;
 }
 
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.8)' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
-/* Ссылки навигации */
+/* Ссылки навигации — используем компонент .nav-link-dark */
 .gp-link {
-    color: #ccc !important;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    position: relative;
-    transition: all 0.3s ease;
+    /* Базовые стили из .nav-link-dark в components.css */
 }
 
-    .gp-link:hover {
-        color: #fff !important;
-        background: rgba(255, 61, 61, 0.15);
-    }
-
-    .gp-link.active {
-        color: #ff3d3d !important;
-        font-weight: 700;
-    }
-
-        .gp-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 2px;
-            background: #ff3d3d;
-            box-shadow: 0 0 10px rgba(255, 61, 61, 0.5);
-        }
-
-/* Кнопка входа */
+/* Кнопка входа — используем компонент .btn-outline-primary-glow */
 .gp-btn-login {
-    border-color: rgba(255, 61, 61, 0.5);
-    color: #ff3d3d;
-    font-weight: 600;
-    padding: 0.4rem 1rem;
-    transition: all 0.3s ease;
+    /* Базовые стили из .btn-outline-primary-glow */
 }
 
     .gp-btn-login:hover {
-        background: #ff3d3d;
-        color: #fff;
-        border-color: #ff3d3d;
-        box-shadow: 0 0 20px rgba(255, 61, 61, 0.4);
+        background: var(--color-primary);
+        color: var(--color-text-main);
+        border-color: var(--color-primary);
+        box-shadow: var(--shadow-button);
     }
 
 /* Кнопка админа */
 .gp-btn-admin {
-    color: #888;
+    color: var(--color-text-dim);
     font-size: 1.3rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast);
 }
 
     .gp-btn-admin:hover {
-        color: #ff3d3d;
+        color: var(--color-primary);
         transform: rotate(30deg);
     }
 
 /* ===== ФУТЕР ===== */
 .footer {
-    background: rgba(10, 10, 15, 0.98);
+    background: var(--rgba-bg-glass-darker);
     font-size: 0.85rem;
-    color: #ccc;
+    color: var(--color-text-muted);
 }
 
 .hover-red {
-    transition: color 0.2s ease;
+    transition: color var(--transition-fast);
 }
 
     .hover-red:hover {
-        color: #ff6b6b !important;
+        color: var(--color-primary-light) !important;
     }
 
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
+/* ===== МОДАЛЬНОЕ ОКНО — используем компонент .modal-dark ===== */
 .gp-modal .modal-content {
-    background: linear-gradient(145deg, #1a1520, #0f0a10);
-    border: 1px solid rgba(255, 61, 61, 0.3);
-    border-radius: 12px;
-    color: #fff;
+    /* Базовые стили из .modal-dark .modal-content */
 }
 
 .gp-modal .modal-title {
-    color: #ff6b6b;
+    color: var(--color-primary-light);
 }
 
 .gp-input {
-    background: rgba(10, 10, 15, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
+    background: var(--rgba-bg-glass-dark);
+    border: var(--border-input);
+    color: var(--color-text-main);
 }
 
     .gp-input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--rgba-white-dim);
     }
 
     .gp-input:focus {
-        background: rgba(10, 10, 15, 0.95);
-        border-color: #ff3d3d;
-        box-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25);
-        color: #fff;
+        background: var(--rgba-bg-glass-darker);
+        border-color: var(--color-primary);
+        box-shadow: var(--focus-shadow);
+        color: var(--color-text-main);
     }
 
 .gp-modal label {
-    color: #aaa;
+    color: var(--color-text-muted);
 }
 
 .gp-btn-eye {
-    color: #888;
-    transition: color 0.2s ease;
+    color: var(--color-text-dim);
+    transition: color var(--transition-fast);
 }
 
     .gp-btn-eye:hover {
-        color: #ff6b6b;
+        color: var(--color-primary-light);
     }
 
 .gp-btn-submit {
-    background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
+    background: var(--gradient-primary);
     border: none;
     padding: 0.75rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-fast);
 }
 
     .gp-btn-submit:hover {
-        background: linear-gradient(90deg, #ff1a1a, #ff3d3d);
-        box-shadow: 0 6px 25px rgba(255, 61, 61, 0.5);
+        background: var(--gradient-primary-dark);
+        box-shadow: var(--shadow-button-hover);
         transform: translateY(-2px);
     }
 
-/* ===== OFFCANVAS АДМИН-ПАНЕЛЬ ===== */
+/* ===== OFFCANVAS АДМИН-ПАНЕЛЬ — используем компонент .offcanvas-dark ===== */
 .gp-offcanvas {
-    background: linear-gradient(180deg, #140f19, #0a0a0f);
-    border-right: 1px solid rgba(255, 61, 61, 0.2);
+    /* Базовые стили из .offcanvas-dark */
 }
 
     .gp-offcanvas .offcanvas-title {
-        color: #ff6b6b;
+        color: var(--color-primary-light);
     }
 
     .gp-offcanvas .nav-link {
-        color: #ccc;
+        color: var(--color-text-muted);
         padding: 0.6rem 1rem;
-        border-radius: 6px;
-        transition: all 0.2s ease;
+        border-radius: var(--radius-xs);
+        transition: all var(--transition-fast);
     }
 
         .gp-offcanvas .nav-link:hover {
-            background: rgba(255, 61, 61, 0.15);
-            color: #fff;
-            padding-left: 1.25rem; /* Микро-анимация сдвига */
+            background: var(--rgba-primary-light);
+            color: var(--color-text-main);
+            padding-left: 1.25rem;
         }
 
         .gp-offcanvas .nav-link i {
-            color: #ff3d3d;
+            color: var(--color-primary);
             width: 20px;
             text-align: center;
         }
 
-/* ===== АДАПТИВ ===== */
-@media (max-width: 768px) {
-    .top-header .row {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .top-header .col:first-child {
-        margin-bottom: 0.5rem;
-    }
-
-    .main-nav .navbar-collapse {
-        padding-top: 1rem;
-    }
-
-    .gp-link {
-        text-align: center;
-    }
-
-        .gp-link.active::after {
-            left: 50%;
-        }
-}
-
-/* ===== УТИЛИТЫ ===== */
+/* ===== ТЕКСТОВЫЕ ЭФФЕКТЫ — перенесены в components.css ===== */
 .text-gains {
-    background: linear-gradient(90deg, #ff3d3d, #ff8a3d);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* Базовые стили из .text-gains в components.css */
 }
 
 .text-pains {
-    background: linear-gradient(90deg, #8a0000, #ff1a1a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* Базовые стили из .text-pains в components.css */
 }
+
+/* ===== УТИЛИТЫ Bootstrap для замены ===== */
+/* Вместо color: #fff → class="text-white" */
+/* Вместо color: #ccc → class="text-muted" */
+/* Вместо color: #ff3d3d → class="text-danger" или var(--color-primary) */
+/* Вместо text-align: center → class="text-center" */
+/* Вместо margin: 0 auto → class="mx-auto" */
+
+/* ===== АДАПТИВНОСТЬ (перенесена в responsive.css) ===== */
+/* @media (max-width: 768px) { ... } — удалено */

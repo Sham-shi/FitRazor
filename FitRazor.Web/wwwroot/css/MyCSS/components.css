@@ -1,1 +1,886 @@
-﻿
+﻿/* ========================================
+   COMPONENTS - FitRazor Project
+   Версия: 1.0
+   Подключать ПОСЛЕ variables.css и Bootstrap
+   ======================================== */
+
+/* ===== 1. ЗАГОЛОВКИ СЕКЦИЙ ===== */
+.section-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-section);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    color: var(--color-text-main);
+    text-transform: uppercase;
+}
+
+.section-title--hero {
+    font-size: var(--font-size-title-hero);
+}
+
+.section-title--mobile {
+    font-size: var(--font-size-title-hero-mobile);
+}
+
+.section-title--card {
+    font-size: var(--font-size-title-card);
+}
+
+.section-title--price {
+    font-size: var(--font-size-price);
+}
+
+/* Подзаголовок секции */
+.section-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* ===== 2. КАРТОЧКИ (БАЗОВЫЕ СТИЛИ) ===== */
+.card-dark {
+    position: relative;
+    background: var(--gradient-card);
+    border: var(--border-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-card);
+}
+
+    .card-dark:hover {
+        border-color: var(--border-card-hover);
+        box-shadow: var(--shadow-card-hover);
+        transform: translateY(-5px);
+    }
+
+/* Карточка с выделением (популярное) */
+.card-dark--popular {
+    border: var(--border-card-popular);
+    box-shadow: var(--shadow-glow);
+}
+
+    .card-dark--popular:hover {
+        box-shadow: var(--shadow-glow-strong);
+    }
+
+/* Карточка тренера (высокая) */
+.card-trainer {
+    height: var(--card-height-trainer);
+    cursor: pointer;
+}
+
+/* Карточка философии (высокая) */
+.card-philosophy {
+    min-height: var(--card-height-philosophy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Карточка зоны (карусель) */
+.card-zone {
+    min-height: var(--card-height-zone);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+}
+
+/* ===== 3. КНОПКИ ===== */
+.btn-primary-glow {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    padding: 1rem 2rem;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-button);
+    transition: all var(--transition-fast);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: var(--color-text-main);
+    text-transform: uppercase;
+}
+
+    .btn-primary-glow:hover {
+        background: var(--gradient-primary-dark);
+        box-shadow: var(--shadow-button-hover);
+        transform: translateY(-2px);
+        color: var(--color-text-main);
+    }
+
+    .btn-primary-glow:active {
+        transform: translateY(0);
+    }
+
+/* Кнопка outline с красной обводкой */
+.btn-outline-primary-glow {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1.5rem;
+    border-color: var(--rgba-primary-strong);
+    color: var(--color-text-main);
+    text-transform: uppercase;
+    transition: all var(--transition-fast);
+}
+
+    .btn-outline-primary-glow:hover {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: var(--color-text-main);
+        box-shadow: var(--shadow-button);
+    }
+
+/* Кнопка маленькая (для карточек) */
+.btn-sm-glow {
+    font-size: 0.75rem;
+    padding: 0.5rem 1.5rem;
+}
+
+/* ===== 4. ОВЕРЛЕИ (ЗАТЕМНЕНИЕ) ===== */
+.overlay-dark {
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-overlay);
+    z-index: var(--z-overlay);
+    transition: background var(--transition-medium);
+}
+
+.overlay-dark--light {
+    background: var(--gradient-overlay-light);
+}
+
+.overlay-dark--hover {
+    background: var(--gradient-overlay);
+}
+
+.card-dark:hover .overlay-dark--hover {
+    background: var(--gradient-overlay-light);
+}
+
+/* ===== 5. ФОРМЫ ===== */
+.form-dark {
+    max-width: var(--form-max-width);
+    margin: 0 auto;
+    background: var(--rgba-bg-glass);
+    padding: var(--padding-card-desktop);
+    border-radius: var(--radius-md);
+    border: var(--border-card);
+    backdrop-filter: var(--backdrop-blur);
+}
+
+.form-dark-label {
+    font-family: var(--font-heading);
+    color: var(--color-primary-light);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.form-dark-input {
+    background: var(--rgba-bg-glass-dark);
+    border: var(--border-input);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-main);
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    padding: 0.85rem 1.25rem;
+    transition: all var(--transition-fast);
+}
+
+    .form-dark-input::placeholder {
+        color: var(--rgba-white-dim);
+    }
+
+    .form-dark-input:focus {
+        background: var(--rgba-bg-glass-darker);
+        border-color: var(--color-primary);
+        box-shadow: var(--focus-shadow);
+        color: var(--color-text-main);
+    }
+
+.form-dark-text {
+    font-size: var(--font-size-body-xs);
+    color: var(--color-text-dim);
+}
+
+.form-dark-check {
+    background-color: var(--rgba-bg-glass-dark);
+    border-color: var(--rgba-white-strong);
+    cursor: pointer;
+}
+
+    .form-dark-check:checked {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+/* ===== 6. ТЕКСТОВЫЕ ЭФФЕКТЫ ===== */
+.text-gains {
+    background: var(--gradient-primary-gains);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s linear infinite;
+    text-shadow: 0 0 30px var(--rgba-primary-strong);
+}
+
+.text-pains {
+    background: var(--gradient-primary-pains);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s linear infinite reverse;
+    text-shadow: 0 0 30px rgba(138, 0, 0, 0.5);
+}
+
+.text-highlight {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-shadow: var(--text-shadow-highlight);
+}
+
+.text-highlight--strong {
+    text-shadow: var(--text-shadow-highlight-strong);
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% center;
+    }
+
+    50% {
+        background-position: 100% center;
+    }
+
+    100% {
+        background-position: 0% center;
+    }
+}
+
+/* ===== 7. АНИМАЦИИ ПОЯВЛЕНИЯ ===== */
+.reveal-up {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all var(--transition-reveal);
+}
+
+    .reveal-up.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: all var(--transition-reveal);
+}
+
+    .reveal-left.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all var(--transition-reveal);
+}
+
+    .reveal-right.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+.reveal-fade {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all var(--transition-reveal);
+}
+
+    .reveal-fade.active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+/* Ударное появление (hero) */
+.reveal-slam-left {
+    animation: slamInLeft 0.6s cubic-bezier(0.7, 0, 0.3, 1) 0.2s forwards;
+}
+
+.reveal-slam-right {
+    animation: slamInRight 0.6s cubic-bezier(0.7, 0, 0.3, 1) 0.5s forwards;
+}
+
+.reveal-power {
+    animation: powerFadeIn 1s ease-out 1.2s forwards;
+}
+
+@keyframes slamInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-150%) scale(0.8);
+        filter: blur(10px);
+    }
+
+    70% {
+        transform: translateX(20%) scale(1.05);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes slamInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(150%) scale(0.8);
+        filter: blur(10px);
+    }
+
+    70% {
+        transform: translateX(-20%) scale(1.05);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes powerFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+        filter: brightness(0.5);
+    }
+
+    60% {
+        transform: scale(1.02) translateY(-5px);
+        filter: brightness(1.1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: brightness(1);
+    }
+}
+
+/* ===== 8. ЭЛЕМЕНТЫ КАРТОЧЕК ===== */
+.card-header-dark {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rgba-white-medium);
+    margin-bottom: 1.5rem;
+}
+
+.card-body-dark {
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+.card-footer-dark {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rgba-white-medium);
+}
+
+/* Элемент списка с иконкой */
+.list-item-dark {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-small);
+    color: var(--color-text-light);
+    padding: 0.6rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--rgba-white-light);
+}
+
+    .list-item-dark:last-child {
+        border-bottom: none;
+    }
+
+.list-item-dark--disabled {
+    color: var(--color-text-disabled);
+}
+
+    .list-item-dark--disabled .check-icon {
+        color: var(--color-text-dark-disabled);
+    }
+
+.check-icon {
+    font-weight: 700;
+    flex-shrink: 0;
+    color: var(--color-primary);
+}
+
+/* Детали карточки (тренер) */
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--rgba-white-light);
+    border-radius: var(--radius-xs);
+    border-left: 2px solid var(--color-primary);
+}
+
+.detail-icon {
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.detail-item p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-xs);
+    line-height: 1.5;
+    color: var(--color-text-light);
+    margin: 0;
+}
+
+.detail-item strong {
+    color: var(--color-text-main);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* Утверждение (философия) */
+.truth-statement {
+    font-family: var(--font-heading);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 600;
+    margin: 2rem 0 !important;
+    padding: 1rem 0;
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Бейдж (популярное) */
+.badge-popular {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-primary);
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.4rem 1.5rem;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    z-index: var(--z-badge);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== 9. КОНТЕНТ ВНУТРИ КАРТОЧЕК ===== */
+.card-content {
+    position: relative;
+    z-index: var(--z-content);
+    max-width: 90%;
+}
+
+.card-content--center {
+    text-align: center;
+    width: 100%;
+}
+
+.card-text {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.8;
+    color: var(--color-text-light);
+    font-weight: 300;
+}
+
+    .card-text p {
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+.card-name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-card);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    text-shadow: var(--shadow-text-strong);
+}
+
+.card-nickname {
+    display: block;
+    font-size: 1.1em;
+}
+
+.card-words {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-shadow: var(--shadow-text-strong);
+}
+
+    .card-words span {
+        color: var(--color-primary);
+        font-weight: 500;
+    }
+
+.card-direction {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-primary-light);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.08em;
+    text-shadow: var(--shadow-text-strong);
+}
+
+.card-motto {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-text-light);
+    font-style: italic;
+    margin: 0;
+    opacity: 0.95;
+    text-shadow: var(--shadow-text-strong);
+}
+
+/* ===== 10. ЦЕНЫ ===== */
+.price-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.price-currency {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-card);
+    color: var(--color-text-muted);
+    align-self: flex-start;
+    margin-top: 0.5rem;
+}
+
+.price-value {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-price);
+    font-weight: 700;
+    color: var(--color-text-main);
+    line-height: 1;
+}
+
+.price-period {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-small);
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.price-save {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-xs);
+    color: var(--color-primary-light);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* ===== 11. НАВИГАЦИЯ И СОЦСЕТИ ===== */
+.nav-link-dark {
+    color: var(--color-text-muted) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+    .nav-link-dark:hover {
+        color: var(--color-text-main) !important;
+        background: var(--rgba-primary-light);
+    }
+
+    .nav-link-dark.active {
+        color: var(--color-primary) !important;
+        font-weight: 700;
+    }
+
+        .nav-link-dark.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: var(--color-primary);
+            box-shadow: var(--text-shadow-highlight);
+        }
+
+.social-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+    .social-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--color-text-main);
+    }
+
+/* ===== 12. МОДАЛЬНЫЕ ОКНА И OFFCANVAS ===== */
+.modal-dark .modal-content {
+    background: var(--gradient-modal);
+    border: var(--border-card);
+    border-radius: var(--radius-md);
+    color: var(--color-text-main);
+}
+
+.modal-dark .modal-title {
+    color: var(--color-primary-light);
+}
+
+.offcanvas-dark {
+    background: var(--gradient-offcanvas);
+    border-right: var(--border-card);
+}
+
+    .offcanvas-dark .offcanvas-title {
+        color: var(--color-primary-light);
+    }
+
+    .offcanvas-dark .nav-link {
+        color: var(--color-text-muted);
+        padding: 0.6rem 1rem;
+        border-radius: var(--radius-xs);
+        transition: all var(--transition-fast);
+    }
+
+        .offcanvas-dark .nav-link:hover {
+            background: var(--rgba-primary-light);
+            color: var(--color-text-main);
+            padding-left: 1.25rem;
+        }
+
+        .offcanvas-dark .nav-link i {
+            color: var(--color-primary);
+            width: 20px;
+            text-align: center;
+        }
+
+/* ===== 13. КАРУСЕЛЬ ===== */
+.carousel-dark .carousel-inner {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.carousel-dark .carousel-control-prev,
+.carousel-dark .carousel-control-next {
+    width: 60px;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    z-index: var(--z-controls);
+}
+
+    .carousel-dark .carousel-control-prev:hover,
+    .carousel-dark .carousel-control-next:hover {
+        opacity: 1;
+    }
+
+.carousel-dark .carousel-control-prev-icon,
+.carousel-dark .carousel-control-next-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--rgba-primary-strong);
+    border-radius: 50%;
+    background-size: 50%;
+    background-position: center;
+    transition: background-color var(--transition-fast);
+}
+
+    .carousel-dark .carousel-control-prev-icon:hover,
+    .carousel-dark .carousel-control-next-icon:hover {
+        background-color: var(--rgba-primary-hover);
+    }
+
+/* ===== 14. УТИЛИТЫ ===== */
+.section-spacing {
+    padding: var(--spacing-section-desktop);
+}
+
+.section-spacing--tablet {
+    padding: var(--spacing-section-tablet);
+}
+
+.section-spacing--mobile {
+    padding: var(--spacing-section-mobile);
+}
+
+.bg-gradient-dark {
+    background: var(--gradient-bg-main);
+}
+
+.bg-gradient-dark-reverse {
+    background: var(--gradient-bg-reverse);
+}
+
+.border-red-light {
+    border: 1px solid var(--rgba-primary-medium);
+}
+
+.border-red-top {
+    border-top: 1px solid var(--rgba-primary-medium);
+}
+
+.shadow-glow {
+    box-shadow: var(--shadow-glow);
+}
+
+.shadow-glow-strong {
+    box-shadow: var(--shadow-glow-strong);
+}
+
+/* ===== 15. АДАПТИВНЫЕ МОДИФИКАТОРЫ ===== */
+@media (max-width: 992px) {
+    .truth-statement {
+        border-left: none;
+        border-top: 3px solid var(--color-primary);
+        padding-left: 0;
+        padding-top: 1rem;
+    }
+
+    .reveal-left,
+    .reveal-right {
+        transform: translateY(100px);
+    }
+
+        .reveal-left.active,
+        .reveal-right.active {
+            transform: translateY(0);
+        }
+}
+
+@media (max-width: 768px) {
+    .card-trainer {
+        height: var(--card-height-trainer-tablet);
+    }
+
+    .card-philosophy {
+        min-height: var(--card-height-philosophy-tablet);
+    }
+
+    .card-zone {
+        min-height: var(--card-height-zone-tablet);
+    }
+
+    .form-dark {
+        padding: var(--padding-card-tablet);
+    }
+
+    .section-title {
+        font-size: var(--font-size-title-section-mobile);
+    }
+}
+
+@media (max-width: 576px) {
+    .card-trainer {
+        height: var(--card-height-trainer-mobile);
+    }
+
+    .card-philosophy {
+        min-height: var(--card-height-philosophy-mobile);
+    }
+
+    .card-zone {
+        min-height: var(--card-height-zone-mobile);
+    }
+
+    .form-dark {
+        padding: var(--padding-card-mobile);
+    }
+
+    .btn-primary-glow {
+        font-size: 1rem;
+        padding: 0.85rem 1.5rem;
+    }
+}
+
+/* ===== 16. ДОСТУПНОСТЬ ===== */
+@media (prefers-reduced-motion: reduce) {
+    .reveal-up,
+    .reveal-left,
+    .reveal-right,
+    .reveal-fade,
+    .card-dark,
+    .btn-primary-glow,
+    .nav-link-dark,
+    .social-icon {
+        transition: none;
+        animation: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .card-dark {
+        border: 2px solid var(--color-primary);
+    }
+
+    .border-card {
+        border: 2px solid var(--color-primary);
+    }
+}
+
+/* Hover для устройств без touch */
+@media (hover: hover) {
+    .card-dark:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-zone:hover {
+        transform: scale(1.02);
+        z-index: var(--z-badge);
+    }
+}
+
+/* Active для touch устройств */
+@media (hover: none) {
+    .card-dark:active {
+        transform: translateY(-5px);
+    }
+}

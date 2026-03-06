@@ -1,79 +1,94 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Главная";
 }
 
-
-<div class="hero-container d-flex flex-column justify-content-center align-items-center text-center">
-    <h1 class="hero-title line-1 pb-5 d-flex align-items-center"><span class="pains">Pains</span> — <span class="subtitle gy-4">временно</span></h1>
-    <h1 class="hero-title line-2 pb-5 d-flex align-items-center"><span class="gains">Gains</span> — <span class="subtitle gy-4">навсегда</span></h1>
-    <h1 class="hero-title line-3">
-        <span class="gains">Gains</span> & <span class="pains">Pains</span>:
-        <span class="tagline">Честный фитнес</span>
+<!-- ===== HERO СЕКЦИЯ ===== -->
+<div class="hero-container d-flex flex-column justify-content-center align-items-center text-center text-white">
+    <h1 class="hero-title line-1 reveal-slam-left pb-5 d-flex align-items-center">
+        <span class="text-pains">Pains</span> — <span class="subtitle gy-4">временно</span>
+    </h1>
+    <h1 class="hero-title line-2 reveal-slam-right pb-5 d-flex align-items-center">
+        <span class="text-gains">Gains</span> — <span class="subtitle gy-4">навсегда</span>
+    </h1>
+    <h1 class="hero-title line-3 reveal-power">
+        <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span>:
+        <span class="tagline text-primary-light">Честный фитнес</span>
     </h1>
 </div>
-<section class="philosophy-section py-5 py-lg-6">
-    <h2 class="philosophy-main-title text-center text-uppercase mb-5">
-        <span class="gains">Gains</span> & <span class="pains">Pains</span> —
+
+<!-- ===== ФИЛОСОФИЯ СЕКЦИЯ ===== -->
+<section class="philosophy-section section-spacing bg-gradient-dark">
+    <h2 class="section-title philosophy-main-title text-center mb-5">
+        <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
         это не просто зал.<br class="d-none d-md-block">Это философия
     </h2>
 
     <div class="philosophy-grid-wrapper">
-        <div class="row g-0 philosophy-grid">
+        <div class="row g-0 philosophy-grid mx-auto">
+
             <!-- Левая карточка -->
-            <div class="col-md-6 philosophy-card left-card reveal-left">
-                <div class="card-overlay"></div>
-                <div class="card-body card-content p-4 p-md-5">
-                    <div class="card-text">
-                        <p>Здесь нет места для легких путей. Сюда приходят за настоящими изменениями.</p>
-                        <p>
-                            Каждый грамм силы и сантиметр прогресса оплачен решимостью —
-                            <span class="highlight">сдаться или прорваться</span>.
-                        </p>
-                        <p>
-                            Мы не верим в волшебные таблетки. Мы верим в пот, характер и
-                            <span class="highlight">последнее повторение</span>, сделанное на пределе.
-                        </p>
+            <div class="col-md-6">
+                <div class="card-dark philosophy-card left-card reveal-left h-100">
+                    <div class="overlay-dark"></div>
+                    <div class="card-content p-4 p-md-5">
+                        <div class="card-text">
+                            <p>Здесь нет места для легких путей. Сюда приходят за настоящими изменениями.</p>
+                            <p>
+                                Каждый грамм силы и сантиметр прогресса оплачен решимостью —
+                                <span class="text-highlight">сдаться или прорваться</span>.
+                            </p>
+                            <p>
+                                Мы не верим в волшебные таблетки. Мы верим в пот, характер и
+                                <span class="text-highlight">последнее повторение</span>, сделанное на пределе.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Правая карточка -->
-            <div class="col-md-6 philosophy-card right-card reveal-right">
-                <div class="card-overlay"></div>
-                <div class="card-body card-content p-4 p-md-5">
-                    <div class="card-text">
-                        <p>Наша истина проста:</p>
-                        <p class="truth-statement"><span class="gains">Боль</span> — это валюта роста.</p>
-                        <p class="truth-statement"><span class="pains">Усталость</span> — плата за выносливость.</p>
-                        <p class="truth-statement"><span class="gains">Дискомфорт</span> — фундамент новой уверенности.</p>
+            <div class="col-md-6">
+                <div class="card-dark philosophy-card right-card reveal-right h-100">
+                    <div class="overlay-dark"></div>
+                    <div class="card-content p-4 p-md-5">
+                        <div class="card-text">
+                            <p>Наша истина проста:</p>
+                            <p class="truth-statement"><span class="text-gains">Боль</span> — это валюта роста.</p>
+                            <p class="truth-statement"><span class="text-pains">Усталость</span> — плата за выносливость.</p>
+                            <p class="truth-statement"><span class="text-gains">Дискомфорт</span> — фундамент новой уверенности.</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
-<section class="zones-section py-5 py-lg-6">
+
+<!-- ===== ЗОНЫ СЕКЦИЯ ===== -->
+<section class="zones-section section-spacing bg-gradient-dark text-white">
     <div class="container">
-        <h2 class="zones-title text-center text-uppercase mb-5">
-            И мы создали пространство,<br class="d-none d-md-block">где эта философия <span class="gains">оживает</span>
+        <h2 class="section-title zones-title text-center mb-5">
+            И мы создали пространство,<br class="d-none d-md-block">где эта философия <span class="text-gains">оживает</span>
         </h2>
 
-        <div id="zonesCarousel" class="carousel carousel-fade slide" data-bs-ride="carousel" data-bs-interval="5000">
+        <div id="zonesCarousel" class="carousel carousel-dark carousel-fade slide" data-bs-ride="carousel" data-bs-interval="5000">
             <div class="carousel-inner">
+
                 <!-- Слайд 1: Профессиональное железо -->
                 <div class="carousel-item active">
                     <div class="zone-slide" style="background-image: url('/Images/zone-iron.png');">
-                        <div class="zone-overlay"></div>
+                        <div class="overlay-dark"></div>
                         <div class="zone-content container">
-                            <div class="zone-text-wrapper">
-                                <h3 class="zone-title-item text-uppercase">
-                                    <span class="gains">Профессиональное железо</span>
+                            <div class="zone-text-wrapper text-center">
+                                <h3 class="section-title zone-title-item text-uppercase">
+                                    <span class="text-gains">Профессиональное железо</span>
                                 </h3>
-                                <p class="zone-description">
+                                <p class="card-text">
                                     Наши грифы и тренажеры — это инструменты, которые задают тебе тот самый вопрос:
-                                    <span class="highlight">«Насколько ты этого хочешь?»</span>
+                                    <span class="text-highlight">«Насколько ты этого хочешь?»</span>
                                 </p>
                             </div>
                         </div>
@@ -83,15 +98,15 @@
                 <!-- Слайд 2: Зоны для настоящей работы -->
                 <div class="carousel-item">
                     <div class="zone-slide" style="background-image: url('/Images/zone-work.png');">
-                        <div class="zone-overlay"></div>
+                        <div class="overlay-dark"></div>
                         <div class="zone-content container">
-                            <div class="zone-text-wrapper">
-                                <h3 class="zone-title-item text-uppercase">
-                                    <span class="pains">Зоны для настоящей работы</span>
+                            <div class="zone-text-wrapper text-center">
+                                <h3 class="section-title zone-title-item text-uppercase">
+                                    <span class="text-pains">Зоны для настоящей работы</span>
                                 </h3>
-                                <p class="zone-description">
+                                <p class="card-text">
                                     Просторные кардио- и силовые залы, где нет места лишним словам.
-                                    <span class="highlight">Только ты и твоя работа.</span>
+                                    <span class="text-highlight">Только ты и твоя работа.</span>
                                 </p>
                             </div>
                         </div>
@@ -101,16 +116,16 @@
                 <!-- Слайд 3: Команда, которая понимает -->
                 <div class="carousel-item">
                     <div class="zone-slide" style="background-image: url('/Images/zone-team.jpg');">
-                        <div class="zone-overlay"></div>
+                        <div class="overlay-dark"></div>
                         <div class="zone-content container">
-                            <div class="zone-text-wrapper">
-                                <h3 class="zone-title-item text-uppercase">
-                                    <span class="gains">Команда, которая понимает</span>
+                            <div class="zone-text-wrapper text-center">
+                                <h3 class="section-title zone-title-item text-uppercase">
+                                    <span class="text-gains">Команда, которая понимает</span>
                                 </h3>
-                                <p class="zone-description">
+                                <p class="card-text">
                                     Наши тренеры прошли через это сами. Они не будут тебя жалеть.
                                     Они будут грамотно направлять твою боль в рост, помогая превращать
-                                    <span class="highlight">Pains в твои личные Gains.</span>
+                                    <span class="text-highlight">Pains в твои личные Gains.</span>
                                 </p>
                             </div>
                         </div>
@@ -120,20 +135,21 @@
                 <!-- Слайд 4: Атмосфера поддержки -->
                 <div class="carousel-item">
                     <div class="zone-slide" style="background-image: url('/Images/zone-atmosphere.png');">
-                        <div class="zone-overlay"></div>
+                        <div class="overlay-dark"></div>
                         <div class="zone-content container">
-                            <div class="zone-text-wrapper">
-                                <h3 class="zone-title-item text-uppercase">
-                                    <span class="pains">Атмосфера поддержки</span>
+                            <div class="zone-text-wrapper text-center">
+                                <h3 class="section-title zone-title-item text-uppercase">
+                                    <span class="text-pains">Атмосфера поддержки</span>
                                 </h3>
-                                <p class="zone-description">
+                                <p class="card-text">
                                     Ты окружишь себя такими же целеустремленными людьми. Здесь не ждут легких путей.
-                                    <span class="highlight">Здесь ценят не слова, а пот на полу.</span>
+                                    <span class="text-highlight">Здесь ценят не слова, а пот на полу.</span>
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- Управление: стрелки -->
@@ -148,24 +164,26 @@
         </div>
 
         <!-- Финальные заголовки -->
-        <div class="zones-final text-center mt-5 pt-4">
-            <h2 class="zones-final-title text-uppercase mb-4">
+        <div class="zones-final section-spacing text-center">
+            <h2 class="section-title zones-final-title text-uppercase mb-4">
                 Прими свой вызов.<br class="d-none d-md-block">
                 Уважай свой путь.<br class="d-none d-md-block">
-                <span class="gains">Заработай свой результат</span><br class="d-none d-md-block">
+                <span class="text-gains">Заработай свой результат</span><br class="d-none d-md-block">
                 в месте, созданном для преодоления.
             </h2>
-            <h3 class="zones-final-slogan text-uppercase">
-                <span class="gains">Gains</span> & <span class="pains">Pains</span> —
+            <h3 class="zones-final-slogan text-uppercase text-muted">
+                <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
                 честный фитнес для сильных духом.
             </h3>
         </div>
     </div>
 </section>
-<section class="trainers-section py-5 py-lg-6">
+
+<!-- ===== ТРЕНЕРЫ СЕКЦИЯ ===== -->
+<section class="trainers-section section-spacing bg-gradient-dark text-white">
     <div class="container">
-        <h2 class="trainers-title text-center text-uppercase mb-5">
-            Команда, которая <span class="gains">направляет</span>
+        <h2 class="section-title text-center mb-5">
+            Команда, которая <span class="text-gains">направляет</span>
         </h2>
 
         <div class="row g-4 justify-content-center">
@@ -173,187 +191,203 @@
             @foreach (var trainer in Model.Trainers)
             {
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="trainer-card">
+                    <div class="card-dark card-trainer">
+
+                        <!-- ===== ПЕРЕДНЯЯ СТОРОНА ===== -->
                         <div class="trainer-card-front">
-                            <div class="trainer-photo" 
-                                style="background-image: url('@(!string.IsNullOrEmpty(trainer.PhotoUrl) ? trainer.PhotoUrl : "/Images/Trainers/no-photo.jpg")');">
+                            <div class="trainer-photo"
+                                 style="background-image: url('@(!string.IsNullOrEmpty(trainer.PhotoUrl) ? trainer.PhotoUrl : "/Images/Trainers/no-photo.jpg")');">
                             </div>
-                            <div class="trainer-overlay-front"></div>
-                            <div class="trainer-info-front">
-                                <h3 class="trainer-name text-uppercase">
-                                    <span class="trainer-nickname gains">@trainer.FullName</span>
+                            <div class="overlay-dark"></div>
+                            <div class="card-content trainer-info-front">
+                                <h3 class="card-name text-uppercase">
+                                    <span class="trainer-nickname text-gains">@trainer.FullName</span>
                                 </h3>
-                                <div class="trainer-words">
+                                <div class="card-words">
                                     <span>@trainer.Slogan</span>
                                 </div>
-                                <p class="trainer-direction text-uppercase">@trainer.Specialization</p>
-                                <p class="trainer-motto">@trainer.Motto</p>
+                                <p class="card-direction text-uppercase">@trainer.Specialization</p>
+                                <p class="card-motto">@trainer.Motto</p>
                             </div>
                         </div>
+
+                        <!-- ===== ЗАДНЯЯ СТОРОНА (появляется при наведении) ===== -->
                         <div class="trainer-card-back">
-                            <div class="trainer-info-back">
+                            <div class="trainer-info-back text-center">
                                 <div class="trainer-details">
+
                                     <div class="detail-item">
                                         <span class="detail-icon">🏆</span>
                                         <p><strong>@trainer.SportsAchievements</strong><br>@trainer.WorkExperience</p>
                                     </div>
+
                                     <div class="detail-item">
                                         <span class="detail-icon">🎯</span>
                                         <p><strong>@trainer.Specialization</strong><br>@trainer.SpecializationDescription</p>
                                     </div>
+
                                 </div>
+
+                                <!-- Кнопка записи -->
+                                <a href="#contact" class="btn btn-outline-primary-glow btn-sm-glow">
+                                    Записаться
+                                </a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             }
+
         </div>
     </div>
 </section>
-<section class="pricing-section py-5 py-lg-6">
+
+<!-- ===== АБОНЕМЕНТЫ СЕКЦИЯ ===== -->
+<section class="pricing-section section-spacing bg-gradient-dark-reverse text-white">
     <div class="container">
-        <h2 class="pricing-title text-center text-uppercase mb-5">
-            Выбери свой <span class="gains">путь</span>
+        <h2 class="section-title text-center mb-5">
+            Выбери свой <span class="text-gains">путь</span>
         </h2>
 
         <div class="row g-4 justify-content-center">
 
             <!-- Гостевой визит -->
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name text-uppercase">Гостевой визит</h3>
+                <div class="card-dark h-100 p-3">
+                    <div class="card-header-dark">
+                        <h3 class="section-title--card text-uppercase">Гостевой визит</h3>
                         <p class="pricing-desc">Попробуй перед решением</p>
                     </div>
-                    <div class="pricing-body">
-                        <ul class="pricing-features list-unstyled">
-                            <li><span class="check-icon">✓</span> Доступ в зал на 1 день</li>
-                            <li><span class="check-icon">✓</span> Инструктаж по технике</li>
-                            <li><span class="check-icon">✓</span> Душ и раздевалка</li>
-                            <li class="disabled"><span class="check-icon">✗</span> Групповые занятия</li>
-                            <li class="disabled"><span class="check-icon">✗</span> Заморозка</li>
+                    <div class="card-body-dark">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Доступ в зал на 1 день</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Инструктаж по технике</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Душ и раздевалка</li>
+                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Групповые занятия</li>
+                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Заморозка</li>
                         </ul>
                     </div>
-                    <div class="pricing-footer">
+                    <div class="card-footer-dark">
                         <div class="price-block">
                             <span class="price-currency">₽</span>
                             <span class="price-value">500</span>
                             <span class="price-period">/раз</span>
                         </div>
-                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Попробовать</a>
+                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Попробовать</a>
                     </div>
                 </div>
             </div>
 
             <!-- 1 месяц -->
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name text-uppercase">1 месяц</h3>
+                <div class="card-dark h-100 p-3">
+                    <div class="card-header-dark">
+                        <h3 class="section-title--card text-uppercase">1 месяц</h3>
                         <p class="pricing-desc">Отличный старт</p>
                     </div>
-                    <div class="pricing-body">
-                        <ul class="pricing-features list-unstyled">
-                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li><span class="check-icon">✓</span> Фитнес-тестирование</li>
-                            <li><span class="check-icon">✓</span> Заморозка до 3 дней</li>
-                            <li class="disabled"><span class="check-icon">✗</span> Персональная тренировка</li>
+                    <div class="card-body-dark">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 3 дней</li>
+                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Персональная тренировка</li>
                         </ul>
                     </div>
-                    <div class="pricing-footer">
+                    <div class="card-footer-dark">
                         <div class="price-block">
                             <span class="price-currency">₽</span>
                             <span class="price-value">3 900</span>
                             <span class="price-period">/мес</span>
                         </div>
-                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
                     </div>
                 </div>
             </div>
 
             <!-- 3 месяца (ПОПУЛЯРНО) -->
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="pricing-card popular">
-                    <div class="popular-badge">Популярно</div>
-                    <div class="pricing-header">
-                        <h3 class="pricing-name text-uppercase">3 месяца</h3>
+                <div class="card-dark card-dark--popular h-100 p-3">
+                    <div class="badge-popular">Популярно</div>
+                    <div class="card-header-dark">
+                        <h3 class="section-title--card text-uppercase">3 месяца</h3>
                         <p class="pricing-desc">Для тех, кто настроен серьёзно</p>
                     </div>
-                    <div class="pricing-body">
-                        <ul class="pricing-features list-unstyled">
-                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li><span class="check-icon">✓</span> Фитнес-тестирование + план</li>
-                            <li><span class="check-icon">✓</span> Заморозка до 10 дней</li>
-                            <li><span class="check-icon">✓</span> Скидка 10% на персоналки</li>
+                    <div class="card-body-dark">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование + план</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 10 дней</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 10% на персоналки</li>
                         </ul>
                     </div>
-                    <div class="pricing-footer">
+                    <div class="card-footer-dark">
                         <div class="price-block">
                             <span class="price-currency">₽</span>
                             <span class="price-value">10 500</span>
                             <span class="price-period">/3 мес</span>
                         </div>
                         <span class="price-save">Экономия 1 200 ₽</span>
-                        <a href="#contact" class="btn-pricing btn btn-danger text-uppercase">Выбрать</a>
+                        <a href="#contact" class="btn btn-primary-glow w-100 text-uppercase">Выбрать</a>
                     </div>
                 </div>
             </div>
 
             <!-- 6 месяцев -->
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name text-uppercase">6 месяцев</h3>
+                <div class="card-dark h-100 p-3">
+                    <div class="card-header-dark">
+                        <h3 class="section-title--card text-uppercase">6 месяцев</h3>
                         <p class="pricing-desc">Для тех, кто строит результат</p>
                     </div>
-                    <div class="pricing-body">
-                        <ul class="pricing-features list-unstyled">
-                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li><span class="check-icon">✓</span> Персональный план тренировок</li>
-                            <li><span class="check-icon">✓</span> Заморозка до 21 дня</li>
-                            <li><span class="check-icon">✓</span> Скидка 15% на персоналки</li>
+                    <div class="card-body-dark">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план тренировок</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 21 дня</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 15% на персоналки</li>
                         </ul>
                     </div>
-                    <div class="pricing-footer">
+                    <div class="card-footer-dark">
                         <div class="price-block">
                             <span class="price-currency">₽</span>
                             <span class="price-value">19 900</span>
                             <span class="price-period">/6 мес</span>
                         </div>
                         <span class="price-save">Экономия 3 500 ₽</span>
-                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
                     </div>
                 </div>
             </div>
 
             <!-- 1 год -->
             <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name text-uppercase">1 год</h3>
+                <div class="card-dark h-100 p-3">
+                    <div class="card-header-dark">
+                        <h3 class="section-title--card text-uppercase">1 год</h3>
                         <p class="pricing-desc">Максимальная выгода</p>
                     </div>
-                    <div class="pricing-body">
-                        <ul class="pricing-features list-unstyled">
-                            <li><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li><span class="check-icon">✓</span> Персональный план + контроль</li>
-                            <li><span class="check-icon">✓</span> Заморозка до 45 дней</li>
-                            <li><span class="check-icon">✓</span> Скидка 20% на персоналки</li>
-                            <li><span class="check-icon">✓</span> Бесплатная консультация нутрициолога</li>
+                    <div class="card-body-dark">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план + контроль</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 45 дней</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 20% на персоналки</li>
+                            <li class="list-item-dark"><span class="check-icon">✓</span> Бесплатная консультация нутрициолога</li>
                         </ul>
                     </div>
-                    <div class="pricing-footer">
+                    <div class="card-footer-dark">
                         <div class="price-block">
                             <span class="price-currency">₽</span>
                             <span class="price-value">35 900</span>
                             <span class="price-period">/год</span>
                         </div>
                         <span class="price-save">Экономия 10 900 ₽</span>
-                        <a href="#contact" class="btn-pricing btn btn-outline-light text-uppercase">Выбрать</a>
+                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
                     </div>
                 </div>
             </div>
@@ -361,57 +395,59 @@
         </div>
     </div>
 </section>
-<section class="contact-section py-5 py-lg-6">
+
+<!-- ===== КОНТАКТЫ СЕКЦИЯ ===== -->
+<section class="contact-section section-spacing bg-gradient-dark text-white">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-xl-6">
 
                 <div class="contact-wrapper text-center mb-5">
-                    <h2 class="contact-title text-uppercase mb-3">
-                        Готов начать <span class="gains">сейчас</span>?
+                    <h2 class="section-title text-uppercase mb-3">
+                        Готов начать <span class="text-gains">сейчас</span>?
                     </h2>
-                    <p class="contact-subtitle">
+                    <p class="section-subtitle">
                         Оставь заявку — мы свяжемся в течение 15 минут.
                         Никаких звонков «просто так». Только дело.
                     </p>
                 </div>
 
-                <form class="contact-form" method="post">
+                <form class="form-dark" method="post">
                     @Html.AntiForgeryToken()
 
-                    <div class="form-group mb-4">
-                        <label for="name" class="form-label text-start text-uppercase small fw-bold">
+                    <div class="mb-4">
+                        <label for="name" class="form-dark-label text-start text-uppercase small fw-bold d-block">
                             Твоё имя
                         </label>
                         <input type="text"
                                id="name"
                                name="Name"
-                               class="form-control form-control-lg"
+                               class="form-dark-input form-control-lg w-100"
                                placeholder="Максим"
                                required>
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label for="phone" class="form-label text-start text-uppercase small fw-bold">
+                    <div class="mb-4">
+                        <label for="phone" class="form-dark-label text-start text-uppercase small fw-bold d-block">
                             Телефон для связи
                         </label>
                         <input type="tel"
                                id="phone"
                                name="Phone"
-                               class="form-control form-control-lg"
+                               class="form-dark-input form-control-lg w-100"
                                placeholder="+7 (___) ___-__-__"
                                required>
-                        <small class="form-text text-muted">Формат: +7 (999) 999-99-99</small>
+                        <small class="form-dark-text d-block mt-2">Формат: +7 (999) 999-99-99</small>
                     </div>
 
                     <div class="form-check mb-4 text-start">
-                        <input class="form-check-input" type="checkbox" id="consent" required>
+                        <input class="form-check-input form-dark-check" type="checkbox" id="consent" required>
                         <label class="form-check-label small" for="consent">
                             Согласен на обработку персональных данных и хочу стать сильнее
                         </label>
                     </div>
 
-                    <button type="submit" class="btn-submit btn btn-danger btn-lg w-100 text-uppercase fw-bold">
+                    <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
                         Отправить заявку
                     </button>
                 </form>

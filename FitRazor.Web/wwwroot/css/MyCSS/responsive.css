@@ -1,0 +1,488 @@
+﻿/* ========================================
+   RESPONSIVE - FitRazor Project
+   Версия: 1.0
+   Подключать ПОСЛЕ всех основных CSS файлов
+   ======================================== */
+
+/* ===== XL BREAKPOINT (1200px+) ===== */
+@media (min-width: 1200px) {
+    /* Сетка тренеров (5 колонок вместо 6) */
+    .col-xl-2-4 {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+/* ===== LG BREAKPOINT (992px - 1199px) ===== */
+@media (max-width: 992px) {
+    /* Философия */
+    .philosophy-grid {
+        min-height: auto;
+        gap: 2rem !important;
+        padding: 0 1rem;
+    }
+
+    .philosophy-card {
+        min-height: var(--card-height-philosophy-tablet);
+    }
+
+    .truth-statement {
+        border-left: none;
+        border-top: 3px solid var(--color-primary);
+        padding-left: 0;
+        padding-top: 1rem;
+    }
+
+    /* Анимации появления (меняем направление на вертикальное) */
+    .reveal-left,
+    .reveal-right {
+        transform: translateY(100px);
+    }
+
+        .reveal-left.active,
+        .reveal-right.active {
+            transform: translateY(0);
+        }
+}
+
+/* ===== MD BREAKPOINT (768px - 991px) ===== */
+@media (max-width: 768px) {
+    /* ===== ОБЩИЕ СТИЛИ ===== */
+    .section-spacing {
+        padding: var(--spacing-section-tablet);
+    }
+
+    /* ===== HERO (base.css) ===== */
+    .hero-title {
+        font-size: var(--font-size-title-hero-mobile);
+        letter-spacing: 0.02em;
+    }
+
+        .hero-title .subtitle {
+            font-size: 0.7em;
+            display: block;
+            margin-top: 0.2em;
+        }
+
+        .hero-title .tagline {
+            font-size: 0.6em;
+            letter-spacing: 0.2em;
+        }
+
+    /* ===== LAYOUT (layout.css) ===== */
+    .top-header .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .top-header .col:first-child {
+        margin-bottom: 0.5rem;
+    }
+
+    .main-nav .navbar-collapse {
+        padding-top: 1rem;
+    }
+
+    .gp-link {
+        text-align: center;
+    }
+
+        .gp-link.active::after {
+            left: 50%;
+        }
+
+    /* ===== ТРЕНЕРЫ (trainer.css) ===== */
+    .trainer-card {
+        height: var(--card-height-trainer-tablet);
+    }
+
+    .trainer-photo {
+        height: 50%;
+    }
+
+    .trainer-name {
+        font-size: 1.2rem;
+    }
+
+    .trainer-motto {
+        font-size: 0.8rem;
+    }
+
+    .detail-item {
+        padding: 0.5rem;
+    }
+
+        .detail-item p {
+            font-size: 0.75rem;
+        }
+
+    .trainer-info-front {
+        padding: 1rem;
+    }
+
+    .trainer-card-back {
+        padding: 1.5rem;
+    }
+
+    /* ===== АБОНЕМЕНТЫ (abonement.css) ===== */
+    .pricing-card {
+        padding: var(--padding-card-tablet);
+    }
+
+    .pricing-name {
+        font-size: 1.3rem;
+    }
+
+    .price-value {
+        font-size: 2rem;
+    }
+
+    .pricing-features li {
+        font-size: 0.85rem;
+        padding: 0.5rem 0;
+    }
+
+    /* ===== ЗОНЫ (zone.css) ===== */
+    .zone-slide {
+        min-height: var(--card-height-zone-tablet);
+    }
+
+    .zone-content {
+        padding: 2rem 1rem;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 45px;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .zones-final {
+        padding: 2rem 0;
+    }
+
+    /* ===== КОНТАКТЫ (contact.css) ===== */
+    .contact-form {
+        padding: var(--padding-card-tablet);
+    }
+
+    .contact-title {
+        font-size: var(--font-size-title-section-mobile);
+    }
+
+    .btn-primary-glow {
+        font-size: 1rem;
+        padding: 0.85rem 1.5rem;
+    }
+}
+
+/* ===== SM BREAKPOINT (576px - 767px) ===== */
+@media (max-width: 576px) {
+    /* ===== ОБЩИЕ СТИЛИ ===== */
+    .section-spacing {
+        padding: var(--spacing-section-mobile);
+    }
+
+    /* ===== HERO (base.css) ===== */
+    .hero-container {
+        padding: 1rem;
+        min-height: 70vh;
+    }
+
+    .hero-title {
+        margin: 0.3rem 0;
+    }
+
+    /* ===== ТРЕНЕРЫ (trainer.css) ===== */
+    .trainer-card {
+        height: var(--card-height-trainer-mobile);
+    }
+
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* ===== ФИЛОСОФИЯ (philosophy.css) ===== */
+    .philosophy-main-title {
+        margin-bottom: 3rem !important;
+    }
+
+    .philosophy-card {
+        min-height: var(--card-height-philosophy-mobile);
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* ===== ЗОНЫ (zone.css) ===== */
+    .zone-slide {
+        min-height: var(--card-height-zone-mobile);
+    }
+
+    .zone-title-item {
+        margin-bottom: 1rem;
+    }
+
+    .zone-description {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* ===== АБОНЕМЕНТЫ (abonement.css) ===== */
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .pricing-card {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .popular-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 1.2rem;
+    }
+
+    /* ===== КОНТАКТЫ (contact.css) ===== */
+    .contact-section {
+        padding: 3rem 0;
+    }
+
+    .contact-form {
+        padding: var(--padding-card-mobile);
+    }
+
+    /* ===== ФОРМЫ И КНОПКИ ===== */
+    .form-dark {
+        padding: var(--padding-card-mobile);
+    }
+
+    .btn-primary-glow {
+        font-size: 1rem;
+        padding: 0.85rem 1.5rem;
+    }
+}
+
+/* ===== XS BREAKPOINT (480px и меньше) ===== */
+@media (max-width: 480px) {
+    .hero-container {
+        padding: 1rem;
+        min-height: 70vh;
+    }
+
+    .hero-title {
+        margin: 0.3rem 0;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .card-dark {
+        padding: 1rem;
+    }
+}
+
+/* ===== УСТРОЙСТВА С HOVER (Desktop) ===== */
+@media (hover: hover) {
+    /* Философия */
+    .philosophy-card:hover {
+        transform: scale(1.02);
+        z-index: var(--z-badge);
+    }
+
+    /* Зоны */
+    .zone-slide {
+        transition: transform var(--transition-fast);
+    }
+
+        .zone-slide:hover {
+            transform: scale(1.02);
+            z-index: var(--z-badge);
+        }
+
+    /* Карточки (общие) */
+    .card-dark:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-zone:hover {
+        transform: scale(1.02);
+        z-index: var(--z-badge);
+    }
+}
+
+/* ===== УСТРОЙСТВА БЕЗ HOVER (Mobile/Touch) ===== */
+@media (hover: none) {
+    /* Тренеры (активное нажатие вместо hover) */
+    .trainer-card:active .trainer-card-back {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .trainer-card:active .trainer-card-front {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    /* Карточки (общие) */
+    .card-dark:active {
+        transform: translateY(-5px);
+    }
+
+    .card-zone:active {
+        transform: scale(1.02);
+        z-index: var(--z-badge);
+    }
+}
+
+/* ===== ВЫСОКАЯ КОНТРАСТНОСТЬ (Доступность) ===== */
+@media (prefers-contrast: high) {
+    .card-dark {
+        border: 2px solid var(--color-primary);
+    }
+
+    .border-card {
+        border: 2px solid var(--color-primary);
+    }
+
+    .truth-statement {
+        border-top: 3px solid var(--color-primary);
+        border-left: none;
+    }
+}
+
+/* ===== УМЕНЬШЕННОЕ ДВИЖЕНИЕ (Доступность) ===== */
+@media (prefers-reduced-motion: reduce) {
+    /* Отключаем все анимации */
+    .reveal-up,
+    .reveal-left,
+    .reveal-right,
+    .reveal-fade,
+    .reveal-slam-left,
+    .reveal-slam-right,
+    .reveal-power,
+    .philosophy-main-title,
+    .zones-title {
+        transition: none;
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Отключаем hover-эффекты */
+    .card-dark,
+    .card-zone,
+    .philosophy-card,
+    .btn-primary-glow,
+    .nav-link-dark,
+    .social-icon,
+    .brand-logo {
+        transition: none;
+        transform: none;
+    }
+
+    /* Отключаем градиентные анимации */
+    .gains,
+    .pains,
+    .text-gains,
+    .text-pains {
+        animation: none;
+        background-size: 100% auto;
+    }
+}
+
+/* ===== ПЕЧАТНАЯ ВЕРСИЯ ===== */
+@media print {
+    /* Скрываем навигацию и интерактивные элементы */
+    .top-header,
+    .main-nav,
+    .footer,
+    .btn-primary-glow,
+    .carousel-control-prev,
+    .carousel-control-next,
+    .modal,
+    .offcanvas {
+        display: none !important;
+    }
+
+    /* Упрощаем фон */
+    body,
+    main,
+    .hero-container,
+    .trainers-section,
+    .philosophy-section,
+    .zones-section,
+    .pricing-section,
+    .contact-section {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    /* Упрощаем карточки */
+    .card-dark,
+    .trainer-card,
+    .philosophy-card,
+    .pricing-card {
+        border: 1px solid #000;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    /* Скрываем декоративные элементы */
+    .overlay-dark,
+    .trainer-overlay-front,
+    .card-overlay,
+    .zone-overlay {
+        display: none;
+    }
+
+    /* Показываем весь контент */
+    .trainer-card-front,
+    .trainer-card-back {
+        opacity: 1;
+        transform: none;
+        position: relative;
+    }
+}
+
+/* ===== LANDSCAPE MODE (Mobile) ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .section-spacing {
+        padding: 2rem 0;
+    }
+}
+
+/* ===== LARGE DESKTOP (1400px+) ===== */
+@media (min-width: 1400px) {
+    .philosophy-grid {
+        max-width: var(--grid-max-width);
+    }
+
+    #zonesCarousel {
+        max-width: var(--carousel-max-width);
+    }
+
+    .contact-wrapper {
+        max-width: var(--contact-wrapper-max-width);
+    }
+}

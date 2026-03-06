@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Intersection Observer для анимации появления элементов
-    // ===== Анимация титула для карточек =====
     const mainTitleObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -33,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rootMargin: '0px 0px -50px 0px' // Менее агрессивный отступ
     });
 
-    const mainTitle = document.querySelector('.philosophy-main-title');
+    const mainTitle = document.querySelector('.reveal-up');
     if (mainTitle) {
         mainTitleObserver.observe(mainTitle);
     }

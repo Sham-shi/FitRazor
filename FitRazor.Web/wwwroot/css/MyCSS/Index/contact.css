@@ -1,145 +1,102 @@
-﻿.contact-section {
+﻿/* ========================================
+   CONTACT SECTION - FitRazor Project
+   Версия: 2.0 (оптимизированная)
+   ======================================== */
+
+/* ===== СЕКЦИЯ ===== */
+.contact-section {
     background: transparent;
-    color: #fff;
-    padding: 4rem 0;
+    padding: var(--spacing-section-desktop);
 }
 
 .contact-wrapper {
-    max-width: 600px;
+    max-width: var(--contact-wrapper-max-width);
     margin: 0 auto;
 }
 
+/* Заголовок — используем компонент */
 .contact-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(2rem, 4vw, 2.8rem);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    line-height: 1.2;
+    /* Базовые стили из .section-title */
 }
 
 .contact-subtitle {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.05rem;
-    color: #ccc;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    color: var(--color-text-muted);
     line-height: 1.6;
     margin: 0;
 }
 
-/* ===== ФОРМА ===== */
+/* ===== ФОРМА — используем компонент .form-dark ===== */
 .contact-form {
-    max-width: 500px;
+    max-width: var(--form-max-width);
     margin: 0 auto;
-    background: rgba(20, 15, 25, 0.6);
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 61, 61, 0.2);
-    backdrop-filter: blur(10px);
+    /* Остальное из .form-dark в components.css */
 }
 
+/* Лейблы формы */
 .form-label {
-    font-family: 'Oswald', sans-serif;
-    color: #ff6b6b;
+    font-family: var(--font-heading);
+    color: var(--color-primary-light);
     margin-bottom: 0.5rem;
     letter-spacing: 0.05em;
 }
 
+/* Поля ввода — расширяем компонент */
 .form-control {
-    background: rgba(10, 10, 15, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    color: #fff;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-    padding: 0.85rem 1.25rem;
-    transition: all 0.3s ease;
+    /* Базовые стили из .form-dark-input */
 }
 
     .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--rgba-white-dim);
     }
 
     .form-control:focus {
-        background: rgba(10, 10, 15, 0.95);
-        border-color: #ff3d3d;
-        box-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25);
-        color: #fff;
+        background: var(--rgba-bg-glass-darker);
+        border-color: var(--color-primary);
+        box-shadow: var(--focus-shadow);
+        color: var(--color-text-main);
     }
 
+/* Текст подсказки */
 .form-text {
-    font-size: 0.8rem;
-    color: #888 !important;
+    font-size: var(--font-size-body-xs);
+    color: var(--color-text-dim);
 }
 
+/* Чекбоксы */
 .form-check-input {
-    background-color: rgba(10, 10, 15, 0.8);
-    border-color: rgba(255, 255, 255, 0.3);
+    background-color: var(--rgba-bg-glass-dark);
+    border-color: var(--rgba-white-strong);
     cursor: pointer;
 }
 
     .form-check-input:checked {
-        background-color: #ff3d3d;
-        border-color: #ff3d3d;
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
     }
 
 .form-check-label {
-    color: #ccc;
+    color: var(--color-text-muted);
     cursor: pointer;
 }
 
     .form-check-label a {
-        color: #ff6b6b;
+        color: var(--color-primary-light);
         text-decoration: none;
     }
 
         .form-check-label a:hover {
-            color: #ff3d3d;
+            color: var(--color-primary);
         }
 
+/* ===== КНОПКА — используем компонент .btn-primary-glow ===== */
 .btn-submit {
-    font-family: 'Oswald', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    padding: 1rem 2rem;
-    background: linear-gradient(90deg, #ff3d3d, #ff6b6b);
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(255, 61, 61, 0.4);
-    transition: all 0.3s ease;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    /* Базовые стили из .btn-primary-glow */
 }
 
-    .btn-submit:hover {
-        background: linear-gradient(90deg, #ff1a1a, #ff3d3d);
-        box-shadow: 0 6px 30px rgba(255, 61, 61, 0.6);
-        transform: translateY(-2px);
-    }
-
-    .btn-submit:active {
-        transform: translateY(0);
-    }
-
-/* Адаптив */
-@media (max-width: 768px) {
-    .contact-form {
-        padding: 1.5rem;
-    }
-
-    .contact-title {
-        font-size: 1.8rem;
-    }
-
-    .btn-submit {
-        font-size: 1rem;
-        padding: 0.85rem 1.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .contact-section {
-        padding: 3rem 0;
-    }
-
-    .contact-form {
-        padding: 1.25rem;
-    }
-}
+/* ===== УТИЛИТЫ Bootstrap для замены ===== */
+/* Вместо color: #fff → class="text-white" */
+/* Вместо color: #ccc → class="text-muted" */
+/* Вместо text-align: center → class="text-center" */
+/* Вместо margin: 0 auto → class="mx-auto" */
