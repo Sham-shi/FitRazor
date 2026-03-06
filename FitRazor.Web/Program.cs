@@ -1,6 +1,7 @@
 using FitRazor.Data;
 using FitRazor.Data.Models;
 using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +12,14 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Настройка Serilog
 Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
     .WriteTo.File(
-        Path.Combine(Directory.GetCurrentDirectory(), "Logs", "Razor_EF-.txt"),
+        Path.Combine(Directory.GetCurrentDirectory(), "Logs", "FitRazor-.txt"),
         rollingInterval: RollingInterval.Day,
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Используем Serilog как основной провайдер логов
 builder.Host.UseSerilog(); // <-- это подключает Serilog к ILogger<T>
