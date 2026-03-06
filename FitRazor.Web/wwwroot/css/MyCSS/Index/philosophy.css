@@ -25,7 +25,8 @@
 
 /* ===== СЕТКА С КАРТОЧКАМИ ===== */
 .philosophy-grid-wrapper {
-    overflow: hidden;
+    overflow: visible;
+    padding: 1rem;
     width: 100%;
     position: relative;
 }
@@ -35,6 +36,7 @@
     margin: 0 auto 5rem;
     min-height: var(--card-height-philosophy);
     position: relative;
+    padding: 0 1rem;
 }
 
 /* ===== КАРТОЧКА ФИЛОСОФИИ — расширяем .card-dark ===== */
