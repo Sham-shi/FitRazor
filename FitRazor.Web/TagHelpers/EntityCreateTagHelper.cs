@@ -23,6 +23,9 @@ namespace FitRazor.Web.TagHelpers
         [HtmlAttributeName("cancel-page")]
         public string CancelPage { get; set; } = "/Entities/Index";
 
+
+        private readonly string[] _validStatuses = { "Запланировано", "Перенесено", "Завершено", "Отменено" };
+
         public EntityCreateTagHelper(FitRazorContext context)
         {
             _context = context;
@@ -131,6 +134,26 @@ namespace FitRazor.Web.TagHelpers
                 return sb.ToString();
             }
 
+            if (propName == "Status")
+            {
+                // Определяем допустимые статусы (можно вынести в константу или конфиг)
+                var validStatuses = new[] { "Запланировано", "Перенесено", "Завершено", "Отменено" };
+
+                var sb = new System.Text.StringBuilder();
+                sb.Append($"<select name='{propName}' class='form-select'>");
+                sb.Append("<option value=''>— Выберите статус —</option>");
+
+                foreach (var status in validStatuses)
+                {
+                    // По умолчанию можно выбрать первый элемент, если нужно:
+                    // var isSelected = status == "Запланировано"; 
+                    var encodedStatus = System.Web.HttpUtility.HtmlAttributeEncode(status);
+                    sb.Append($"<option value='{encodedStatus}'>{status}</option>");
+                }
+                sb.Append("</select>");
+                return sb.ToString();
+            }
+
             // Выпадающий список для foreign keys
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))
             {
@@ -185,7 +208,10 @@ namespace FitRazor.Web.TagHelpers
 
             if (propType == typeof(decimal) || propType == typeof(decimal?))
             {
-                return $"<input type='number' name='{propName}' class='form-control' step='0.01' />";
+                var requiredAttr = prop.GetCustomAttribute<RequiredAttribute>() != null ? "required" : "";
+                // step='0.01' важен для корректной валидации в браузере
+                // placeholder помогает пользователю понять формат (точка!)
+                return $"<input type='number' name='{propName}' class='form-control' step='0.01' {requiredAttr} placeholder='0.00' />";
             }
 
             // Дата и время

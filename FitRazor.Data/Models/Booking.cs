@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Data.Models;
 
+
 [Display(Name = "Записи")]
 public partial class Booking
 {
@@ -23,15 +24,15 @@ public partial class Booking
     [Display(Name = "Тренер - Услуга")]
     public int TrainerServiceId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Дата занятия обязательна")]
     [Display(Name = "Дата занятия")]
     public DateTime BookingDateTime { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Кол-во занятий обязательно")]
     [Display(Name = "Кол-во занятий")]
     public int SessionsCount { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Цена обязательна")]
     [Column(TypeName = "decimal(10, 2)")]
     [Display(Name = "Цена за услугу")]
     public decimal UnitPrice { get; set; }
@@ -40,8 +41,8 @@ public partial class Booking
     [Display(Name = "Общая стоимость")]
     public decimal? TotalPrice { get; set; }
 
-    [Required]
-    [StringLength(20)]
+    [Required(ErrorMessage = "Статус обязателен")]
+    [StringLength(20, ErrorMessage = "Статус должен быть не длиннее 20 символов")]
     [Display(Name = "Статус")]
     public string Status { get; set; } = null!;
 

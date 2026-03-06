@@ -205,19 +205,18 @@ namespace FitRazor.Web.Services.Admin
                     var service = b.TrainerService?.Service?.ServiceName ?? "Услуга";
                     return $"{client} — {service} ({b.BookingDateTime:dd.MM.yyyy HH:mm})";
                 },
-
                 DropdownProviders =
                 {
                     ["ClientId"] = async ctx => await ctx.Clients
-                        .Select(c => new SelectListItem(c.ClientId.ToString(), c.FullName))
+                        .Select(c => new SelectListItem(c.FullName, c.ClientId.ToString())) // ✅ Текст, затем Значение
                         .ToListAsync(),
 
                     ["TrainerServiceId"] = async ctx => await ctx.TrainerServices
                         .Include(ts => ts.Trainer)
                         .Include(ts => ts.Service)
                         .Select(ts => new SelectListItem(
-                            ts.TrainerServiceId.ToString(),
-                            $"{ts.Trainer!.FullName} — {ts.Service!.ServiceName}"))
+                            $"{ts.Trainer!.FullName} — {ts.Service!.ServiceName}", // Текст (что видим)
+                            ts.TrainerServiceId.ToString()))                       // Значение (что отправляем)
                         .ToListAsync()
                 }
             };
@@ -273,11 +272,15 @@ namespace FitRazor.Web.Services.Admin
                 DropdownProviders =
                 {
                     ["TrainerId"] = async ctx => await ctx.Trainers
-                        .Select(t => new SelectListItem(t.TrainerId.ToString(), t.FullName))
+                        .Select(t => new SelectListItem(
+                            t.FullName,              // ✅ 1. Текст (что видит пользователь)
+                            t.TrainerId.ToString())) // ✅ 2. Значение (что сохраняется в БД)
                         .ToListAsync(),
 
                     ["ServiceId"] = async ctx => await ctx.Services
-                        .Select(s => new SelectListItem(s.ServiceId.ToString(), s.ServiceName))
+                        .Select(s => new SelectListItem(
+                            s.ServiceName,           // ✅ 1. Текст
+                            s.ServiceId.ToString())) // ✅ 2. Значение
                         .ToListAsync()
                 }
             };

@@ -1,10 +1,11 @@
 using FitRazor.Data.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages
 {
+    [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly FitRazorContext _context;

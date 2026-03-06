@@ -119,12 +119,12 @@ namespace FitRazor.Web.TagHelpers
                         prop.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
                         prop.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
                     {
-                        html.Append(FormatValue(value, prop.PropertyType, prop.Name));
+                        html.Append(FormatValue(value, prop.PropertyType, prop.Name, item));
                     }
                     else if (value != null)
                     {
                         // Простое форматирование по типу
-                        html.Append(FormatValue(value, prop.PropertyType, prop.Name));
+                        html.Append(FormatValue(value, prop.PropertyType, prop.Name, item));
                     }
                     else
                     {
@@ -174,7 +174,7 @@ namespace FitRazor.Web.TagHelpers
             return nameProp?.GetValue(item)?.ToString() ?? $"{entityName} #{GetIdValue(item)}";
         }
 
-        private string FormatValue(object value, Type type, string propertyName = "")
+        private string FormatValue(object value, Type type, string propertyName = "", object? entity = null)
         {
             if (propertyName == nameof(Trainer.PhotoUrl) ||
                 propertyName.EndsWith("PhotoUrl") ||
@@ -198,6 +198,41 @@ namespace FitRazor.Web.TagHelpers
                        $"style='min-width:100px;min-height:100px;object-fit:cover;' " +
                        $"class='img-thumbnail rounded' " +
                        $"onerror=\"this.onerror=null; this.src='/Images/Trainers/no-photo.jpg';this.alt='Фото отсутствует'\" />";
+            }
+
+            if (propertyName.EndsWith("Id") && entity != null && value != null)
+            {
+                // Имя навигационного свойства: TrainerId → Trainer, ClientId → Client
+                var navPropName = propertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
+                    ? propertyName.Substring(0, propertyName.Length - 2)
+                    : propertyName;
+
+                var navProp = entity.GetType().GetProperty(navPropName);
+
+                if (navProp != null)
+                {
+                    var navValue = navProp.GetValue(entity);
+                    if (navValue != null)
+                    {
+                        // Ищем стандартные свойства для отображения имени
+                        var displayNameProp = navValue.GetType().GetProperty("FullName")
+                                            ?? navValue.GetType().GetProperty("Name")
+                                            ?? navValue.GetType().GetProperty("ServiceName")
+                                            ?? navValue.GetType().GetProperty("Title")
+                                            ?? navValue.GetType().GetProperty("Description");
+
+                        if (displayNameProp != null)
+                        {
+                            var displayName = displayNameProp.GetValue(navValue)?.ToString();
+                            if (!string.IsNullOrWhiteSpace(displayName))
+                            {
+                                return System.Net.WebUtility.HtmlEncode(displayName);
+                            }
+                        }
+                    }
+                }
+                // Если навигация не загружена — показываем ID в красивом формате
+                return $"<span class='text-muted' title='Навигационное свойство не загружено'>#{value}</span>";
             }
 
             if (type == typeof(decimal))

@@ -17,58 +17,59 @@ public partial class Trainer
     [Column("TrainerID")]
     public int TrainerId { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "ФИО обязательно")]
+    [StringLength(100, ErrorMessage = "ФИО должен быть не длиннее 100 символов")]
     [Display(Name = "ФИО")]
     public string FullName { get; set; } = null!;
 
-    [Required]
-    [StringLength(20)]
+    [Required(ErrorMessage = "Телефон обязателен")]
+    [StringLength(20, ErrorMessage = "Телефон должен быть не длиннее 20 символов")]
     [Display(Name = "Телефон")]
     public string Phone { get; set; } = null!;
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "Email обязателен")]
+    [StringLength(100, ErrorMessage = "Email должен быть не длиннее 100 символов")]
+    [EmailAddress(ErrorMessage = "Неверный формат email")]
     public string Email { get; set; } = null!;
 
-    [StringLength(100)]
+    [StringLength(100, ErrorMessage = "Слоган должен быть не длиннее 100 символов")]
     [Display(Name = "Слоган")]
     public string? Slogan { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "Специализация обязательна")]
+    [StringLength(100, ErrorMessage = "Специализация должна быть не длиннее 100 символов")]
     [Display(Name = "Специализация")]
     public string Specialization { get; set; } = null!;
 
-    [StringLength(1000)]
+    [StringLength(1000, ErrorMessage = "Описание должно быть не длиннее 1000 символов")]
     [Display(Name = "Описание специализации")]
     public string? SpecializationDescription { get; set; }
 
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = "Девиз должен быть не длиннее 500 символов")]
     [Display(Name = "Девиз")]
     public string? Motto { get; set; }
 
-    [Required]
-    [StringLength(500)]
+    [Required(ErrorMessage = "Образование обязательно")]
+    [StringLength(500, ErrorMessage = "Образование должно быть не длиннее 500 символов")]
     [Display(Name = "Образование")]
     public string Education { get; set; } = null!;
 
-    [Required]
-    [StringLength(1000)]
+    [Required(ErrorMessage = "Опыт работы обязателен")]
+    [StringLength(1000, ErrorMessage = "Опыт работы должен быть не длиннее 1000 символов")]
     [Display(Name = "Опыт работы")]
     public string WorkExperience { get; set; } = null!;
 
-    [Required]
-    [StringLength(1000)]
+    [Required(ErrorMessage = "Достижения обязательны")]
+    [StringLength(1000, ErrorMessage = "Достижения должны быть не длиннее 1000 символов")]
     [Display(Name = "Достижения")]
     public string SportsAchievements { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Зарплата обязательна")]
     [Column(TypeName = "decimal(10, 2)")]
     [Display(Name = "Зарплата")]
     public decimal Salary { get; set; }
 
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = "Путь до фото должно быть не длиннее 500 символов")]
     [Display(Name = "Фото")]
     public string? PhotoUrl { get; set; }
 

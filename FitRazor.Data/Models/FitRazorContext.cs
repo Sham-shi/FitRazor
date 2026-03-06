@@ -2,11 +2,12 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Data.Models;
 
-public partial class FitRazorContext : DbContext
+public partial class FitRazorContext : IdentityDbContext<ApplicationUser>
 {
     public FitRazorContext(DbContextOptions<FitRazorContext> options)
         : base(options)
@@ -25,6 +26,9 @@ public partial class FitRazorContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Сначала вызываем базовую настройку Identity
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Booking>(entity =>
         {
             entity.HasKey(e => e.BookingId).HasName("PK__Bookings__73951ACD3650F6F7");

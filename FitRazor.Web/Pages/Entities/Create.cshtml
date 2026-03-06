@@ -5,14 +5,14 @@
     ViewData["Title"] = $"Создать: {Model.EntityName}";
 }
 
-<form method="post" class="entity-create-form" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="EntityName" value="@Model.EntityName" />
-    <div class="container mt-4">
-        <h1>@ViewData["Title"]</h1>
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
+    <div class="card card-dark shadow-sm">
+        <div class="card-body card-content" style="max-width: 100%;">
+            <form method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="EntityName" value="@Model.EntityName" />
                 <input type="hidden" asp-for="EntityName" />
 
                 @* Вызов тег-хелпера формы *@
@@ -20,8 +20,7 @@
                                     submit-text="Создать запись"
                                     cancel-page="/Entities/Index">
                 </entity-create-form>
-            </div>
+            </form>
         </div>
     </div>
-
-</form>
+</div>

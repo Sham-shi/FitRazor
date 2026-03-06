@@ -17,17 +17,19 @@ public partial class Client
     [Column("ClientID")]
     public int ClientId { get; set; }
 
-    [Required]
-    [StringLength(100)]
+    [Required(ErrorMessage = "Имя обязательно")]
+    [StringLength(100, ErrorMessage = "ФИО должно быть не длиннее 100 символов")]
     [Display(Name = "ФИО")]
     public string FullName { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Телефон обязателен")]
+    [Phone(ErrorMessage = "Неверный формат телефона")]
     [StringLength(20)]
     [Display(Name = "Телефон")]
     public string Phone { get; set; } = null!;
 
-    [StringLength(100)]
+    [StringLength(100, ErrorMessage = "Email должен быть не длиннее 100 символов")]
+    [EmailAddress(ErrorMessage = "Неверный формат email")]
     public string? Email { get; set; }
 
     [Display(Name = "День рождения")]

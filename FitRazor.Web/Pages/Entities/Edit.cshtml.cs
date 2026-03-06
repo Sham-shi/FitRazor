@@ -1,12 +1,14 @@
 ﻿using FitRazor.Data.Models;
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities
 {
+    [Authorize(Roles = "Trainer,Admin")]
     [BindProperties]
     public class EditModel : PageModel
     {

@@ -26,6 +26,8 @@ namespace FitRazor.Web.TagHelpers
         [HtmlAttributeName("cancel-page")]
         public string CancelPage { get; set; } = "/Entities/Index";
 
+        private readonly string[] _validStatuses = { "Запланировано", "Перенесено", "Завершено", "Отменено" };
+
         public EntityEditTagHelper(FitRazorContext context)
         {
             _context = context;
@@ -156,6 +158,23 @@ namespace FitRazor.Web.TagHelpers
                 return sb.ToString();
             }
 
+            if (propName == "Status")
+            {
+                var sb = new System.Text.StringBuilder();
+                sb.Append($"<select name='{propName}' class='form-select'>");
+                sb.Append("<option value=''>— Выберите статус —</option>");
+
+                foreach (var status in _validStatuses)
+                {
+                    // Сравниваем текущее значение с элементом массива
+                    var isSelected = currentValue?.ToString() == status;
+                    sb.Append($"<option value='{status}' {(isSelected ? "selected" : "")}>{status}</option>");
+                }
+
+                sb.Append("</select>");
+                return sb.ToString();
+            }
+
             // Выпадающий список для foreign keys
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))
             {
@@ -212,8 +231,16 @@ namespace FitRazor.Web.TagHelpers
 
             if (propType == typeof(decimal) || propType == typeof(decimal?))
             {
-                var value = currentValue != null ? ((decimal)currentValue).ToString("F2") : "0.00";
-                return $"<input type='number' name='{propName}' class='form-control' value='{value}' step='0.01' />";
+                string value = "";
+
+                // Безопасное извлечение значения через pattern matching
+                if (currentValue is decimal decValue)
+                {
+                    // InvariantCulture гарантирует точку как разделитель (требуется для HTML5 number input)
+                    value = decValue.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                }
+
+                return $"<input type='number' name='{propName}' class='form-control' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' step='0.01' />";
             }
 
             // Дата и время

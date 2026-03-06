@@ -15,21 +15,21 @@ public partial class Service
     [Column("ServiceID")]
     public int ServiceId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Название обязательно")]
     [StringLength(100)]
     [Display(Name = "Название")]
     public string ServiceName { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Продолжительность обязательна")]
     [Display(Name = "Продолжительность, мин")]
     public int DurationMinutes { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Цена обязательна")]
     [Column(TypeName = "decimal(10, 2)")]
     [Display(Name = "Цена")]
     public decimal BasePrice { get; set; }
 
-    [StringLength(500)]
+    [StringLength(500, ErrorMessage = "Email должен быть не длиннее 500 символов")]
     [Display(Name = "Описание")]
     public string? Description { get; set; }
 

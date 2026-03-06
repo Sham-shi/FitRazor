@@ -1,10 +1,12 @@
 using FitRazor.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities
 {
+    [Authorize(Roles = "Trainer,Admin")]
     public class DetailsModel : PageModel
     {
         private readonly FitRazorContext _context;
