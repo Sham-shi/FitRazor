@@ -19,8 +19,8 @@
     }
     else
     {
-        <div class="card shadow-sm">
-            <div class="card-body">
+        <div class="card card-dark shadow-sm">
+            <div class="card-body card-content" style="max-width: 100%;">
                 <form method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="EntityName" />

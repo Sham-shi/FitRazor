@@ -27,16 +27,16 @@ namespace FitRazor.Web.TagHelpers
             var entity = await GetEntityAsync();
 
             output.TagName = "div";
-            output.Attributes.SetAttribute("class", "card shadow-sm");
+            output.Attributes.SetAttribute("class", "card card-dark shadow-sm");
 
             if (entity == null)
             {
-                output.Content.SetHtmlContent("<div class='card-body'><div class='alert alert-warning'>Запись не найдена</div></div>");
+                output.Content.SetHtmlContent("<div class='card-body card-content' style='max-width: 100%'><div class='alert alert-warning'>Запись не найдена</div></div>");
                 return;
             }
 
             var html = new System.Text.StringBuilder();
-            html.Append("<div class='card-body'>");
+            html.Append("<div class='card-body card-content' style='max-width: 100%'>");
 
             foreach (var prop in entity.GetType().GetProperties()
                 .Where(p =>
@@ -58,8 +58,8 @@ namespace FitRazor.Web.TagHelpers
                 if (value != null)
                 {
                     html.Append("<div class='row mb-2'>");
-                    html.Append($"<div class='col-md-4 fw-bold'>{displayName}:</div>");
-                    html.Append("<div class='col-md-8'>");
+                    html.Append($"<div class='col-md-4 fw-bold card-text'>{displayName}:</div>");
+                    html.Append("<div class='col-md-8 card-motto'>");
                     html.Append(FormatValue(value, prop.PropertyType, prop));
                     html.Append("</div></div>");
                 }
@@ -106,7 +106,7 @@ namespace FitRazor.Web.TagHelpers
                     <img src='{System.Web.HttpUtility.HtmlAttributeEncode(displayUrl)}'
                          alt='Фото'
                          class='img-fluid rounded shadow-sm'
-                         style='max-width: 320px; max-height: 320px; object-fit: contain;'
+                         style='max-width: 320px; max-height: 320px; object-fit: contain; min-width: 100px; min-height: 100px'
                          onerror=""this.src='/Images/Trainers/no-photo.jpg'; this.alt='Фото отсутствует';"" />";
             }
 

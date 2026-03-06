@@ -83,7 +83,7 @@ namespace FitRazor.Web.TagHelpers
             html.Append("<table class='table table-hover table-bordered'>");
 
             // Заголовки колонок
-            html.Append("<thead class='table-light'>");
+            html.Append("<thead class='table-dark borderer'>");
             html.Append("<tr>");
             html.Append("<th class='text-center' style='width: 50px;'>#</th>");
 
@@ -140,11 +140,12 @@ namespace FitRazor.Web.TagHelpers
                     var displayName = GetDisplayNameForModal(item, EntityName);
 
                     html.Append("<td class='text-center'>");
-                    html.Append($"<a href='{DetailsPage}/{EntityName}/{id}' class='btn btn-sm btn-info me-1'>📄</a>");
-                    html.Append($"<a href='{EditPage}/{EntityName}/{id}' class='btn btn-sm btn-primary me-1'>✏️</a>");
+                    html.Append($"<a href='{DetailsPage}/{EntityName}/{id}' data-bs-toggle='tooltip' data-bs-title='Детали' class='btn btn-sm btn-info me-2'>📄</a>");
+                    html.Append($"<a href='{EditPage}/{EntityName}/{id}' data-bs-toggle='tooltip' data-bs-title='Редактировать' class='btn btn-sm btn-primary me-1'>✏️</a>");
                     html.Append($@"
                         <button type='button' class='btn btn-sm btn-danger'
                                 data-bs-toggle='modal' data-bs-target='#deleteModal'
+                                data-bs-toggle='tooltip' data-bs-title='Удалить'
                                 data-entity-name='{EntityName}'
                                 data-entity-id='{id}'
                                 data-entity-display='{System.Web.HttpUtility.HtmlAttributeEncode(displayName)}'>
