@@ -55,19 +55,7 @@
 }
 
 /* Анимация переливания градиента — перенесена в components.css */
-@keyframes gradientShift {
-    0% {
-        background-position: 0% center;
-    }
-
-    50% {
-        background-position: 100% center;
-    }
-
-    100% {
-        background-position: 0% center;
-    }
-}
+/*@keyframes gradientShift*/
 
 /* ===== АНИМАЦИИ ПОЯВЛЕНИЯ — перенесены в components.css ===== */
 .line-1 {
@@ -84,17 +72,17 @@
 /* Keyframes анимаций — перенесены в components.css */
 
 /* ===== ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ===== */
-.gains,
-.pains {
+.text-gains,
+.text-pains {
     transition: filter var(--transition-fast);
     cursor: default;
 }
 
-    .gains:hover {
+    .text-gains:hover {
         filter: drop-shadow(0 0 15px var(--rgba-primary-glow));
     }
 
-    .pains:hover {
+    .text-pains:hover {
         filter: drop-shadow(0 0 15px rgba(138, 0, 0, 0.8));
     }
 
