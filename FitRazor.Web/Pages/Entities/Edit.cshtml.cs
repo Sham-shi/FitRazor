@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities
 {
-    [Authorize(Roles = "Trainer,Admin")]
+    //[Authorize(Roles = "Trainer,Admin")]
     [BindProperties]
     public class EditModel : PageModel
     {

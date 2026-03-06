@@ -1,0 +1,127 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<!-- ===== СЕКЦИЯ РЕГИСТРАЦИИ ===== -->
+<section class="register-section section-spacing bg-gradient-dark text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+
+                <!-- Заголовок -->
+                <div class="register-wrapper text-center mb-5 reveal-up">
+                    <h2 class="section-title text-uppercase mb-3">
+                        Начни свой путь <span class="text-gains">сейчас</span>
+                    </h2>
+                    <p class="section-subtitle">
+                        Создай аккаунт и получи доступ к персональному кабинету.
+                        <br class="d-none d-md-block">Никаких скрытых платежей. Только результат.
+                    </p>
+                </div>
+
+                <!-- Форма регистрации -->
+                <form class="form-dark" method="post" asp-action="Register">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Логин -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Login" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            Логин
+                        </label>
+
+                        <input asp-for="Input.Login"
+                               class="form-dark-input form-control-lg w-100"
+                               placeholder="Максим"
+                               required
+                               minlength="3"
+                               maxlength="50" />
+
+                        <small class="form-dark-text d-block mt-2">От 3 до 50 символов</small>
+                        <span asp-validation-for="Input.Login" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Пароль -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Password" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            Пароль
+                        </label>
+                        <div class="position-relative">
+                            
+                            <input asp-for="Input.Password"
+                                   class="form-dark-input form-control-lg w-100 pe-5"
+                                   placeholder="••••••••"
+                                   id="regPassword"
+                                   required
+                                   minlength="1">
+
+                            <!-- Показать/скрыть пароль -->
+                            <button type="button"
+                                    class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                    id="toogleRegPassword"
+                                    aria-label="Показать пароль"
+                                    onclick="togglePasswordVisibility('Input.Password', 'eyeSlash', 'eye')">
+                                <i class="bi bi-eye-slash" id="regEyeSlash"></i>
+                                <i class="bi bi-eye d-none" id="regEye"></i>
+                            </button>
+                        </div>
+                        <small class="form-dark-text d-block mt-2">Минимум 1 символ</small>
+                        
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Подтверждение пароля -->
+                    <div class="mb-4">
+                        <label asp-for="Input.ConfirmPassword" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            Подтвердите пароль
+                        </label>
+                        <div class="position-relative">
+                            <input asp-for="Input.ConfirmPassword"
+                                   class="form-dark-input form-control-lg w-100 pe-5"
+                                   placeholder="••••••••"
+                                   id="regConfirmPassword"
+                                   required>
+
+                            <button type="button"
+                                    class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                    id="toogleRegConfirmPassword"
+                                    aria-label="Показать пароль"
+                                    onclick="togglePasswordVisibility('Input.ConfirmPassword', 'eyeSlashConfirm', 'eyeConfirm')">
+                                <i class="bi bi-eye-slash" id="regConfirmEyeSlash"></i>
+                                <i class="bi bi-eye d-none" id="regConfirmEye"></i>
+                            </button>
+                        </div>
+                        
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Чекбокс согласия -->
+                    <div class="form-check mb-4 text-start">
+                        <input asp-for="Input.Consent" class="form-check-input form-dark-check" type="checkbox" id="consent" required>
+                        <label class="form-check-label small text-muted" asp-for="Input.Consent" ">
+                            <small class="form-dark-text">Я согласен с </small><a href="/privacy" class="text-primary-light text-decoration-none hover-red">правилами сервиса</a>
+                            <small class="form-dark-text">и хочу стать сильнее</small>
+                        </label>
+                        <span asp-validation-for="Input.Consent" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Кнопка отправки -->
+                    <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
+                        Зарегистрироваться
+                    </button>
+                </form>
+
+                <!-- Ссылка на вход -->
+                <div class="text-center mt-4">
+                    <small class="">
+                        Уже есть аккаунт?
+                        <a href="/login" class="text-primary-light text-decoration-none hover-red fw-bold">Войти</a>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

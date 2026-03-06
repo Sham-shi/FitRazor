@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FitRazor.Web.Pages.Entities
 {
-    [Authorize(Roles = "Trainer,Admin")]
+    //[Authorize(Roles = "Trainer,Admin")]
     [BindProperties]
     public class CreateModel : PageModel
     {

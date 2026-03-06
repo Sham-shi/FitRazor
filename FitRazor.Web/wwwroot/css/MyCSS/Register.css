@@ -1,0 +1,83 @@
+﻿/* ========================================
+   REGISTER PAGE - FitGiri Project
+   ======================================== */
+
+.register-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.register-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Анимация появления формы */
+.form-dark {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: formFadeIn 0.8s ease-out 0.5s forwards;
+}
+/*
+@keyframes formFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}*/
+
+/* Валидация полей */
+.form-dark-input.is-invalid {
+    border-color: #ff3d3d !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 61, 61, 0.25) !important;
+}
+
+.form-dark-input.is-valid {
+    border-color: #4caf50 !important;
+    box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25) !important;
+}
+
+/* Кнопка глаза (показать пароль) */
+.gp-btn-eye {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color var(--transition-fast);
+}
+
+    .gp-btn-eye:hover {
+        color: var(--color-primary-light) !important;
+    }
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .register-section {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+
+    .form-dark {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .register-section {
+        padding: 2rem 0;
+    }
+
+    .form-dark {
+        padding: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+}

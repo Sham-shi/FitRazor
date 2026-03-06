@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities
 {
-    [Authorize(Roles = "Trainer,Admin")]
+    //[Authorize(Roles = "Trainer,Admin")]
     public class IndexModel : PageModel
     {
         private readonly FitRazorContext _context;
