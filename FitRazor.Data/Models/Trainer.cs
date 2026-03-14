@@ -74,6 +74,14 @@ public partial class Trainer
     public string? PhotoUrl { get; set; }
 
     [ScaffoldColumn(false)]
+    [ForeignKey("ApplicationUser")]
+    public string? ApplicationUserId { get; set; }
+
+    [ScaffoldColumn(false)]
+    [InverseProperty("TrainerProfile")]
+    public virtual ApplicationUser? ApplicationUser { get; set; }
+
+    [ScaffoldColumn(false)]
     [InverseProperty("Trainer")]
     public virtual ICollection<TrainerService> TrainerServices { get; set; } = new List<TrainerService>();
 }

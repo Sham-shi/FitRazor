@@ -1,11 +1,13 @@
 ﻿using FitRazor.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FitRazor.Data
 {
     public static class SeedData
     {
-        public static async Task InitializeAsync(FitRazorContext context)
+        public static async Task InitializeAsync(FitRazorContext context, IServiceProvider services)
         {
             // EnsureCreated создает БД и таблицы, если их нет
             // Это альтернатива миграциям для простых сценариев
@@ -97,6 +99,51 @@ namespace FitRazor.Data
                 // Добавляем данные и сохраняем
                 await context.Trainers.AddRangeAsync(trainers);
                 await context.SaveChangesAsync();
+
+                // 🔗 Создаём соответствующие учётные записи ApplicationUser
+                var trainerUsers = new List<(Trainer trainer, string login, string password, string role)>
+                {
+                    (trainers[0], "skala", "Trainer1!", "Trainer"),
+                    (trainers[1], "dvizh", "Trainer2!", "Trainer"),
+                    (trainers[2], "tesla", "Trainer3!", "Trainer"),
+                    (trainers[3], "stal", "Trainer4!", "Trainer"),
+                    (trainers[4], "fenix", "Trainer5!", "Trainer"),
+                };
+
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                foreach (var (trainer, login, password, role) in trainerUsers)
+                {
+                    // Создаём роль, если нет
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+
+                    // Создаём ApplicationUser
+                    var appUser = new ApplicationUser
+                    {
+                        UserName = login,
+                        Email = trainer.Email,
+                        PhoneNumber = trainer.Phone,
+                        FullName = trainer.FullName,
+                        EmailConfirmed = true // 🔥 Для упрощения в дев-среде
+                    };
+
+                    var result = await userManager.CreateAsync(appUser, password);
+                    if (result.Succeeded)
+                    {
+                        // Назначаем роль
+                        await userManager.AddToRoleAsync(appUser, role);
+
+                        // 🔗 Связываем: обновляем Trainer с ApplicationUserId
+                        trainer.ApplicationUserId = appUser.Id;
+
+                        // 🔗 Обновляем ApplicationUser с TrainerId (для обратной навигации)
+                        appUser.TrainerId = trainer.TrainerId;
+                        await userManager.UpdateAsync(appUser);
+                    }
+                }
+                await context.SaveChangesAsync();
             }
 
             if (!await context.Clients.AnyAsync())
@@ -147,11 +194,51 @@ namespace FitRazor.Data
 
                 await context.Clients.AddRangeAsync(clients);
                 await context.SaveChangesAsync();
+
+                // 🔗 Создаём учётные записи для клиентов
+                var clientUsers = new List<(Client client, string login, string password, string role)>
+                {
+                    (clients[0], "ivanov", "Client1!", "Client"),
+                    (clients[1], "petrova", "Client2!", "Client"),
+                    (clients[2], "smirnov", "Client3!", "Client"),
+                    (clients[3], "kozlova", "Client4!", "Client"),
+                    (clients[4], "novikov", "Client5!", "Client"),
+                };
+
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                foreach (var (client, login, password, role) in clientUsers)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+
+                    var appUser = new ApplicationUser
+                    {
+                        UserName = login,
+                        Email = client.Email,
+                        PhoneNumber = client.Phone,
+                        FullName = client.FullName,
+                        EmailConfirmed = true
+                    };
+
+                    var result = await userManager.CreateAsync(appUser, password);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(appUser, role);
+
+                        // 🔗 Связываем сущности
+                        client.ApplicationUserId = appUser.Id;
+                        appUser.ClientId = client.ClientId;
+                        await userManager.UpdateAsync(appUser);
+                    }
+                }
+                await context.SaveChangesAsync();
             }
 
             if (!await context.Services.AnyAsync())
             {
-                var services = new List<Service>
+                var _services = new List<Service>
                 {
                     new Service
                     {
@@ -204,7 +291,7 @@ namespace FitRazor.Data
                     }
                 };
 
-                await context.Services.AddRangeAsync(services);
+                await context.Services.AddRangeAsync(_services);
                 await context.SaveChangesAsync();
             }
 

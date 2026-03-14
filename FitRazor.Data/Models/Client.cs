@@ -39,6 +39,14 @@ public partial class Client
     public DateOnly RegistrationDate { get; set; }
 
     [ScaffoldColumn(false)]
+    [ForeignKey("ApplicationUser")]
+    public string? ApplicationUserId { get; set; }
+
+    [ScaffoldColumn(false)]
+    [InverseProperty("ClientProfile")]
+    public virtual ApplicationUser? ApplicationUser { get; set; }
+
+    [ScaffoldColumn(false)]
     [InverseProperty("Client")]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

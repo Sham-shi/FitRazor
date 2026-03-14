@@ -60,12 +60,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
-    // Инициализация доменных данных
     var context = services.GetRequiredService<FitRazorContext>();
-    await SeedData.InitializeAsync(context);
 
-    // Инициализация ролей и тестовых пользователей
+    await SeedData.InitializeAsync(context, services);
+
+    // Инициализация ролей и админа
     await RoleSeed.SeedAsync(services);
 }
 

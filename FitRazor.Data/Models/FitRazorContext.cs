@@ -52,6 +52,13 @@ public partial class FitRazorContext : IdentityDbContext<ApplicationUser>
             entity.HasKey(e => e.ClientId).HasName("PK__Clients__E67E1A04E7D74D67");
 
             entity.Property(e => e.RegistrationDate).HasDefaultValueSql("(getdate())");
+
+            // Связь один-к-одному между Client и ApplicationUser
+            // При удалении ApplicationUser, Client остаётся, но ссылка обнуляется
+            entity.HasOne(c => c.ApplicationUser)
+                .WithOne(u => u.ClientProfile)
+                .HasForeignKey<Client>(c => c.ApplicationUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<Service>(entity =>
@@ -62,6 +69,13 @@ public partial class FitRazorContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Trainer>(entity =>
         {
             entity.HasKey(e => e.TrainerId).HasName("PK__Trainers__366A1B9C316B4273");
+
+            // Связь один-к-одному между Trainer и ApplicationUser
+            // При удалении ApplicationUser, Trainer остаётся, но ссылка обнуляется
+            entity.HasOne(t => t.ApplicationUser)
+                .WithOne(u => u.TrainerProfile)
+                .HasForeignKey<Trainer>(t => t.ApplicationUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<TrainerService>(entity =>
