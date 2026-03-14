@@ -128,24 +128,7 @@
 
             <!-- Кнопки справа: Вход + Админ -->
             <div class="d-flex align-items-center gap-2">
-
-                <!-- Кнопка входа (открывает модалку) -->
-                <button type="button"
-                        class="btn btn-outline-primary-glow btn-sm text-uppercase"
-                        data-bs-toggle="modal"
-                        data-bs-target="#login">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Войти
-                </button>
-
-                <!-- Кнопка админ-панели (offcanvas) -->
-                <button class="btn btn-link text-muted p-0 gp-btn-admin"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#adminMenu"
-                        aria-controls="adminMenu"
-                        aria-label="Панель администратора">
-                    <i class="bi bi-gear-fill"></i>
-                </button>
+                @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </nav>
@@ -170,50 +153,6 @@
         </div>
     </footer>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО ВХОДА ===== -->
-    <div class="modal fade modal-dark" id="login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title text-uppercase fw-bold text-primary-light">Авторизация</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                </div>
-
-                <div class="modal-body pt-0">
-                    <form method="post" class="form-dark">
-                        @Html.AntiForgeryToken()
-
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control form-dark-input" id="email" placeholder="" name="Email" required>
-                            <label for="email" class="form-dark-label">Email</label>
-                        </div>
-
-                        <div class="form-floating mb-4">
-                            <input type="password" class="form-control form-dark-input pe-5" id="password" placeholder="" name="Password" required>
-                            <label for="password" class="form-dark-label">Пароль</label>
-
-                            <!-- Показать/скрыть пароль -->
-                            <button type="button" class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
-                                    id="togglePassword" aria-label="Показать пароль">
-                                <i class="bi bi-eye-slash" id="eyeSlash"></i>
-                                <i class="bi bi-eye d-none" id="eye"></i>
-                            </button>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary-glow w-100 text-uppercase fw-bold">
-                            Войти
-                        </button>
-                    </form>
-                </div>
-
-                <div class="modal-footer border-0 justify-content-center">
-                    <a href="/Register" class="small text-decoration-none hover-red">Зарегистрироваться</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- ===== OFFCANVAS АДМИН-ПАНЕЛЬ ===== -->
     <div class="offcanvas offcanvas-start offcanvas-dark"
          data-bs-backdrop="static"
@@ -236,7 +175,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-dark" asp-page="/Privacy">
+                    <a class="nav-link nav-link-dark" asp-page="/About">
                         <i class="bi bi-person me-2"></i>О разработчике
                     </a>
                 </li>

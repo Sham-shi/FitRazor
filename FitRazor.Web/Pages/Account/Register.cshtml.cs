@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace FitRazor.Web.Pages;
+namespace FitRazor.Web.Pages.Account;
 
 [AllowAnonymous]
 public class RegisterModel : PageModel
@@ -217,7 +217,7 @@ public class InputModel
     public string Login { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Введите пароль")]
-    [StringLength(50, MinimumLength = 1, ErrorMessage = "Пароль должен быть не менее 1 символов")]
+    [StringLength(50, MinimumLength = 2, ErrorMessage = "Пароль должен быть не менее 2 символов")]
     [DataType(DataType.Password)]
     [Display(Name = "Пароль")]
     public string Password { get; set; } = string.Empty;

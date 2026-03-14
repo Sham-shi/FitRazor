@@ -27,9 +27,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireDigit = true;            // Требовать цифры
     options.Password.RequireLowercase = true;        // Требовать строчные
     options.Password.RequireUppercase = false;       // Не требовать заглавные
-    options.Password.RequiredLength = 1;             // Минимальная длина
+    options.Password.RequiredLength = 2;             // Минимальная длина
     options.Password.RequireNonAlphanumeric = false; // Не требовать спецсимволы
     options.Password.RequiredUniqueChars = 0;        // Не требовать уникальные символы
+
+    // 🔐 Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
 
     // 🔥 Вход по логину, а не по email
     options.SignIn.RequireConfirmedAccount = false;

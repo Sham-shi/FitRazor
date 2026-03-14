@@ -1,0 +1,97 @@
+﻿@page
+@model FitRazor.Web.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<!-- ===== СЕКЦИЯ ВХОДА ===== -->
+<section class="login-section section-spacing bg-gradient-dark text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-5">
+
+                <!-- Заголовок -->
+                <div class="login-wrapper text-center mb-5 reveal-up">
+                    <h2 class="section-title text-uppercase mb-3">
+                        С возвращением, <span class="text-gains">чемпион</span>
+                    </h2>
+                    <p class="section-subtitle">
+                        Введите свои данные для доступа к персональному кабинету.
+                        <br class="d-none d-md-block">Готовы продолжить путь к цели?
+                    </p>
+                </div>
+
+                <!-- 🔹 Глобальные ошибки -->
+                <div asp-validation-summary="All" class="alert alert-danger mb-4 small" role="alert"></div>
+
+                <!-- Форма входа -->
+                <form class="form-dark" method="post" asp-page="Login">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <!-- 🔹 Логин -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Login" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.Login)
+                        </label>
+                        <input asp-for="Input.Login"
+                               class="form-dark-input form-control-lg w-100"
+                               placeholder="maxim_power"
+                               minlength="3"
+                               maxlength="50"
+                               autocomplete="username" />
+                        <small class="form-dark-text d-block mt-2">Ваш логин для входа</small>
+                        <span asp-validation-for="Input.Login" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 🔹 Пароль -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Password" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.Password)
+                        </label>
+                        <div class="position-relative">
+                            <input asp-for="Input.Password"
+                                   class="form-dark-input form-control-lg w-100 pe-5"
+                                   placeholder="••••••••"
+                                   id="loginPassword"
+                                   autocomplete="current-password" />
+
+                            <!-- Показать/скрыть пароль -->
+                            <button type="button"
+                                    class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                    id="togglePassword"
+                                    aria-label="Показать пароль">
+                                <i class="bi bi-eye-slash" id="eyeSlash"></i>
+                                <i class="bi bi-eye d-none" id="eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 🔹 Запомнить меня -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input asp-for="Input.RememberMe" class="form-check-input form-dark-check" type="checkbox" id="rememberMe">
+                            <label class="form-check-label small text-muted" asp-for="Input.RememberMe"></label>
+                        </div>
+                    </div>
+
+                    <!-- 🔹 Кнопка входа -->
+                    <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
+                        Войти
+                    </button>
+                </form>
+
+                <!-- 🔹 Ссылка на регистрацию -->
+                <div class="text-center mt-4">
+                    <small class="">
+                        Нет аккаунта?
+                        <a asp-page="Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-primary-light text-decoration-none hover-red fw-bold">
+                            Зарегистрироваться
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
