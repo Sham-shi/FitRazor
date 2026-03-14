@@ -23,13 +23,66 @@
                 </div>
 
                 <!-- Форма регистрации -->
-                <form class="form-dark" method="post" asp-action="Register">
+                <form class="form-dark" method="post" asp-page="Register">
                     @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <!-- 🔹 ФИО -->
+                    <div class="mb-4">
+                        <label asp-for="Input.FullName" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.FullName) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Input.FullName"
+                               class="form-dark-input form-control-lg w-100"
+                               placeholder="Иванов Иван Иванович"
+                               maxlength="100" />
+                        <small class="form-dark-text d-block mt-2">Не более 100 символов</small>
+                        <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 🔹 Телефон -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Phone" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.Phone) <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Input.Phone"
+                               class="form-dark-input form-control-lg w-100"
+                               placeholder="+7 (999) 123-45-67"
+                               maxlength="20"
+                               id="phoneInput" />
+                        <small class="form-dark-text d-block mt-2">В международном формате</small>
+                        <span asp-validation-for="Input.Phone" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 🔹 Email (опционально) -->
+                    <div class="mb-4">
+                        <label asp-for="Input.Email" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.Email) <small class="text-muted">(необязательно)</small>
+                        </label>
+                        <input asp-for="Input.Email"
+                               class="form-dark-input form-control-lg w-100"
+                               placeholder="example@mail.ru"
+                               maxlength="100" />
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 🔹 День рождения (опционально) -->
+                    <div class="mb-4">
+                        <label asp-for="Input.BirthDate" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                            @Html.DisplayNameFor(m => m.Input.BirthDate) <small class="text-muted">(необязательно)</small>
+                        </label>
+                        <input asp-for="Input.BirthDate"
+                               type="date"
+                               class="form-dark-input form-control-lg w-100"
+                               max="@DateOnly.FromDateTime(DateTime.Today.AddYears(-14))" />
+                        <small class="form-dark-text d-block mt-2">Для персонализации программы</small>
+                        <span asp-validation-for="Input.BirthDate" class="text-danger small"></span>
+                    </div>
 
                     <!-- Логин -->
                     <div class="mb-4">
                         <label asp-for="Input.Login" class="form-dark-label text-start text-uppercase small fw-bold d-block">
-                            Логин
+                            Логин <span class="text-danger">*</span>
                         </label>
 
                         <input asp-for="Input.Login"
@@ -46,7 +99,7 @@
                     <!-- Пароль -->
                     <div class="mb-4">
                         <label asp-for="Input.Password" class="form-dark-label text-start text-uppercase small fw-bold d-block">
-                            Пароль
+                            Пароль <span class="text-danger">*</span>
                         </label>
                         <div class="position-relative">
                             
@@ -61,8 +114,7 @@
                             <button type="button"
                                     class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
                                     id="toogleRegPassword"
-                                    aria-label="Показать пароль"
-                                    onclick="togglePasswordVisibility('Input.Password', 'eyeSlash', 'eye')">
+                                    aria-label="Показать пароль">
                                 <i class="bi bi-eye-slash" id="regEyeSlash"></i>
                                 <i class="bi bi-eye d-none" id="regEye"></i>
                             </button>
@@ -75,7 +127,7 @@
                     <!-- Подтверждение пароля -->
                     <div class="mb-4">
                         <label asp-for="Input.ConfirmPassword" class="form-dark-label text-start text-uppercase small fw-bold d-block">
-                            Подтвердите пароль
+                            Подтвердите пароль <span class="text-danger">*</span>
                         </label>
                         <div class="position-relative">
                             <input asp-for="Input.ConfirmPassword"
@@ -87,8 +139,7 @@
                             <button type="button"
                                     class="btn gp-btn-eye position-absolute top-50 end-0 translate-middle-y me-3"
                                     id="toogleRegConfirmPassword"
-                                    aria-label="Показать пароль"
-                                    onclick="togglePasswordVisibility('Input.ConfirmPassword', 'eyeSlashConfirm', 'eyeConfirm')">
+                                    aria-label="Показать пароль">
                                 <i class="bi bi-eye-slash" id="regConfirmEyeSlash"></i>
                                 <i class="bi bi-eye d-none" id="regConfirmEye"></i>
                             </button>
@@ -100,12 +151,15 @@
                     <!-- Чекбокс согласия -->
                     <div class="form-check mb-4 text-start">
                         <input asp-for="Input.Consent" class="form-check-input form-dark-check" type="checkbox" id="consent" required>
-                        <label class="form-check-label small text-muted" asp-for="Input.Consent" ">
+                        <label class="form-check-label small text-muted" asp-for="Input.Consent">
                             <small class="form-dark-text">Я согласен с </small><a href="/privacy" class="text-primary-light text-decoration-none hover-red">правилами сервиса</a>
                             <small class="form-dark-text">и хочу стать сильнее</small>
                         </label>
                         <span asp-validation-for="Input.Consent" class="text-danger small"></span>
                     </div>
+
+                    <!-- 🔹 Глобальные ошибки валидации -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
 
                     <!-- Кнопка отправки -->
                     <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
@@ -125,3 +179,4 @@
         </div>
     </div>
 </section>
+}

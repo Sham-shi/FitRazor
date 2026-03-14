@@ -23,9 +23,6 @@ namespace FitRazor.Web.TagHelpers
         [HtmlAttributeName("cancel-page")]
         public string CancelPage { get; set; } = "/Entities/Index";
 
-
-        private readonly string[] _validStatuses = { "Запланировано", "Перенесено", "Завершено", "Отменено" };
-
         public EntityCreateTagHelper(FitRazorContext context)
         {
             _context = context;

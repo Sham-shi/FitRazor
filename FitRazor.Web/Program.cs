@@ -24,11 +24,12 @@ builder.Host.UseSerilog();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     // Настройки пароля
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 1;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;            // Требовать цифры
+    options.Password.RequireLowercase = true;        // Требовать строчные
+    options.Password.RequireUppercase = false;       // Не требовать заглавные
+    options.Password.RequiredLength = 1;             // Минимальная длина
+    options.Password.RequireNonAlphanumeric = false; // Не требовать спецсимволы
+    options.Password.RequiredUniqueChars = 0;        // Не требовать уникальные символы
 
     // 🔥 Вход по логину, а не по email
     options.SignIn.RequireConfirmedAccount = false;

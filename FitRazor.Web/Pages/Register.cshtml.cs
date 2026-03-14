@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FitRazor.Data;
-using FitRazor.Data.Models;
-using Microsoft.AspNetCore.Authentication;
+﻿using FitRazor.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitRazor.Web.Pages;
 
@@ -36,7 +35,6 @@ public class RegisterModel : PageModel
 
     public IActionResult OnGet(string? returnUrl = null)
     {
-        // Если пользователь уже авторизован — перенаправляем
         if (User.Identity?.IsAuthenticated == true)
             return LocalRedirect(returnUrl ?? "/");
 
@@ -52,72 +50,166 @@ public class RegisterModel : PageModel
         if (!ModelState.IsValid)
             return Page();
 
-        // 🔹 Проверка согласия с правилами
+        // 🔹 Проверка согласия
         if (!Input.Consent)
         {
             ModelState.AddModelError("Input.Consent", "Необходимо согласиться с правилами сервиса");
             return Page();
         }
 
-        // 🔹 Проверка, что пользователь с таким логином ещё не существует
-        var existingUser = await _userManager.FindByNameAsync(Input.Login);
-        if (existingUser != null)
+        // 🔹 Проверка уникальности логина
+        if (await _userManager.FindByNameAsync(Input.Login) != null)
         {
             ModelState.AddModelError("Input.Login", "Пользователь с таким логином уже существует");
             return Page();
         }
 
-        // 🔹 Создаём Identity-пользователя
-        var user = new ApplicationUser
+        // 🔹 Проверка уникальности телефона (если указан)
+        if (!string.IsNullOrEmpty(Input.Phone))
         {
-            UserName = Input.Login,
-            FullName = Input.Login, // Можно позже добавить поле для полного имени
-            Email = null, // Email не используем
-            EmailConfirmed = true // Подтверждаем сразу (т.к. email не требуется)
-        };
+            var normalizedInput = NormalizePhone(Input.Phone);
+            var existingClientByPhone = await _context.Clients
+                .AnyAsync(c => c.Phone == normalizedInput);
 
-        var result = await _userManager.CreateAsync(user, Input.Password);
+            if (existingClientByPhone)
+            {
+                ModelState.AddModelError("Input.Phone", "Клиент с таким телефоном уже зарегистрирован");
+                return Page();
+            }
+        }
 
-        if (result.Succeeded)
+        // 🔹 Проверка уникальности email (если указан)
+        if (!string.IsNullOrEmpty(Input.Email))
         {
-            _logger.LogInformation("Пользователь {UserName} зарегистрирован", user.UserName);
+            var existingClientByEmail = await _context.Clients
+                .AnyAsync(c => c.Email == Input.Email);
+            if (existingClientByEmail)
+            {
+                ModelState.AddModelError("Input.Email", "Клиент с таким email уже зарегистрирован");
+                return Page();
+            }
+        }
 
-            // 🔹 Назначаем роль "Client" по умолчанию
-            await _userManager.AddToRoleAsync(user, "Client");
+        // 🔹 🔥 Начинаем транзакцию для атомарного создания пользователя и профиля
+        using var transaction = await _context.Database.BeginTransactionAsync();
 
-            // 🔹 Создаём запись в доменной таблице Client (связь с Identity)
-            //var client = new Client
-            //{
-            //    Name = Input.Login, // Или добавьте отдельное поле FullName в форму
-            //    Phone = string.Empty, // Можно добавить поле в форму
-            //    ApplicationUserId = user.Id, // 🔗 Ключевая связь!
-            //    RegistrationDate = DateTime.Now
-            //};
+        try
+        {
+            // 1️⃣ Создаём ApplicationUser
+            var appUser = new ApplicationUser
+            {
+                UserName = Input.Login,
+                FullName = Input.FullName,
+                Email = string.IsNullOrWhiteSpace(Input.Email) ? null : Input.Email,
+                PhoneNumber = Input.Phone,
+                EmailConfirmed = true, // 🔥 Для упрощения (в продакшене — отправлять письмо)
+                LastLoginDate = DateTime.Now
+            };
 
-            //_context.Clients.Add(client);
-            //await _context.SaveChangesAsync();
+            var createUserResult = await _userManager.CreateAsync(appUser, Input.Password);
+            if (!createUserResult.Succeeded)
+            {
+                foreach (var error in createUserResult.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+                return Page();
+            }
 
-            // 🔹 Автоматический вход после регистрации
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            // 2️⃣ Назначаем роль "Client"
+            var addRoleResult = await _userManager.AddToRoleAsync(appUser, "Client");
+            if (!addRoleResult.Succeeded)
+            {
+                // 🔥 Откат: удаляем пользователя, если не удалось добавить роль
+                await _userManager.DeleteAsync(appUser);
+                ModelState.AddModelError(string.Empty, "Не удалось назначить роль пользователю");
+                return Page();
+            }
 
-            _logger.LogInformation("Пользователь {UserName} автоматически вошёл в систему", user.UserName);
+            var normalizedPhone = NormalizePhone(Input.Phone);
 
-            // 🔹 Перенаправление
+            // 3️⃣ Создаём профиль Client с привязкой к ApplicationUser
+            var client = new Client
+            {
+                FullName = Input.FullName,
+                Phone = normalizedPhone,
+                Email = string.IsNullOrWhiteSpace(Input.Email) ? null : Input.Email,
+                BirthDate = Input.BirthDate,
+                RegistrationDate = DateOnly.FromDateTime(DateTime.Now),
+                ApplicationUserId = appUser.Id // 🔗 Ключевая связь!
+            };
+
+            _context.Clients.Add(client);
+            await _context.SaveChangesAsync(); // 🔥 Сохраняем, чтобы получить ClientId
+
+            // 4️⃣ Обновляем ApplicationUser с ссылкой на профиль (для обратной навигации)
+            appUser.ClientId = client.ClientId;
+            var updateResult = await _userManager.UpdateAsync(appUser);
+            if (!updateResult.Succeeded)
+            {
+                // 🔥 Логгируем, но не откатываем — связь не критична для работы
+                _logger.LogWarning("Не удалось обновить ApplicationUser.ClientId для пользователя {UserId}", appUser.Id);
+            }
+
+            // 5️⃣ Фиксируем транзакцию
+            await transaction.CommitAsync();
+
+            _logger.LogInformation("Пользователь {UserName} зарегистрирован с профилем клиента {ClientId}",
+                appUser.UserName, client.ClientId);
+
+            // 6️⃣ Автоматический вход
+            await _signInManager.SignInAsync(appUser, isPersistent: false);
+            _logger.LogInformation("Пользователь {UserName} автоматически вошёл в систему", appUser.UserName);
+
+            // 7️⃣ Перенаправление
             return LocalRedirect(returnUrl ?? "/");
         }
-
-        // 🔹 Ошибки создания пользователя
-        foreach (var error in result.Errors)
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, error.Description);
+            // 🔥 Откат при любой ошибке
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Ошибка при регистрации пользователя {Login}", Input.Login);
+            ModelState.AddModelError(string.Empty, "Произошла ошибка при регистрации. Попробуйте позже.");
+            return Page();
         }
+    }
 
-        return Page();
+    private string NormalizePhone(string phone)
+    {
+        // Оставляем только цифры и + в начале
+        var cleaned = new string(phone.Where(c => char.IsDigit(c) || c == '+').ToArray());
+
+        // Если начинается с 8, заменяем на +7
+        if (cleaned.StartsWith("8"))
+            cleaned = "+7" + cleaned.Substring(1);
+        else if (cleaned.StartsWith("7") && !cleaned.StartsWith("+"))
+            cleaned = "+" + cleaned;
+
+        return cleaned;
     }
 }
 
 public class InputModel
 {
+
+    [Required(ErrorMessage = "Имя обязательно")]
+    [StringLength(100, ErrorMessage = "ФИО должно быть не длиннее 100 символов")]
+    [Display(Name = "ФИО")]
+    public string FullName { get; set; } = null!;
+
+    [Required(ErrorMessage = "Телефон обязателен")]
+    [RegularExpression(
+        @"^(\+7|8)\s?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$|^(\+7|8)\d{10}$",
+        ErrorMessage = "Неверный формат телефона. Пример: +7 (999) 123-45-67 или 89991234567")]
+    [StringLength(20, MinimumLength = 11, ErrorMessage = "Телефон должен состоять минимум из 11 цифр")]
+    [Display(Name = "Телефон")]
+    public string Phone { get; set; } = null!;
+
+    [StringLength(100, ErrorMessage = "Email должен быть не длиннее 100 символов")]
+    [EmailAddress(ErrorMessage = "Неверный формат email")]
+    public string? Email { get; set; }
+
+    [Display(Name = "День рождения")]
+    public DateOnly? BirthDate { get; set; }
+
     [Required(ErrorMessage = "Введите логин")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Логин должен быть от 3 до 50 символов")]
     [RegularExpression(@"^[a-zA-Z0-9._@+\- ]+$", ErrorMessage = "Логин может содержать только латинские буквы, цифры и символы: . _ @ + -")]

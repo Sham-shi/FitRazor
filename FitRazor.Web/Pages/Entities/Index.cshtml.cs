@@ -1,85 +1,160 @@
-using FitRazor.Data.Models;
+п»їusing FitRazor.Data.Models;
 using FitRazor.Web.Services.Admin;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace FitRazor.Web.Pages.Entities
+namespace FitRazor.Web.Pages.Entities;
+
+//[Authorize(Roles = "Trainer,Admin")]
+public class IndexModel : PageModel
 {
-    //[Authorize(Roles = "Trainer,Admin")]
-    public class IndexModel : PageModel
+    private readonly FitRazorContext _context;
+    private readonly ILogger<IndexModel> _logger;
+
+    public IndexModel(FitRazorContext context, ILogger<IndexModel> logger)
     {
-        private readonly FitRazorContext _context;
-        private readonly ILogger<IndexModel> _logger;
+        _context = context;
+        _logger = logger;
+    }
 
-        public IndexModel(FitRazorContext context, ILogger<IndexModel> logger)
+    [BindProperty(SupportsGet = true)]
+    public string EntityName { get; set; } = "Trainers";
+
+    public void OnGet(string entityName)
+    {
+        EntityName = entityName ?? "Trainers";
+        _logger.LogDebug("Р—Р°РїСЂРѕСЃ СЃРїРёСЃРєР° СЃСѓС‰РЅРѕСЃС‚Рё: {EntityName}", EntityName);
+
+        // Р’Р°Р»РёРґР°С†РёСЏ РёРјРµРЅРё СЃСѓС‰РЅРѕСЃС‚Рё
+        if (EntityAdminRegistry.Get(EntityName) == null)
         {
-            _context = context;
-            _logger = logger;
+            _logger.LogWarning("РџРѕР»СѓС‡РµРЅРѕ РЅРµРёР·РІРµСЃС‚РЅРѕРµ РёРјСЏ СЃСѓС‰РЅРѕСЃС‚Рё: {EntityName}, РёСЃРїРѕР»СЊР·СѓРµРј Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ", EntityName);
+            EntityName = "Trainers"; // РёР»Рё РѕС€РёР±РєР°
         }
-
-        [BindProperty(SupportsGet = true)]
-        public string EntityName { get; set; } = "Trainers";
-
-        public void OnGet(string entityName)
+        else
         {
-            EntityName = entityName ?? "Trainers";
-            _logger.LogDebug("Запрос списка сущности: {EntityName}", EntityName);
+            _logger.LogDebug("РЎСѓС‰РЅРѕСЃС‚СЊ {EntityName} РІР°Р»РёРґРЅР°, РїСЂРѕРґРѕР»Р¶Р°РµРј Р·Р°РіСЂСѓР·РєСѓ", EntityName);
+        }
+    }
 
-            // Валидация имени сущности
-            if (EntityAdminRegistry.Get(EntityName) == null)
+    public async Task<IActionResult> OnPostDeleteAsync(string entityName, int id)
+    {
+        _logger.LogInformation("Р—Р°РїСЂРѕСЃ РЅР° СѓРґР°Р»РµРЅРёРµ {EntityName}#{Id}", entityName, id);
+
+        try
+        {
+            // рџ”№ РћСЃРѕР±Р°СЏ РѕР±СЂР°Р±РѕС‚РєР° РґР»СЏ Client/Trainer
+            if (entityName is "Clients" or "Trainers")
             {
-                _logger.LogWarning("Получено неизвестное имя сущности: {EntityName}, используем значение по умолчанию", EntityName);
-                EntityName = "Trainers"; // или ошибка
+                return await DeleteWithUserAsync(entityName, id);
+            }
+
+            var meta = EntityAdminRegistry.Get(entityName);
+            if (meta == null)
+            {
+                _logger.LogWarning("РџРѕРїС‹С‚РєР° СѓРґР°Р»РµРЅРёСЏ РЅРµРёР·РІРµСЃС‚РЅРѕР№ СЃСѓС‰РЅРѕСЃС‚Рё: {EntityName}", entityName);
+                TempData["ErrorMessage"] = "РќРµРёР·РІРµСЃС‚РЅР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ";
+                return RedirectToPage("Index", new { entityName });
+            }
+
+            _logger.LogDebug("Р’С‹РїРѕР»РЅСЏРµРј СѓРґР°Р»РµРЅРёРµ С‡РµСЂРµР· РјРµС‚Р°-СЃРµСЂРІРёСЃ РґР»СЏ {EntityName}#{Id}", entityName, id);
+            var (success, error) = await meta.DeleteAsync(_context, id);
+
+            if (success)
+            {
+                _logger.LogInformation("РЈСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅР° Р·Р°РїРёСЃСЊ {EntityName}#{Id}", entityName, id);
+                TempData["SuccessMessage"] = "Р—Р°РїРёСЃСЊ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅР°!";
             }
             else
             {
-                _logger.LogDebug("Сущность {EntityName} валидна, продолжаем загрузку", EntityName);
+                _logger.LogWarning("РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ {EntityName}#{Id}: {Error}", entityName, id, error ?? "Р—Р°РїРёСЃСЊ РЅРµ РЅР°Р№РґРµРЅР°");
+                TempData["ErrorMessage"] = error ?? "Р—Р°РїРёСЃСЊ РЅРµ РЅР°Р№РґРµРЅР° РёР»Рё СѓР¶Рµ СѓРґР°Р»РµРЅР°";
             }
         }
-
-        public async Task<IActionResult> OnPostDeleteAsync(string entityName, int id)
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("FOREIGN KEY constraint") == true)
         {
-            _logger.LogInformation("Запрос на удаление {EntityName}#{Id}", entityName, id);
+            // РЎРїРµС†РёС„РёС‡РЅР°СЏ РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№
+            _logger.LogWarning(ex, "РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ {EntityName}#{Id}: Р·Р°РїРёСЃСЊ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РґСЂСѓРіРёС… С‚Р°Р±Р»РёС†Р°С… (РЅР°СЂСѓС€РµРЅРёРµ РІРЅРµС€РЅРµРіРѕ РєР»СЋС‡Р°)", entityName, id);
+            TempData["ErrorMessage"] = "РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ: Р·Р°РїРёСЃСЊ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РґСЂСѓРіРёС… РґР°РЅРЅС‹С…";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё СѓРґР°Р»РµРЅРёРё {EntityName}#{Id}", entityName, id);
+            TempData["ErrorMessage"] = $"РћС€РёР±РєР° РїСЂРё СѓРґР°Р»РµРЅРёРё: {ex.Message}";
+        }
 
-            try
+        return RedirectToPage("Index", new { entityName });
+    }
+
+    // рџ”№ РћС‚РґРµР»СЊРЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ СЃСѓС‰РЅРѕСЃС‚РµР№ СЃ ApplicationUser
+    private async Task<IActionResult> DeleteWithUserAsync(string entityName, int id)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+        try
+        {
+            // рџ”№ РЈРґР°Р»СЏРµРј РїСЂРѕС„РёР»СЊ Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР°
+            if (entityName == "Clients")
             {
-                var meta = EntityAdminRegistry.Get(entityName);
-                if (meta == null)
+                var client = await _context.Clients.FindAsync(id);
+                if (client == null) return NotFound();
+
+                // 1. РЈРґР°Р»СЏРµРј ApplicationUser
+                if (!string.IsNullOrEmpty(client.ApplicationUserId))
                 {
-                    _logger.LogWarning("Попытка удаления неизвестной сущности: {EntityName}", entityName);
-                    TempData["ErrorMessage"] = "Неизвестная сущность";
-                    return RedirectToPage("Index", new { entityName });
+                    var user = await userManager.FindByIdAsync(client.ApplicationUserId);
+                    if (user != null)
+                    {
+                        var result = await userManager.DeleteAsync(user);
+                        if (!result.Succeeded)
+                            return BadRequest(string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
                 }
 
-                _logger.LogDebug("Выполняем удаление через мета-сервис для {EntityName}#{Id}", entityName, id);
-                var (success, error) = await meta.DeleteAsync(_context, id);
+                // 2. РЈРґР°Р»СЏРµРј Client (EF СѓРґР°Р»РёС‚ СЃРІСЏР·Р°РЅРЅС‹Рµ Bookings Р±Р»Р°РіРѕРґР°СЂСЏ РєР°СЃРєР°РґСѓ)
+                _context.Clients.Remove(client);
+            }
+            else if (entityName == "Trainers")
+            {
+                var trainer = await _context.Trainers.FindAsync(id);
+                if (trainer == null) return NotFound();
 
-                if (success)
+                if (!string.IsNullOrEmpty(trainer.ApplicationUserId))
                 {
-                    _logger.LogInformation("Успешно удалена запись {EntityName}#{Id}", entityName, id);
-                    TempData["SuccessMessage"] = "Запись успешно удалена!";
+                    var user = await userManager.FindByIdAsync(trainer.ApplicationUserId);
+                    if (user != null)
+                    {
+                        var result = await userManager.DeleteAsync(user);
+                        if (!result.Succeeded)
+                            return BadRequest(string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
                 }
-                else
-                {
-                    _logger.LogWarning("Не удалось удалить {EntityName}#{Id}: {Error}", entityName, id, error ?? "Запись не найдена");
-                    TempData["ErrorMessage"] = error ?? "Запись не найдена или уже удалена";
-                }
-            }
-            catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("FOREIGN KEY constraint") == true)
-            {
-                // Специфичная обработка ошибок внешних ключей
-                _logger.LogWarning(ex, "Не удалось удалить {EntityName}#{Id}: запись используется в других таблицах (нарушение внешнего ключа)", entityName, id);
-                TempData["ErrorMessage"] = "Невозможно удалить: запись используется в других данных";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Критическая ошибка при удалении {EntityName}#{Id}", entityName, id);
-                TempData["ErrorMessage"] = $"Ошибка при удалении: {ex.Message}";
+
+                _context.Trainers.Remove(trainer);
             }
 
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            _logger.LogInformation("РЈСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅР° Р·Р°РїРёСЃСЊ Рё Р°РєРєР°СѓРЅС‚ {EntityName}#{Id}", entityName, id);
+            TempData["SuccessMessage"] = "Р—Р°РїРёСЃСЊ Рё Р°РєРєР°СѓРЅС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅС‹!";
             return RedirectToPage("Index", new { entityName });
+        }
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("FOREIGN KEY") == true)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogWarning(ex, "РќРµ СѓРґР°Р»РѕСЃСЊ СѓРґР°Р»РёС‚СЊ {EntityName}#{Id}: Р·Р°РїРёСЃСЊ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РґСЂСѓРіРёС… С‚Р°Р±Р»РёС†Р°С… (РЅР°СЂСѓС€РµРЅРёРµ РІРЅРµС€РЅРµРіРѕ РєР»СЋС‡Р°)", entityName, id);
+            TempData["ErrorMessage"] = "РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ: Р·Р°РїРёСЃСЊ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ РґСЂСѓРіРёС… РґР°РЅРЅС‹С…";
+            return RedirectToPage("Index", new { entityName });
+        }
+        catch
+        {
+            _logger.LogError("РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё СѓРґР°Р»РµРЅРёРё {EntityName}#{Id}", entityName, id);
+            await transaction.RollbackAsync();
+            throw;
         }
     }
 }
