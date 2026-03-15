@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // ==== Скрипт для переключения видимости пароля ====
     const togglePassword = document.getElementById('togglePassword');
-    const inputPassword = document.getElementById('password');
+    const inputPassword = document.getElementById('loginPassword');
     const eye = document.getElementById('eye');
     const eyeSlash = document.getElementById('eyeSlash');
 

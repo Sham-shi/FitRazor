@@ -1,5 +1,5 @@
 ﻿@page
-@model FitRazor.Web.Pages.Account.LoginModel
+@model LoginModel
 @{
     ViewData["Title"] = "Вход";
 }
@@ -22,7 +22,7 @@
                 </div>
 
                 <!-- 🔹 Глобальные ошибки -->
-                <div asp-validation-summary="All" class="alert alert-danger mb-4 small" role="alert"></div>
+                <div asp-validation-summary="All" class="text-danger mb-4 small" role="alert"></div>
 
                 <!-- Форма входа -->
                 <form class="form-dark" method="post" asp-page="Login">

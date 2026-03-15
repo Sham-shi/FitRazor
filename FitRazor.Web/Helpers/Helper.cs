@@ -30,7 +30,7 @@ namespace FitRazor.Web.Helpers
             }
             catch
             {
-                return null; // или throw, если хочешь строгую валидацию
+                return null;
             }
         }
 

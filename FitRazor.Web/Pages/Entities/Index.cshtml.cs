@@ -43,20 +43,32 @@ public class IndexModel : PageModel
     {
         _logger.LogInformation("Запрос на удаление {EntityName}#{Id}", entityName, id);
 
+        var meta = EntityAdminRegistry.Get(entityName);
+        if (meta == null)
+        {
+            _logger.LogWarning("Попытка удаления неизвестной сущности: {EntityName}", entityName);
+            TempData["ErrorMessage"] = "Неизвестная сущность";
+            return RedirectToPage("Index", new { entityName });
+        }
+
         try
         {
-            // 🔹 Особая обработка для Client/Trainer
-            if (entityName is "Clients" or "Trainers")
+            // 🔹 Выполняем бизнес-проверки из метаданных
+            if (meta.PreDeleteChecksAsync != null)
             {
-                return await DeleteWithUserAsync(entityName, id);
+                var (canDelete, errorMsg) = await meta.PreDeleteChecksAsync(_context, id);
+                if (!canDelete)
+                {
+                    _logger.LogWarning("Не удалось удалить {EntityName}#{Id}: {Error}", entityName, id, errorMsg);
+                    TempData["ErrorMessage"] = errorMsg ?? "Запись не найдена или уже удалена";
+                    return RedirectToPage("Index", new { entityName });
+                }
             }
 
-            var meta = EntityAdminRegistry.Get(entityName);
-            if (meta == null)
+            // 🔹 Особая обработка для сущностей с ApplicationUser
+            if (meta.HasUserProfile && meta.GetApplicationUserId != null)
             {
-                _logger.LogWarning("Попытка удаления неизвестной сущности: {EntityName}", entityName);
-                TempData["ErrorMessage"] = "Неизвестная сущность";
-                return RedirectToPage("Index", new { entityName });
+                return await DeleteWithUserProfileAsync(meta, id, entityName);
             }
 
             _logger.LogDebug("Выполняем удаление через мета-сервис для {EntityName}#{Id}", entityName, id);
@@ -88,57 +100,50 @@ public class IndexModel : PageModel
         return RedirectToPage("Index", new { entityName });
     }
 
-    // 🔹 Отдельный метод для удаления сущностей с ApplicationUser
-    private async Task<IActionResult> DeleteWithUserAsync(string entityName, int id)
+    /// <summary>
+    /// Удаление сущности + связанного ApplicationUser в транзакции
+    /// </summary>
+    private async Task<IActionResult> DeleteWithUserProfileAsync(EntityAdminMetadata meta, int id, string entityName)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
 
         try
         {
-            // 🔹 Удаляем профиль и пользователя в зависимости от типа
-            if (entityName == "Clients")
+            // 1. Получаем сущность для извлечения ApplicationUserId
+            var entity = await meta.GetByIdAsync(_context, id);
+            if (entity == null)
             {
-                var client = await _context.Clients.FindAsync(id);
-                if (client == null) return NotFound();
-
-                // 1. Удаляем ApplicationUser
-                if (!string.IsNullOrEmpty(client.ApplicationUserId))
-                {
-                    var user = await userManager.FindByIdAsync(client.ApplicationUserId);
-                    if (user != null)
-                    {
-                        var result = await userManager.DeleteAsync(user);
-                        if (!result.Succeeded)
-                            return BadRequest(string.Join("; ", result.Errors.Select(e => e.Description)));
-                    }
-                }
-
-                // 2. Удаляем Client (EF удалит связанные Bookings благодаря каскаду)
-                _context.Clients.Remove(client);
-            }
-            else if (entityName == "Trainers")
-            {
-                var trainer = await _context.Trainers.FindAsync(id);
-                if (trainer == null) return NotFound();
-
-                if (!string.IsNullOrEmpty(trainer.ApplicationUserId))
-                {
-                    var user = await userManager.FindByIdAsync(trainer.ApplicationUserId);
-                    if (user != null)
-                    {
-                        var result = await userManager.DeleteAsync(user);
-                        if (!result.Succeeded)
-                            return BadRequest(string.Join("; ", result.Errors.Select(e => e.Description)));
-                    }
-                }
-
-                _context.Trainers.Remove(trainer);
+                await transaction.RollbackAsync();
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
+            // 2. Извлекаем и удаляем ApplicationUser
+            var appUserId = meta.GetApplicationUserId!(entity);
+            if (!string.IsNullOrEmpty(appUserId))
+            {
+                var user = await userManager.FindByIdAsync(appUserId);
+                if (user != null)
+                {
+                    var result = await userManager.DeleteAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        await transaction.RollbackAsync();
+                        return BadRequest(string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
+                }
+            }
+
+            // 3. Удаляем саму сущность (каскадное удаление связанных записей через EF)
+            var (success, error) = await meta.DeleteAsync(_context, id);
+            if (!success)
+            {
+                await transaction.RollbackAsync();
+                TempData["ErrorMessage"] = error ?? "Не удалось удалить запись";
+                return RedirectToPage("Index", new { entityName });
+            }
+
             await transaction.CommitAsync();
-
             _logger.LogInformation("Успешно удалена запись и аккаунт {EntityName}#{Id}", entityName, id);
             TempData["SuccessMessage"] = "Запись и аккаунт пользователя успешно удалены!";
             return RedirectToPage("Index", new { entityName });
@@ -146,13 +151,12 @@ public class IndexModel : PageModel
         catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("FOREIGN KEY") == true)
         {
             await transaction.RollbackAsync();
-            _logger.LogWarning(ex, "Не удалось удалить {EntityName}#{Id}: запись используется в других таблицах (нарушение внешнего ключа)", entityName, id);
+            _logger.LogWarning(ex, "Нарушение внешнего ключа при удалении {EntityName}#{Id}", entityName, id);
             TempData["ErrorMessage"] = "Невозможно удалить: запись используется в других данных";
             return RedirectToPage("Index", new { entityName });
         }
         catch
         {
-            _logger.LogError("Критическая ошибка при удалении {EntityName}#{Id}", entityName, id);
             await transaction.RollbackAsync();
             throw;
         }
