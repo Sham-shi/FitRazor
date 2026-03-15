@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text;
 
 namespace FitRazor.Web.TagHelpers
 {
@@ -40,26 +41,23 @@ namespace FitRazor.Web.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            // Получаем данные
-            var data = await GetDataAsync();
+            var meta = EntityAdminRegistry.Get(EntityName);
+            if (meta == null)
+            {
+                output.TagName = "div";
+                output.Attributes.SetAttribute("class", "alert alert-warning");
+                output.Content.SetHtmlContent($"⚠️ Метаданные для сущности '{EntityName}' не найдены");
+                return;
+            }
 
-            // Генерируем HTML
+            var data = await meta.QueryFactory(_context).ToListAsync();
+
             output.TagName = "div";
             output.Attributes.SetAttribute("class", "entity-list-container");
-
-            var html = GenerateHtml(data);
-            output.Content.SetHtmlContent(html);
+            output.Content.SetHtmlContent(GenerateHtml(data, meta));
         }
 
-        private async Task<IEnumerable<object>> GetDataAsync()
-        {
-            var meta = EntityAdminRegistry.Get(EntityName);
-            if (meta == null) return Enumerable.Empty<object>();
-            var query = meta.QueryFactory(_context);
-            return await query.ToListAsync();
-        }
-
-        private string GenerateHtml(IEnumerable<object> data)
+        private string GenerateHtml(IEnumerable<object> data, EntityAdminMetadata meta)
         {
             var items = data.ToList();
             if (!items.Any())
@@ -67,10 +65,11 @@ namespace FitRazor.Web.TagHelpers
                 return "<div class='alert alert-info'>Записей не найдено</div>";
             }
 
-            var firstItem = items.First();
-            var properties = Helper.GetFormProperties(firstItem.GetType());
+            // Получаем свойства для отображения
+            var properties = meta.GetDisplayPropertiesFunc?.Invoke(meta.EntityType)
+                           ?? Helper.GetFormProperties(meta.EntityType);
 
-            var html = new System.Text.StringBuilder();
+            var html = new StringBuilder();
 
             // Заголовок
             if (!string.IsNullOrEmpty(TableTitle))
@@ -113,31 +112,15 @@ namespace FitRazor.Web.TagHelpers
                 {
                     var value = prop.GetValue(item);
                     html.Append("<td>");
-
-                    // 🔹 Для фото — передаём даже null, чтобы FormatValue показал заглушку
-                    if (prop.Name.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
-                        prop.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
-                        prop.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
-                    {
-                        html.Append(FormatValue(value, prop.PropertyType, prop.Name, item));
-                    }
-                    else if (value != null)
-                    {
-                        // Простое форматирование по типу
-                        html.Append(FormatValue(value, prop.PropertyType, prop.Name, item));
-                    }
-                    else
-                    {
-                        html.Append("<span class='text-muted'>—</span>");
-                    }
-
+                    html.Append(FormatValue(value, prop.PropertyType, prop.Name, item, meta));
                     html.Append("</td>");
                 }
 
                 if (ShowActions)
                 {
-                    var id = GetIdValue(item);
-                    var displayName = GetDisplayNameForModal(item, EntityName);
+                    var id = GetIdValue(item, meta);
+                    var displayName = meta.GetDisplayNameFunc?.Invoke(item)
+                                   ?? $"{meta.PluralDisplayName} #{id}";
 
                     html.Append("<td class='text-center'>");
                     html.Append($"<a href='{DetailsPage}/{EntityName}/{id}' data-bs-toggle='tooltip' data-bs-title='Детали' class='btn btn-sm btn-info me-2'>📄</a>");
@@ -164,49 +147,27 @@ namespace FitRazor.Web.TagHelpers
             return html.ToString();
         }
 
-        // Метод для получения имени (без запроса к БД!)
-        private string GetDisplayNameForModal(object item, string entityName)
+        private string FormatValue(object? value, Type type, string propertyName, object? entity, EntityAdminMetadata meta)
         {
-            // Пытаемся получить имя через рефлексию
-            var nameProp = item.GetType().GetProperty("FullName")
-                        ?? item.GetType().GetProperty("Name")
-                        ?? item.GetType().GetProperty("ServiceName");
-            return nameProp?.GetValue(item)?.ToString() ?? $"{entityName} #{GetIdValue(item)}";
-        }
-
-        private string FormatValue(object value, Type type, string propertyName = "", object? entity = null)
-        {
-            if (propertyName == nameof(Trainer.PhotoUrl) ||
-                propertyName.EndsWith("PhotoUrl") ||
-                propertyName.EndsWith("ImageUrl") ||
-                propertyName.EndsWith("AvatarUrl"))
+            // 🔹 1. Проверяем кастомный форматтер из метаданных
+            if (meta.PropertyFormatters?.TryGetValue(propertyName, out var formatter) == true && formatter != null)
             {
-                if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
-                {
-                    return "<img src='/Images/Trainers/no-photo.jpg' alt='Нет фото' style='min-width:100px;min-height:100px;object-fit:cover;' class='img-thumbnail rounded' />";
-                }
-
-                var url = value.ToString()!;
-                // Если путь относительный и не начинается с http/https — делаем его корректным
-                if (!url.StartsWith("http") && !url.StartsWith("/"))
-                {
-                    url = "/" + url.TrimStart('~', '/');
-                }
-
-                return $"<img src='{System.Web.HttpUtility.HtmlAttributeEncode(url)}' " +
-                       $"alt='Фото' " +
-                       $"style='min-width:100px;min-height:100px;object-fit:cover;' " +
-                       $"class='img-thumbnail rounded' " +
-                       $"onerror=\"this.onerror=null; this.src='/Images/Trainers/no-photo.jpg';this.alt='Фото отсутствует'\" />";
+                return value != null ? formatter(value, type) : "<span class='text-muted'>—</span>";
             }
 
-            if (propertyName.EndsWith("Id") && entity != null && value != null)
+            // 🔹 2. Обработка изображений
+            if (meta.ImageProperties.Contains(propertyName) ||
+                propertyName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                propertyName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                propertyName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
             {
-                // Имя навигационного свойства: TrainerId → Trainer, ClientId → Client
-                var navPropName = propertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
-                    ? propertyName.Substring(0, propertyName.Length - 2)
-                    : propertyName;
+                return FormatImage(value?.ToString(), meta.DefaultImagePath ?? "/Images/no-photo.jpg");
+            }
 
+            // 🔹 3. Обработка навигационных свойств (Foreign Keys)
+            if (propertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase) && entity != null && value != null)
+            {
+                var navPropName = propertyName[..^2]; // убираем "Id"
                 var navProp = entity.GetType().GetProperty(navPropName);
 
                 if (navProp != null)
@@ -214,51 +175,57 @@ namespace FitRazor.Web.TagHelpers
                     var navValue = navProp.GetValue(entity);
                     if (navValue != null)
                     {
-                        // Ищем стандартные свойства для отображения имени
-                        var displayNameProp = navValue.GetType().GetProperty("FullName")
-                                            ?? navValue.GetType().GetProperty("Name")
-                                            ?? navValue.GetType().GetProperty("ServiceName")
-                                            ?? navValue.GetType().GetProperty("Title")
-                                            ?? navValue.GetType().GetProperty("Description");
+                        // Пытаемся получить имя через стандартные свойства
+                        var displayName = navValue.GetType()
+                            .GetProperty("FullName")?.GetValue(navValue)?.ToString()
+                            ?? navValue.GetType().GetProperty("Name")?.GetValue(navValue)?.ToString()
+                            ?? navValue.GetType().GetProperty("ServiceName")?.GetValue(navValue)?.ToString();
 
-                        if (displayNameProp != null)
+                        if (!string.IsNullOrWhiteSpace(displayName))
                         {
-                            var displayName = displayNameProp.GetValue(navValue)?.ToString();
-                            if (!string.IsNullOrWhiteSpace(displayName))
-                            {
-                                return System.Net.WebUtility.HtmlEncode(displayName);
-                            }
+                            return System.Net.WebUtility.HtmlEncode(displayName);
                         }
                     }
                 }
-                // Если навигация не загружена — показываем ID в красивом формате
+                // Если навигация не загружена — показываем ID
                 return $"<span class='text-muted' title='Навигационное свойство не загружено'>#{value}</span>";
             }
 
-            if (type == typeof(decimal))
+            // 🔹 4. Стандартное форматирование по типу
+            return value switch
             {
-                return $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>";
-            }
-            if (type == typeof(DateTime))
-            {
-                return $"<span>{((DateTime)value):dd.MM.yyyy HH:mm}</span>";
-            }
-            if (type == typeof(DateOnly))
-            {
-                return $"<span>{((DateOnly)value):dd.MM.yyyy}</span>";
-            }
-            if (type == typeof(string))
-            {
-                var str = value.ToString();
-                return string.IsNullOrEmpty(str) ? "<span class='text-muted'>—</span>" : str;
-            }
-            return value.ToString() ?? "—";
+                null => "<span class='text-muted'>—</span>",
+                decimal d => $"<span class='text-success fw-bold'>{d:N2} ₽</span>",
+                DateTime dt => $"<span>{dt:dd.MM.yyyy HH:mm}</span>",
+                DateOnly date => $"<span>{date:dd.MM.yyyy}</span>",
+                string str => string.IsNullOrEmpty(str) ? "<span class='text-muted'>—</span>" : str,
+                _ => System.Net.WebUtility.HtmlEncode(value.ToString())
+            };
         }
 
-        private object GetIdValue(object item)
+        private string FormatImage(string? url, string defaultPath)
         {
-            var idProp = item.GetType().GetProperties()
-                .FirstOrDefault(p => p.Name.EndsWith("Id") || p.Name == "Id");
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return $"<img src='{defaultPath}' alt='Нет фото' style='min-width:100px;min-height:100px;object-fit:cover;' class='img-thumbnail rounded' />";
+            }
+
+            var imageUrl = url;
+            if (!imageUrl.StartsWith("http") && !imageUrl.StartsWith("/"))
+            {
+                imageUrl = "/" + imageUrl.TrimStart('~', '/');
+            }
+
+            return $"<img src='{System.Web.HttpUtility.HtmlAttributeEncode(imageUrl)}' " +
+                   $"alt='Фото' " +
+                   $"style='min-width:100px;min-height:100px;object-fit:cover;' " +
+                   $"class='img-thumbnail rounded' " +
+                   $"onerror=\"this.onerror=null; this.src='{defaultPath}';this.alt='Фото отсутствует'\" />";
+        }
+
+        private object GetIdValue(object item, EntityAdminMetadata meta)
+        {
+            var idProp = item.GetType().GetProperty(meta.KeyPropertyName);
             return idProp?.GetValue(item) ?? "0";
         }
     }

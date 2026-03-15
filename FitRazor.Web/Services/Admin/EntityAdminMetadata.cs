@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using FitRazor.Data;
+using FitRazor.Data.Models;
+using FitRazor.Web.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using FitRazor.Data;
-using FitRazor.Data.Models;
 
 namespace FitRazor.Web.Services.Admin;
 
@@ -50,7 +52,36 @@ public class EntityAdminMetadata
     /// </summary>
     public Func<FitRazorContext, int, Task<(bool CanDelete, string? ErrorMessage)>>? PreDeleteChecksAsync { get; init; }
 
+    /// <summary>
+    /// Функция для получения свойств, отображаемых в таблице списка
+    /// (по умолчанию используется рефлексия с фильтрацией)
+    /// </summary>
+    public Func<Type, IEnumerable<PropertyInfo>>? GetDisplayPropertiesFunc { get; init; }
 
+    /// <summary>
+    /// Синхронная функция для получения отображаемого имени сущности 
+    /// (для использования в модальных окнах, подсказках и т.д.)
+    /// </summary>
+    public Func<object, string>? GetDisplayNameFunc { get; init; }
+
+    /// <summary>
+    /// Настройки форматирования для конкретных свойств
+    /// Ключ: имя свойства, Значение: функция форматирования
+    /// </summary>
+    public Dictionary<string, Func<object, Type, string>>? PropertyFormatters { get; init; } = new();
+
+    /// <summary>
+    /// Свойства, которые должны отображаться как изображения
+    /// </summary>
+    public HashSet<string> ImageProperties { get; init; } = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "PhotoUrl", "ImageUrl", "AvatarUrl"
+    };
+
+    /// <summary>
+    /// Путь к изображению-заглушке по умолчанию
+    /// </summary>
+    public string? DefaultImagePath { get; init; }
 }
 
 public static class EntityAdminRegistry
@@ -70,6 +101,26 @@ public static class EntityAdminRegistry
             PluralDisplayName = "Тренеры",
             EntityType = typeof(Trainer),
             KeyPropertyName = "TrainerId",
+
+            // Синхронное получение имени для отображения
+            GetDisplayNameFunc = entity =>
+                (entity as Trainer)?.FullName ?? $"Тренер #{(entity as Trainer)?.TrainerId}",
+
+            // Настройка отображаемых свойств (опционально, если нужно скрыть/переупорядочить)
+            GetDisplayPropertiesFunc = type => Helper.GetFormProperties(type),
+
+            // Форматтеры для специфичных свойств
+            PropertyFormatters = new()
+            {
+                ["Salary"] = (value, type) =>
+                    $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>",
+                ["WorkExperience"] = (value, type) =>
+                    $"<span class='text-primary'>{value}</span>",
+            },
+
+            // Настройка изображений
+            ImageProperties = { "PhotoUrl" },
+            DefaultImagePath = "/Images/Trainers/no-photo.jpg",
 
             HasUserProfile = true,
 
@@ -119,6 +170,20 @@ public static class EntityAdminRegistry
             EntityType = typeof(Client),
             KeyPropertyName = "ClientId",
 
+            GetDisplayNameFunc = entity =>
+                (entity as Client)?.FullName ?? $"Клиент #{(entity as Client)?.ClientId}",
+
+            GetDisplayPropertiesFunc = type => Helper.GetFormProperties(type),
+
+            PropertyFormatters = new()
+            {
+                ["BirthDate"] = (value, type) =>
+                    value is DateOnly d ? $"<span>{d:dd.MM.yyyy}</span>" : "—",
+            },
+
+            ImageProperties = { "PhotoUrl" }, // если у клиентов тоже есть фото
+            DefaultImagePath = "/Images/Clients/no-photo.jpg",
+
             HasUserProfile = true,
 
             GetApplicationUserId = entity =>
@@ -164,10 +229,19 @@ public static class EntityAdminRegistry
             EntityType = typeof(Service),
             KeyPropertyName = "ServiceId",
 
+            GetDisplayNameFunc = entity =>
+                (entity as Service)?.ServiceName ?? $"Услуга #{(entity as Service)?.ServiceId}",
+
+            PropertyFormatters = new()
+            {
+                ["BasePrice"] = (value, type) =>
+                    $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>",
+                ["DurationMinutes"] = (value, type) =>
+                    $"<span>{value} мин</span>",
+            },
+
             QueryFactory = ctx => ctx.Services.AsQueryable<object>(),
-
             GetByIdAsync = async (ctx, id) => await ctx.Services.FindAsync(id),
-
             ExistsAsync = (ctx, id) => ctx.Services.AnyAsync(s => s.ServiceId == id),
 
             DeleteAsync = async (ctx, id) =>
@@ -202,10 +276,47 @@ public static class EntityAdminRegistry
             EntityType = typeof(Booking),
             KeyPropertyName = "BookingId",
 
+            GetDisplayNameFunc = entity =>
+            {
+                if (entity is Booking b)
+                {
+                    var client = b.Client?.FullName ?? "Клиент";
+                    var service = b.TrainerService?.Service?.ServiceName ?? "Услуга";
+                    return $"{client} — {service} ({b.BookingDateTime:dd.MM.yyyy HH:mm})";
+                }
+                return $"Запись #{(entity as Booking)?.BookingId}";
+            },
+
+            PropertyFormatters = new()
+            {
+                ["BookingDateTime"] = (value, type) =>
+                    value is DateTime dt ? $"<span>{dt:dd.MM.yyyy HH:mm}</span>" : "—",
+                ["UnitPrice"] = (value, type) =>
+                    $"<span class='text-success fw-bold'>{((decimal)value):N2} ₽</span>",
+                ["TotalPrice"] = (value, type) =>
+                    value is decimal total ? $"<span class='fw-bold'>{total:N2} ₽</span>" : "—",
+                ["Status"] = (value, type) =>
+                {
+                    var status = value?.ToString();
+                    var badgeClass = status switch
+                    {
+                        "Запланировано" => "bg-primary",
+                        "Перенесено" => "bg-warning text-dark",
+                        "Завершено" => "bg-success",
+                        "Отменено" => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                    return $"<span class='badge {badgeClass}'>{status}</span>";
+                },
+            },
+
+            // Для Bookings важно загружать навигационные свойства
             QueryFactory = ctx => ctx.Bookings
                 .Include(b => b.Client)
                 .Include(b => b.TrainerService)
-                .ThenInclude(ts => ts!.Trainer)
+                    .ThenInclude(ts => ts!.Service)
+                .Include(b => b.TrainerService)
+                    .ThenInclude(ts => ts!.Trainer)
                 .AsQueryable<object>(),
 
             GetByIdAsync = async (ctx, id) =>
