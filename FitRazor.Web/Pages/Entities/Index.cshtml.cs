@@ -1,5 +1,6 @@
 ﻿using FitRazor.Data.Models;
 using FitRazor.Web.Services.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities;
 
-//[Authorize(Roles = "Trainer,Admin")]
+[Authorize(Roles = "Admin")]
 public class IndexModel : PageModel
 {
     private readonly FitRazorContext _context;

@@ -6,173 +6,141 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace FitRazor.Web.Pages.Entities
+namespace FitRazor.Web.Pages.Entities;
+
+[Authorize(Roles = "Admin")]
+[BindProperties]
+public class EditModel : PageModel
 {
-    //[Authorize(Roles = "Trainer,Admin")]
-    [BindProperties]
-    public class EditModel : PageModel
+    private readonly FitRazorContext _context;
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<EditModel> _logger;
+
+    public EditModel(FitRazorContext context, IWebHostEnvironment env, ILogger<EditModel> logger)
     {
-        private readonly FitRazorContext _context;
-        private readonly IWebHostEnvironment _env;
-        private readonly ILogger<EditModel> _logger;
+        _context = context;
+        _env = env;
+        _logger = logger;
+    }
 
-        public EditModel(FitRazorContext context, IWebHostEnvironment env, ILogger<EditModel> logger)
+    [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
+    [BindProperty(SupportsGet = true)] public int Id { get; set; }
+    public bool EntityNotFound { get; set; }
+
+    // 🔹 Универсальные свойства для фото (работают для любой сущности)
+    [BindProperty] public IFormFile? UploadedFile { get; set; }
+    [BindProperty] public string? OldFileUrl { get; set; }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        var meta = EntityAdminRegistry.Get(EntityName);
+        if (meta == null || !await meta.ExistsAsync(_context, Id))
         {
-            _context = context;
-            _env = env;
-            _logger = logger;
-        }
-
-        [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
-        [BindProperty(SupportsGet = true)] public int Id { get; set; }
-        public bool EntityNotFound { get; set; }
-
-        // Для фото (Trainer.PhotoUrl)
-        [BindProperty] public IFormFile? PhotoUrl { get; set; }          // имя должно совпадать с input name
-        [BindProperty] public string? OldPhotoUrl { get; set; }          // старый путь
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var meta = EntityAdminRegistry.Get(EntityName);
-            if (meta == null)
-            {
-                _logger.LogWarning("Попытка редактирования неизвестной сущности: {EntityName}", EntityName);
-                EntityNotFound = true;
-                return Page();
-            }
-
-            var exists = await meta.ExistsAsync(_context, Id);
-            if (!exists)
-            {
-                _logger.LogWarning("Запись {EntityName}#{Id} не найдена в БД", EntityName, Id);
-                EntityNotFound = true;
-                return Page();
-            }
-
-            _logger.LogDebug("Запись {EntityName}#{Id} найдена, отображаем форму", EntityName, Id);
+            EntityNotFound = true;
             return Page();
         }
+        return Page();
+    }
 
-        public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()
+    {
+        _logger.LogInformation("POST: обновление {EntityName}#{Id}", EntityName, Id);
+
+        var meta = EntityAdminRegistry.Get(EntityName);
+        if (meta == null)
         {
-            _logger.LogInformation("Запрос на редактирование {EntityName}#{Id}", EntityName, Id);
+            _logger.LogError("Сущность {EntityName} не найдена", EntityName);
+            TempData["ErrorMessage"] = "Неизвестная сущность";
+            return RedirectToPage("Index", new { entityName = EntityName });
+        }
 
-            var meta = EntityAdminRegistry.Get(EntityName);
-            if (meta == null)
+        var entity = await meta.GetByIdAsync(_context, Id);
+        if (entity == null)
+        {
+            _logger.LogError("Запись {EntityName}#{Id} не найдена", EntityName, Id);
+            TempData["ErrorMessage"] = "Запись не найдена";
+            return RedirectToPage("Index", new { entityName = EntityName });
+        }
+
+        try
+        {
+            // 1. Применяем данные формы
+            Helper.ApplyFormValuesToEntity(entity, Request.Form);
+
+            // 2. Обрабатываем загрузку файла (если есть конфиг в метаданных)
+            await HandleFileUploadAsync(entity, meta);
+
+            // 3. Выполняем хук BeforeSave (пересчёт TotalPrice и т.п.)
+            if (meta.BeforeSaveAsync != null)
             {
-                _logger.LogWarning("Попытка обновления неизвестной сущности: {EntityName}", EntityName);
-                TempData["ErrorMessage"] = "Неизвестная сущность";
-                return RedirectToPage("Index", new { entityName = EntityName });
+                await meta.BeforeSaveAsync(_context, entity);
             }
 
-            var exists = await meta.ExistsAsync(_context, Id);
-            if (!exists)
+            // 4. Сохраняем
+            await _context.SaveChangesAsync();
+
+            // 5. Хук AfterSave (опционально)
+            if (meta.AfterSaveAsync != null)
             {
-                _logger.LogWarning("Попытка обновить несуществующую запись {EntityName}#{Id}", EntityName, Id);
-                TempData["ErrorMessage"] = "Запись не найдена";
-                return RedirectToPage("Index", new { entityName = EntityName });
+                await meta.AfterSaveAsync(_context, entity);
             }
 
-            try
-            {
-                // Загружаем существующую сущность
-                var entity = await meta.GetByIdAsync(_context, Id);
-                if (entity == null)
-                {
-                    _logger.LogError("Не удалось загрузить сущность {EntityName}#{Id} из БД", EntityName, Id);
-                    TempData["ErrorMessage"] = "Запись не найдена";
-                    return RedirectToPage("Index", new { entityName = EntityName });
-                }
+            _logger.LogInformation("Запись {EntityName}#{Id} успешно обновлена!", EntityName, Id);
+            TempData["SuccessMessage"] = "Запись успешно обновлена!";
+            return RedirectToPage("Index", new { entityName = EntityName });
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Ошибка валидации данных для {EntityName}#{Id}", EntityName, Id);
+            TempData["ErrorMessage"] = ex.Message;
+            return Page();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Критическая ошибка при обновлении {EntityName}#{Id}", EntityName, Id);
+            TempData["ErrorMessage"] = $"Ошибка: {ex.Message}";
+            return Page();
+        }
+    }
 
-                // Применяем значения из формы
-                _logger.LogDebug("Применяем данные формы к сущности {EntityName}#{Id}", EntityName, Id);
-                Helper.ApplyFormValuesToEntity(entity, Request.Form);
+    /// <summary>
+    /// Универсальная обработка загрузки файлов на основе конфигурации в метаданных
+    /// </summary>
+    private async Task HandleFileUploadAsync(object entity, EntityAdminMetadata meta)
+    {
+        if (UploadedFile == null || UploadedFile.Length == 0)
+            return;
 
-                // Специальная логика для Booking (TotalPrice)
-                if (EntityName == "Bookings" && entity is Booking booking)
-                {
-                    var oldPrice = booking.TotalPrice;
-                    booking.TotalPrice = booking.UnitPrice * booking.SessionsCount;
-                    _logger.LogDebug("Пересчитана стоимость бронирования {BookingId}: {OldPrice} → {NewPrice}",
-                        Id, oldPrice, booking.TotalPrice);
-                }
+        // Ищем свойство, для которого загружается файл
+        var photoProp = entity.GetType().GetProperties()
+            .FirstOrDefault(p => meta.PhotoUploadConfigs.ContainsKey(p.Name) ||
+                                 p.Name.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                                 p.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                                 p.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase));
 
-                if (EntityName == "Trainers" && entity is Trainer trainer)
-                {
-                    string? newPhotoPath = null;
+        if (photoProp == null || !photoProp.CanWrite)
+            return;
 
-                    try
-                    {
-                        newPhotoPath = await Helper.SaveImageAsync(
-                            file: PhotoUrl,
-                            env: _env,
-                            subfolder: "Trainers",
-                            oldPath: OldPhotoUrl
-                        );
+        // Получаем конфиг (или создаём дефолтный)
+        var config = meta.PhotoUploadConfigs.TryGetValue(photoProp.Name, out var cfg)
+            ? cfg
+            : new PhotoUploadConfig { Subfolder = "Uploads" };
 
-                        if (newPhotoPath != null)
-                        {
-                            _logger.LogInformation("Обновлено фото тренера #{Id}: {OldPath} → {NewPath}",
-                                Id, OldPhotoUrl ?? "null", newPhotoPath);
-                        }
-                        else if (PhotoUrl != null && PhotoUrl.Length == 0)
-                        {
-                            _logger.LogDebug("Пользователь не выбрал файл, оставляем старое фото: {OldPath}", OldPhotoUrl);
-                        }
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        _logger.LogWarning(ex, "Неверный формат фото для тренера #{Id}", Id);
-                        TempData["ErrorMessage"] = ex.Message;
-                        return RedirectToPage("Edit", new { entityName = EntityName, id = Id });
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Ошибка при обработке фото для тренера #{Id}", Id);
-                        throw; // пробрасываем в общий catch
-                    }
+        // Сохраняем файл
+        var newPath = await Helper.SaveImageAsync(
+            file: UploadedFile,
+            env: _env,
+            subfolder: config.Subfolder,
+            oldPath: OldFileUrl,
+            maxSizeBytes: config.MaxSizeBytes,
+            allowedExtensions: config.AllowedExtensions
+        );
 
-                    trainer.PhotoUrl = newPhotoPath ?? OldPhotoUrl;
-
-                    // Если загрузили новое → обновляем, иначе оставляем старое
-                    trainer.PhotoUrl = newPhotoPath ?? OldPhotoUrl;
-                }
-
-                _logger.LogDebug("Сохраняем изменения в БД для {EntityName}#{Id}", EntityName, Id);
-                var saveResult = await _context.SaveChangesAsync();
-
-                if (saveResult > 0)
-                {
-                    _logger.LogInformation("Успешно обновлена запись {EntityName}#{Id}, затронуто строк: {SaveCount}",
-                        EntityName, Id, saveResult);
-
-                    TempData["SuccessMessage"] = "Запись успешно обновлена!";
-                    return RedirectToPage("Index", new { entityName = EntityName });
-                }
-                else
-                {
-                    _logger.LogWarning("SaveChangesAsync вернул 0 при обновлении {EntityName}#{Id} — возможно, данные не изменились",
-                        EntityName, Id);
-
-                    TempData["SuccessMessage"] = "Запись обновлена (изменения не потребовались)";
-                    return RedirectToPage("Index", new { entityName = EntityName });
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Критическая ошибка при обновлении {EntityName}#{Id}. Контекст: {@Context}",
-                    EntityName, Id,
-                    new
-                    {
-                        FormKeys = Request.Form.Keys,
-                        HasFile = PhotoUrl != null,
-                        FileName = PhotoUrl?.FileName,
-                        UserAgent = Request.Headers.UserAgent.ToString()
-                    });
-
-                TempData["ErrorMessage"] = $"Ошибка при обновлении: {ex.Message}";
-                return RedirectToPage("Edit", new { entityName = EntityName, id = Id });
-            }
+        if (newPath != null)
+        {
+            photoProp.SetValue(entity, newPath);
+            _logger.LogInformation("Файл обновлён для {EntityName}#{Id}: {PropertyName} = {NewPath}",
+                EntityName, Id, photoProp.Name, newPath);
         }
     }
 }

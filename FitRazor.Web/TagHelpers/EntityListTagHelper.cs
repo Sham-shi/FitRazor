@@ -175,6 +175,31 @@ namespace FitRazor.Web.TagHelpers
                     var navValue = navProp.GetValue(entity);
                     if (navValue != null)
                     {
+                        // 🔹 Специальная обработка для TrainerService: показываем "Тренер — Услуга"
+                        if (navPropName == "TrainerService")
+                        {
+                            var trainerProp = navValue.GetType().GetProperty("Trainer");
+                            var serviceProp = navValue.GetType().GetProperty("Service");
+
+                            var trainer = trainerProp?.GetValue(navValue);
+                            var service = serviceProp?.GetValue(navValue);
+
+                            var trainerName = trainer?.GetType()
+                                .GetProperty("FullName")?.GetValue(trainer)?.ToString();
+                            var serviceName = service?.GetType()
+                                .GetProperty("ServiceName")?.GetValue(service)?.ToString();
+
+                            if (!string.IsNullOrWhiteSpace(trainerName) && !string.IsNullOrWhiteSpace(serviceName))
+                            {
+                                return System.Net.WebUtility.HtmlEncode($"{trainerName} — {serviceName}");
+                            }
+                            // Если есть только одно из значений
+                            if (!string.IsNullOrWhiteSpace(trainerName))
+                                return System.Net.WebUtility.HtmlEncode(trainerName);
+                            if (!string.IsNullOrWhiteSpace(serviceName))
+                                return System.Net.WebUtility.HtmlEncode(serviceName);
+                        }
+
                         // Пытаемся получить имя через стандартные свойства
                         var displayName = navValue.GetType()
                             .GetProperty("FullName")?.GetValue(navValue)?.ToString()

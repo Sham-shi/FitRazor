@@ -7,9 +7,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FitRazor.Web.Services.Admin;
+
+/// <summary>
+/// Конфигурация для загрузки изображений в формах
+/// </summary>
+public class PhotoUploadConfig
+{
+    public string Subfolder { get; init; } = "Uploads";
+    public string DefaultImagePath { get; init; } = "/Images/no-photo.jpg";
+    public string[] AllowedExtensions { get; init; } = { ".jpg", ".jpeg", ".png" };
+    public long MaxSizeBytes { get; init; } = 5 * 1024 * 1024; // 5 MB
+    public string? PreviewLabel { get; init; } = "Текущее изображение";
+    public string? UploadLabel { get; init; } = "Загрузить новое";
+}
 
 public class EntityAdminMetadata
 {
@@ -82,6 +96,51 @@ public class EntityAdminMetadata
     /// Путь к изображению-заглушке по умолчанию
     /// </summary>
     public string? DefaultImagePath { get; init; }
+
+    // ────────────────────────────────────────────────
+    // 🔹 Конфигурация для форм редактирования
+    // ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Функция для получения свойств, отображаемых в форме редактирования
+    /// (по умолчанию использует Helper.GetFormProperties)
+    /// </summary>
+    public Func<Type, IEnumerable<PropertyInfo>>? GetEditPropertiesFunc { get; init; }
+
+    /// <summary>
+    /// Свойства, которые должны быть доступны только для чтения в форме
+    /// (отображаются, но не редактируются)
+    /// </summary>
+    public HashSet<string> ReadOnlyProperties { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Свойства, которые нужно полностью скрыть из формы редактирования
+    /// </summary>
+    public HashSet<string> HiddenProperties { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Генераторы кастомных HTML-инпутов для конкретных свойств
+    /// Ключ: имя свойства, Значение: функция генерации HTML
+    /// </summary>
+    public Dictionary<string, Func<PropertyInfo, object?, string, Dictionary<string, IEnumerable<SelectListItem>>, string>>?
+        CustomInputGenerators
+    { get; init; } = new();
+
+    /// <summary>
+    /// Конфигурация для загрузки изображений
+    /// Ключ: имя свойства (PhotoUrl, ImageUrl...), Значение: настройки
+    /// </summary>
+    public Dictionary<string, PhotoUploadConfig> PhotoUploadConfigs { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Хук для выполнения логики перед сохранением (например, пересчёт TotalPrice)
+    /// </summary>
+    public Func<FitRazorContext, object, Task>? BeforeSaveAsync { get; init; }
+
+    /// <summary>
+    /// Хук для выполнения логики после успешного сохранения
+    /// </summary>
+    public Func<FitRazorContext, object, Task>? AfterSaveAsync { get; init; }
 }
 
 public static class EntityAdminRegistry
@@ -121,6 +180,56 @@ public static class EntityAdminRegistry
             // Настройка изображений
             ImageProperties = { "PhotoUrl" },
             DefaultImagePath = "/Images/Trainers/no-photo.jpg",
+
+            // Конфигурация формы редактирования
+            GetEditPropertiesFunc = type => Helper.GetFormProperties(type),
+
+            // Скрыть служебные поля
+            HiddenProperties = { "ApplicationUserId", "ApplicationUser", "TrainerServices" },
+
+            // Поля только для чтения
+            ReadOnlyProperties = { }, // все поля редактируемые
+
+            // Кастомные инпуты
+            CustomInputGenerators = new()
+            {
+                // Специальный инпут для фото
+                ["PhotoUrl"] = (prop, value, fieldName, dropdowns) =>
+                    GeneratePhotoInput(prop, value, fieldName, new PhotoUploadConfig
+                    {
+                        Subfolder = "Trainers",
+                        DefaultImagePath = "/Images/Trainers/no-photo.jpg",
+                        PreviewLabel = "Текущее фото тренера",
+                        UploadLabel = "Загрузить новое фото (jpg, png, до 5 МБ)"
+                    }),
+
+                // Multiline для описаний
+                ["SpecializationDescription"] = (prop, value, fieldName, dropdowns) =>
+                    $"<textarea name='{prop.Name}' class='form-control' rows='3' maxlength='1000'>{value?.ToString()}</textarea>",
+                ["WorkExperience"] = (prop, value, fieldName, dropdowns) =>
+                    $"<textarea name='{prop.Name}' class='form-control' rows='4' maxlength='1000'>{value?.ToString()}</textarea>",
+                ["SportsAchievements"] = (prop, value, fieldName, dropdowns) =>
+                    $"<textarea name='{prop.Name}' class='form-control' rows='3' maxlength='1000'>{value?.ToString()}</textarea>",
+            },
+
+            // Конфигурация загрузки фото (дублируется для удобства в тег-хелпере)
+            PhotoUploadConfigs =
+            {
+                ["PhotoUrl"] = new PhotoUploadConfig
+                {
+                    Subfolder = "Trainers",
+                    DefaultImagePath = "/Images/Trainers/no-photo.jpg",
+                    PreviewLabel = "Текущее фото тренера",
+                    UploadLabel = "Загрузить новое фото (jpg,jpeg, png)"
+                }
+            },
+
+            // Логика перед сохранением
+            BeforeSaveAsync = async (ctx, entity) =>
+            {
+                // Здесь можно добавить валидацию или преобразования
+                await Task.CompletedTask;
+            },
 
             HasUserProfile = true,
 
@@ -184,6 +293,27 @@ public static class EntityAdminRegistry
             ImageProperties = { "PhotoUrl" }, // если у клиентов тоже есть фото
             DefaultImagePath = "/Images/Clients/no-photo.jpg",
 
+            HiddenProperties = { "ApplicationUserId", "ApplicationUser", "Bookings" },
+            ReadOnlyProperties = { "RegistrationDate" }, // дата регистрации не редактируется
+
+            CustomInputGenerators = new()
+            {
+                ["Email"] = (prop, value, fieldName, dropdowns) =>
+                    $"<input type='email' name='{prop.Name}' class='form-control' value='{value?.ToString()}' maxlength='100' />",
+                ["Phone"] = (prop, value, fieldName, dropdowns) =>
+                    $"<input type='tel' name='{prop.Name}' class='form-control' value='{value?.ToString()}' maxlength='20' placeholder='+7 (___) ___-__-__' />",
+            },
+
+            PhotoUploadConfigs =
+            {
+                ["PhotoUrl"] = new PhotoUploadConfig
+                {
+                    Subfolder = "Clients",
+                    DefaultImagePath = "/Images/Clients/no-photo.jpg"
+                }
+            },
+
+
             HasUserProfile = true,
 
             GetApplicationUserId = entity =>
@@ -240,6 +370,15 @@ public static class EntityAdminRegistry
                     $"<span>{value} мин</span>",
             },
 
+            HiddenProperties = { "TrainerServices" },
+            ReadOnlyProperties = { },
+
+            CustomInputGenerators = new()
+            {
+                ["Description"] = (prop, value, fieldName, dropdowns) =>
+                    $"<textarea name='{prop.Name}' class='form-control' rows='4' maxlength='500'>{value?.ToString()}</textarea>",
+            },
+
             QueryFactory = ctx => ctx.Services.AsQueryable<object>(),
             GetByIdAsync = async (ctx, id) => await ctx.Services.FindAsync(id),
             ExistsAsync = (ctx, id) => ctx.Services.AnyAsync(s => s.ServiceId == id),
@@ -276,6 +415,11 @@ public static class EntityAdminRegistry
             EntityType = typeof(Booking),
             KeyPropertyName = "BookingId",
 
+            // ✅ Явно указываем свойства для отображения
+            GetDisplayPropertiesFunc = type =>
+                Helper.GetFormProperties(type)
+                    .Where(p => p.Name != "CreatedDate"),
+
             GetDisplayNameFunc = entity =>
             {
                 if (entity is Booking b)
@@ -311,18 +455,84 @@ public static class EntityAdminRegistry
             },
 
             // Для Bookings важно загружать навигационные свойства
-            QueryFactory = ctx => ctx.Bookings
-                .Include(b => b.Client)
-                .Include(b => b.TrainerService)
+            QueryFactory = ctx =>
+            {
+                var query = ctx.Bookings
+                    .Include(b => b.Client)
+                    .Include(b => b.TrainerService)
                     .ThenInclude(ts => ts!.Service)
-                .Include(b => b.TrainerService)
-                    .ThenInclude(ts => ts!.Trainer)
-                .AsQueryable<object>(),
+                    .Include(b => b.TrainerService)
+                    .ThenInclude(ts => ts!.Trainer);
 
+                return query.Cast<object>();
+            },
+
+            HiddenProperties = { "CreatedDate" }, // дата создания не редактируется
+            ReadOnlyProperties = { "TotalPrice", "UnitPrice" }, // рассчитываются автоматически
+
+            CustomInputGenerators = new()
+            {
+                // 🔹 Status — выпадающий список с валидными значениями
+                ["Status"] = (prop, value, fieldName, dropdowns) =>
+                {
+                    var validStatuses = new[] { "Запланировано", "Перенесено", "Завершено", "Отменено" };
+                    var currentValue = value?.ToString() ?? "";
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append($"<select name='{prop.Name}' class='form-select'>");
+                    sb.Append("<option value=''>— Выберите статус —</option>");
+                    foreach (var status in validStatuses)
+                    {
+                        var selected = currentValue == status ? "selected" : "";
+                        sb.Append($"<option value='{status}' {selected}>{status}</option>");
+                    }
+                    sb.Append("</select>");
+                    return sb.ToString();
+                },
+
+                // 🔹 TotalPrice — только для чтения, с подсветкой
+                ["TotalPrice"] = (prop, value, fieldName, dropdowns) =>
+                {
+                    var displayValue = value is decimal d ? $"{d:N2} ₽" : "—";
+                    return $"<input type='text' class='form-control bg-light' value='{displayValue}' readonly />" +
+                           $"<small class='text-muted'>Рассчитывается автоматически</small>";
+                },
+
+                // 🔹 UnitPrice — только для чтения (берётся из услуги)
+                ["UnitPrice"] = (prop, value, fieldName, dropdowns) =>
+                {
+                    var displayValue = value is decimal d ? $"{d:N2} ₽" : "—";
+                    return $"<input type='text' class='form-control bg-light' value='{displayValue}' readonly />" +
+                           $"<small class='text-muted'>Берётся из выбранной услуги</small>";
+                },
+
+                // 🔹 Notes — многострочное поле
+                ["Notes"] = (prop, value, fieldName, dropdowns) =>
+                    $"<textarea name='{prop.Name}' class='form-control' rows='3' maxlength='500'>{value?.ToString()}</textarea>",
+            },
+
+            // 🔹 Логика перед сохранением: пересчёт TotalPrice
+            BeforeSaveAsync = async (ctx, entity) =>
+            {
+                if (entity is Booking booking)
+                {
+                    // Пересчитываем общую стоимость
+                    booking.TotalPrice = booking.UnitPrice * booking.SessionsCount;
+
+                    // Опционально: можно обновить UnitPrice из связанной услуги, если нужно
+                    // if (booking.TrainerService?.Service?.BasePrice is decimal basePrice)
+                    //     booking.UnitPrice = basePrice;
+                }
+                await Task.CompletedTask;
+            },
+
+            // 🔹 Для Bookings важно загружать навигационные свойства при редактировании
             GetByIdAsync = async (ctx, id) =>
                 await ctx.Bookings
                     .Include(b => b.Client)
                     .Include(b => b.TrainerService)
+                        .ThenInclude(ts => ts!.Service)
+                    .Include(b => b.TrainerService)
+                        .ThenInclude(ts => ts!.Trainer)
                     .FirstOrDefaultAsync(b => b.BookingId == id),
 
             ExistsAsync = (ctx, id) => ctx.Bookings.AnyAsync(b => b.BookingId == id),
@@ -351,6 +561,7 @@ public static class EntityAdminRegistry
                 var service = b.TrainerService?.Service?.ServiceName ?? "Услуга";
                 return $"{client} — {service} ({b.BookingDateTime:dd.MM.yyyy HH:mm})";
             },
+
             DropdownProviders =
             {
                 ["ClientId"] = async ctx => await ctx.Clients
@@ -440,4 +651,45 @@ public static class EntityAdminRegistry
     }
 
     public static IEnumerable<EntityAdminMetadata> All => _registry.Values;
+
+    public static string GeneratePhotoInput(PropertyInfo prop, object? currentValue,
+        string fieldName, PhotoUploadConfig config)
+    {
+        var currentUrl = currentValue?.ToString() ?? "";
+        var displayUrl = string.IsNullOrWhiteSpace(currentUrl)
+            ? config.DefaultImagePath
+            : (currentUrl.StartsWith("http") ? currentUrl : "/" + currentUrl.TrimStart('~', '/'));
+
+        var sb = new StringBuilder();
+
+        // Превью
+        sb.Append("<div class='current-photo mb-2'>");
+        sb.Append($"<label class='form-label small'>{config.PreviewLabel}:</label><br />");
+        sb.Append($"<img src='{System.Web.HttpUtility.HtmlAttributeEncode(displayUrl)}' " +
+                  $"alt='Превью' " +
+                  $"style='max-width:240px; max-height:240px; object-fit:contain;' " +
+                  $"class='img-thumbnail mb-2 rounded border' " +
+                  $"onerror=\"this.src='{config.DefaultImagePath}';\" />");
+        sb.Append("</div>");
+
+        // Инпут загрузки
+        sb.Append("<div class='mb-2'>");
+        sb.Append($"<label class='form-label small'>{config.UploadLabel}:</label><br />");
+        sb.Append($"<label class='btn btn-outline-primary btn-sm' for='file_{fieldName}' id='label_{fieldName}'>");
+        sb.Append("<i class='bi bi-upload me-1'></i>📁 Выбрать файл");
+        sb.Append("</label>");
+        sb.Append($"<input type='file' name='UploadedFile' id='file_{fieldName}' " +  // ✅ name='UploadedFile' для биндинга
+                  $"accept='{string.Join(",", config.AllowedExtensions)}' " +
+                  $"class='d-none' " +
+                  $"onchange=\"document.getElementById('label_{fieldName}').innerHTML = this.files[0] ? '<i class=\\'bi bi-check me-1\\'></i>' + this.files[0].name : '<i class=\\'bi bi-upload me-1\\'></i>Выбрать файл';\" />");
+        sb.Append("</div>");
+        sb.Append("<small class='text-muted'>");
+        sb.Append($"Разрешены: {string.Join(", ", config.AllowedExtensions)} | Макс. {config.MaxSizeBytes / (1024*1024)} МБ");
+        sb.Append("</small>");
+
+        // ✅ Скрытое поле с универсальным именем для биндинга
+        sb.Append($"<input type='hidden' name='OldFileUrl' value='{System.Web.HttpUtility.HtmlAttributeEncode(currentUrl)}' />");
+
+        return sb.ToString();
+    }
 }
