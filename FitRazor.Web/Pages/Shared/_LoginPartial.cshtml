@@ -46,3 +46,19 @@ else
         <i class="bi bi-gear-fill"></i>
     </button>
 }
+else if(User.IsInRole("Trainer"))
+{
+    <!-- 🔹 Тренер -->
+    <a asp-page="/Dashboard/Trainer"
+       class="btn btn-outline-primary-glow btn-sm text-uppercase">
+        <i class="bi bi-person-gear me-1"></i>Профиль
+    </a>
+}
+else if (User.IsInRole("Client"))
+{
+    <!-- 🔹 Клиент -->
+    <a asp-page="/Dashboard/Client"
+       class="btn btn-outline-primary-glow btn-sm text-uppercase">
+        <i class="bi bi-person-gear me-1"></i>Профиль
+    </a>
+}

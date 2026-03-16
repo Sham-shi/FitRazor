@@ -8,15 +8,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class IndexModel : PageModel
 {
     private readonly FitRazorContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<IndexModel> _logger;
 
-    public IndexModel(FitRazorContext context, ILogger<IndexModel> logger)
+    public IndexModel(
+        FitRazorContext context,
+        UserManager<ApplicationUser> userManager,
+        ILogger<IndexModel> logger)
     {
         _context = context;
+        _userManager = userManager;
         _logger = logger;
     }
 
@@ -42,6 +47,33 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnPostDeleteAsync(string entityName, int id)
     {
+        var user = await _userManager.GetUserAsync(User);
+
+        // 🔹 Запрещаем удаление, если пользователь не админ и не владелец данных
+        if (!await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            if (entityName == "Bookings")
+            {
+                // Клиент может удалять только свои записи
+                if (await _userManager.IsInRoleAsync(user, "Client") && user.ClientId != null)
+                {
+                    var booking = await _context.Bookings.FindAsync(id);
+                    if (booking?.ClientId != user.ClientId)
+                        return Forbid();
+                }
+                // Тренер НЕ может удалять записи (только админ)
+                else if (await _userManager.IsInRoleAsync(user, "Trainer"))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                // Другие сущности может удалять только админ
+                return Forbid();
+            }
+        }
+
         _logger.LogInformation("Запрос на удаление {EntityName}#{Id}", entityName, id);
 
         var meta = EntityAdminRegistry.Get(entityName);

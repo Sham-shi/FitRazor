@@ -103,7 +103,7 @@ public class LoginModel : PageModel
             await _userManager.UpdateAsync(user);
 
             // 🔹 Редирект по роли
-            return LocalRedirect(ReturnUrl ?? "/");
+            return await RedirectToDashboardAsync(user);
         }
 
         if (result.IsLockedOut)
@@ -124,6 +124,35 @@ public class LoginModel : PageModel
         _logger.LogWarning("Неверная попытка входа для пользователя {UserName}", user.UserName);
         ModelState.AddModelError(string.Empty, "Неверный логин или пароль");
         return Page();
+    }
+
+    /// <summary>
+    /// Перенаправление на дашборд в зависимости от роли пользователя
+    /// </summary>
+    private async Task<IActionResult> RedirectToDashboardAsync(ApplicationUser user)
+    {
+        // 🔹 Проверяем роли в порядке приоритета
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            _logger.LogDebug("Редирект админа {UserName} на главную", user.UserName);
+            return LocalRedirect("/");
+        }
+
+        if (await _userManager.IsInRoleAsync(user, "Trainer"))
+        {
+            _logger.LogDebug("Редирект тренера {UserName} на дашборд тренера", user.UserName);
+            return LocalRedirect("/Dashboard/Trainer");
+        }
+
+        if (await _userManager.IsInRoleAsync(user, "Client"))
+        {
+            _logger.LogDebug("Редирект клиента {UserName} на дашборд клиента", user.UserName);
+            return LocalRedirect("/Dashboard/Client");
+        }
+
+        // 🔹 Если роль не определена — на главную
+        _logger.LogWarning("У пользователя {UserName} не назначена известная роль, редирект на главную", user.UserName);
+        return LocalRedirect("/");
     }
 
     public async Task<IActionResult> OnPostLogoutAsync()

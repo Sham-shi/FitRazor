@@ -2,25 +2,28 @@
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 [BindProperties]
 public class EditModel : PageModel
 {
     private readonly FitRazorContext _context;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<EditModel> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public EditModel(FitRazorContext context, IWebHostEnvironment env, ILogger<EditModel> logger)
+    public EditModel(FitRazorContext context, IWebHostEnvironment env, ILogger<EditModel> logger, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _env = env;
         _logger = logger;
+        _userManager = userManager;
     }
 
     [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
@@ -33,7 +36,39 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
+        var user = await _userManager.GetUserAsync(User);
         var meta = EntityAdminRegistry.Get(EntityName);
+
+        // 🔹 Фильтрация доступа к редактированию
+        if (!await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            // Клиент может редактировать только свой профиль и свои записи
+            if (await _userManager.IsInRoleAsync(user, "Client"))
+            {
+                if (EntityName == "Clients" && Id != user.ClientId)
+                    return Forbid();
+                if (EntityName == "Bookings")
+                {
+                    var booking = await _context.Bookings.FindAsync(Id);
+                    if (booking?.ClientId != user.ClientId)
+                        return Forbid();
+                }
+            }
+            // Тренер может редактировать только свой профиль
+            else if (await _userManager.IsInRoleAsync(user, "Trainer"))
+            {
+                if (EntityName == "Trainers" && Id != user.TrainerId)
+                    return Forbid();
+                // Тренер не редактирует записи напрямую
+                if (EntityName == "Bookings")
+                    return Forbid();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
         if (meta == null || !await meta.ExistsAsync(_context, Id))
         {
             EntityNotFound = true;

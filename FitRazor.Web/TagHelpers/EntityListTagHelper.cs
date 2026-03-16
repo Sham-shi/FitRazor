@@ -1,6 +1,7 @@
 ﻿using FitRazor.Data.Models;
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,7 @@ namespace FitRazor.Web.TagHelpers
     public class EntityListTagHelper : TagHelper
     {
         private readonly FitRazorContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         // Название сущности (Trainers, Clients, Services...)
         [HtmlAttributeName("entity-name")]
@@ -34,9 +36,10 @@ namespace FitRazor.Web.TagHelpers
         [HtmlAttributeName("edit-page")]
         public string? EditPage { get; set; } = "/Entities/Edit";
 
-        public EntityListTagHelper(FitRazorContext context)
+        public EntityListTagHelper(FitRazorContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor=httpContextAccessor;
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -48,6 +51,40 @@ namespace FitRazor.Web.TagHelpers
                 output.Attributes.SetAttribute("class", "alert alert-warning");
                 output.Content.SetHtmlContent($"⚠️ Метаданные для сущности '{EntityName}' не найдены");
                 return;
+            }
+
+            var query = meta.QueryFactory(_context);
+
+            // 🔹 ФИЛЬТРАЦИЯ ПО РОЛИ ПОЛЬЗОВАТЕЛЯ
+            var httpContext = _httpContextAccessor.HttpContext; // или через IHttpContextAccessor
+            if (httpContext?.User?.Identity?.IsAuthenticated == true)
+            {
+                var userManager = httpContext.RequestServices.GetService<UserManager<ApplicationUser>>();
+                var user = await userManager?.GetUserAsync(httpContext.User);
+
+                if (user != null)
+                {
+                    if (await userManager.IsInRoleAsync(user, "Client") && EntityName == "Bookings")
+                    {
+                        // Клиент видит только свои бронирования
+                        query = query.Cast<Booking>()
+                            .Where(b => b.ClientId == user.ClientId)
+                            .Cast<object>();
+                    }
+                    else if (await userManager.IsInRoleAsync(user, "Trainer") && EntityName == "Bookings")
+                    {
+                        // Тренер видит записи через свои услуги
+                        var trainerServiceIds = await _context.TrainerServices
+                            .Where(ts => ts.TrainerId == user.TrainerId)
+                            .Select(ts => ts.TrainerServiceId)
+                            .ToListAsync();
+
+                        query = query.Cast<Booking>()
+                            .Where(b => trainerServiceIds.Contains(b.TrainerServiceId))
+                            .Cast<object>();
+                    }
+                    // Админ видит всё — без фильтрации
+                }
             }
 
             var data = await meta.QueryFactory(_context).ToListAsync();

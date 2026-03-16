@@ -1,0 +1,185 @@
+﻿@page
+@model FitRazor.Web.Pages.Dashboard.TrainerModel
+@{
+    ViewData["Title"] = "Кабинет тренера";
+}
+
+<div class="container mt-4">
+    @* 🔹 Шапка профиля тренера *@
+    <div class="card card-dark shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    @if (!string.IsNullOrEmpty(Model.TrainerProfile?.PhotoUrl))
+                    {
+                        <img src="@Model.TrainerProfile.PhotoUrl" alt="Фото"
+                             class="img-thumbnail rounded-circle" style="width: 120px; height: 120px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <img src="/Images/Trainers/no-photo.jpg" alt="Нет фото"
+                             class="img-thumbnail rounded-circle" style="width: 120px; height: 120px; object-fit: cover;" />
+                    }
+                </div>
+                <div class="col-md-7 text-light">
+                    <h2 class="mb-1">🏋️ @Model.TrainerProfile?.FullName</h2>
+                    <p class="mb-1">
+                        <i class="bi bi-award me-1"></i> @Model.TrainerProfile?.Specialization
+                    </p>
+                    <p class="mb-0">
+                        <i class="bi bi-telephone me-1"></i> @Model.TrainerProfile?.Phone<br />
+                        <i class="bi bi-envelope me-1"></i> @Model.UserProfile?.Email
+                    </p>
+                </div>
+                <div class="col-md-3 text-md-end">
+                    <a asp-page="/Entities/Edit" asp-route-entityName="Trainers" asp-route-id="@Model.TrainerProfile?.TrainerId"
+                       class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-1"></i> Редактировать профиль
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* 🔹 Статистика *@
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card card-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="text-primary">@Model.Bookings.Count</h3>
+                    <p class="mb-0 text-light">Всего записей</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="text-success">@Model.Bookings.Count(b => b.Status == "Запланировано")</h3>
+                    <p class="mb-0 text-light">Запланировано</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-dark shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="text-info">@Model.Services.Count</h3>
+                    <p class="mb-0 text-light">Услуг в прайсе</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* 🔹 Услуги тренера *@
+    <div class="card card-dark shadow-sm mb-4">
+        <div class="card-header">
+            <h4 class="mb-0 text-light">💼 Мои услуги</h4>
+        </div>
+        <div class="card-body">
+            @if (!Model.Services.Any())
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-circle me-2"></i>У вас пока нет добавленных услуг. Обратитесь к администратору.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Услуга</th>
+                                <th>Продолжительность</th>
+                                <th>Цена</th>
+                                <th>Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ts in Model.Services)
+                            {
+                                <tr>
+                                    <td>@ts.Service?.ServiceName</td>
+                                    <td>@ts.Service?.DurationMinutes мин</td>
+                                    <td class="text-success fw-bold">@ts.Service?.BasePrice.ToString("N2") ₽</td>
+                                    <td>@ts.Service?.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* 🔹 Бронирования *@
+    <div class="card card-dark shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0 text-light">📅 Мои записи</h4>
+        </div>
+        <div class="card-body">
+            @if (!Model.Bookings.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>У вас пока нет записей от клиентов.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Дата и время</th>
+                                <th>Клиент</th>
+                                <th>Услуга</th>
+                                <th>Кол-во занятий</th>
+                                <th>Стоимость</th>
+                                <th>Статус</th>
+                                <th class="text-center">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in Model.Bookings)
+                            {
+                                <tr>
+                                    <td>@booking.BookingDateTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@booking.Client?.FullName ?? "—"</td>
+                                    <td>@booking.TrainerService?.Service?.ServiceName ?? "—"</td>
+                                    <td>@booking.SessionsCount</td>
+                                    <td class="text-success fw-bold">@booking.TotalPrice?.ToString("N2") ₽</td>
+                                    <td>
+                                        @{
+                                            var badgeClass = booking.Status switch
+                                            {
+                                                                "Запланировано" => "bg-primary",
+                                                                "Перенесено" => "bg-warning text-dark",
+                                                                "Завершено" => "bg-success",
+                                                                "Отменено" => "bg-danger",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @badgeClass">@booking.Status</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-page="/Entities/Details" asp-route-entityName="Bookings" asp-route-id="@booking.BookingId"
+                                               class="btn btn-info" title="Детали">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            @if (booking.Status == "Запланировано" || booking.Status == "Перенесено")
+                                            {
+                                                <a asp-page="/Entities/Edit" asp-route-entityName="Bookings" asp-route-id="@booking.BookingId"
+                                                   class="btn btn-primary" title="Редактировать">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

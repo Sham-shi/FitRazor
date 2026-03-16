@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitRazor.Web.Pages.Entities;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class DetailsModel : PageModel
 {
     private readonly FitRazorContext _context;
