@@ -40,16 +40,21 @@ namespace FitRazor.Web.Helpers
         public static void ApplyFormValuesToEntity(object entity, IFormCollection form)
         {
             var type = entity.GetType();
+
+            // 🔹 Поля, которые НЕ нужно применять к сущности
+            var skipFields = new[] { "UploadedFile", "OldFileUrl", "__RequestVerificationToken", "EntityName" };
+
             foreach (var entry in form)
             {
                 var propName = entry.Key;
-                var rawValue = entry.Value.ToString();
+                if (skipFields.Contains(propName)) continue;
 
+                var rawValue = entry.Value.ToString();
                 var prop = type.GetProperty(propName);
                 if (prop == null || !prop.CanWrite) continue;
 
                 var parsed = ParseValue(rawValue, prop.PropertyType);
-                if (parsed != null || prop.PropertyType.IsValueType == false) // null допустим для reference / nullable
+                if (parsed != null || prop.PropertyType.IsValueType == false)
                 {
                     prop.SetValue(entity, parsed);
                 }

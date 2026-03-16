@@ -10,17 +10,16 @@
 
     <div class="card card-dark shadow-sm">
         <div class="card-body card-content" style="max-width: 100%;">
-            <form method="post" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="EntityName" value="@Model.EntityName" />
-                <input type="hidden" asp-for="EntityName" />
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="EntityName" value="@Model.EntityName" />
+            <input type="hidden" asp-for="EntityName" />
+            <input type="hidden" asp-for="ReturnUrl" />
 
-                @* Вызов тег-хелпера формы *@
-                <entity-create-form entity-name="@Model.EntityName"
-                                    submit-text="Создать запись"
-                                    cancel-page="/Entities/Index">
-                </entity-create-form>
-            </form>
+            @* Вызов тег-хелпера формы *@
+            <entity-create-form entity-name="@Model.EntityName"
+                                submit-text="Создать запись"
+                                cancel-page="@(Model.ReturnUrl ?? $"/Entities/Index/{Model.EntityName}")">
+            </entity-create-form>
         </div>
     </div>
 </div>

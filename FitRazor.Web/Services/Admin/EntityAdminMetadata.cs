@@ -141,6 +141,21 @@ public class EntityAdminMetadata
     /// Хук для выполнения логики после успешного сохранения
     /// </summary>
     public Func<FitRazorContext, object, Task>? AfterSaveAsync { get; init; }
+
+    /// <summary>
+    /// Свойства, которые нужно скрыть в форме создания
+    /// </summary>
+    public HashSet<string> HiddenInCreate { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Значения по умолчанию для свойств при создании
+    /// </summary>
+    public Dictionary<string, Func<object?>>? DefaultValues { get; init; } = new();
+
+    /// <summary>
+    /// Хук после успешного создания
+    /// </summary>
+    public Func<FitRazorContext, object, Task>? AfterCreateAsync { get; init; }
 }
 
 public static class EntityAdminRegistry
@@ -346,7 +361,14 @@ public static class EntityAdminRegistry
                 return c?.FullName ?? $"Клиент #{id}";
             },
 
-            DropdownProviders = { }
+            DropdownProviders = { },
+
+            HiddenInCreate = { "ApplicationUserId", "ApplicationUser", "ClientId", "Bookings" },
+
+            DefaultValues = new()
+            {
+                ["RegistrationDate"] = () => DateOnly.FromDateTime(DateTime.Today),
+            },
         };
 
         // ────────────────────────────────────────────────
@@ -575,7 +597,15 @@ public static class EntityAdminRegistry
                         $"{ts.Trainer!.FullName} — {ts.Service!.ServiceName}", // Текст (что видим)
                         ts.TrainerServiceId.ToString()))                       // Значение (что отправляем)
                     .ToListAsync()
-            }
+            },
+
+            HiddenInCreate = { "BookingId", "CreatedDate", "TotalPrice" },
+
+            DefaultValues = new()
+            {
+                ["CreatedDate"] = () => DateTime.Now,
+                ["Status"] = () => "Запланировано",
+            },
         };
 
         // ────────────────────────────────────────────────
@@ -689,6 +719,32 @@ public static class EntityAdminRegistry
 
         // ✅ Скрытое поле с универсальным именем для биндинга
         sb.Append($"<input type='hidden' name='OldFileUrl' value='{System.Web.HttpUtility.HtmlAttributeEncode(currentUrl)}' />");
+
+        return sb.ToString();
+    }
+
+    public static string GeneratePhotoInputForCreate(PropertyInfo prop, string fieldName, PhotoUploadConfig config)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("<div class='mb-3'>");
+        sb.Append($"<label class='form-label'>{config.UploadLabel ?? "Загрузить изображение"}:</label><br />");
+
+        // Стилизованная кнопка + скрытый input
+        sb.Append($"<label class='btn btn-outline-primary btn-sm' for='file_{fieldName}' id='label_{fieldName}'>");
+        sb.Append("<i class='bi bi-upload me-1'></i>📁 Выбрать файл");
+        sb.Append("</label>");
+
+        // ✅ name='UploadedFile' для биндинга в CreateModel
+        sb.Append($"<input type='file' name='UploadedFile' id='file_{fieldName}' " +
+                  $"accept='{string.Join(",", config.AllowedExtensions)}' " +
+                  $"class='d-none' " +
+                  $"onchange=\"document.getElementById('label_{fieldName}').innerHTML = this.files[0] ? '<i class=\\'bi bi-check me-1\\'></i>' + this.files[0].name : '<i class=\\'bi bi-upload me-1\\'></i>Выбрать файл';\" />");
+
+        sb.Append("</div>");
+        sb.Append("<small class='text-muted'>");
+        sb.Append($"Разрешены: {string.Join(", ", config.AllowedExtensions)} | Макс. {config.MaxSizeBytes / (1024*1024)} МБ");
+        sb.Append("</small>");
 
         return sb.ToString();
     }

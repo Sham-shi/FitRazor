@@ -28,6 +28,7 @@ public class EditModel : PageModel
 
     [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
     [BindProperty(SupportsGet = true)] public int Id { get; set; }
+    [BindProperty(SupportsGet = true)] public string? ReturnUrl { get; set; }
     public bool EntityNotFound { get; set; }
 
     // 🔹 Универсальные свойства для фото (работают для любой сущности)
@@ -59,9 +60,6 @@ public class EditModel : PageModel
             {
                 if (EntityName == "Trainers" && Id != user.TrainerId)
                     return Forbid();
-                // Тренер не редактирует записи напрямую
-                if (EntityName == "Bookings")
-                    return Forbid();
             }
             else
             {
@@ -74,6 +72,16 @@ public class EditModel : PageModel
             EntityNotFound = true;
             return Page();
         }
+
+        // 🔹 Если ReturnUrl не передан — берём из заголовка Referer
+        if (string.IsNullOrEmpty(ReturnUrl) && Request.Headers.Referer.Any())
+        {
+            var referer = Request.Headers.Referer.ToString();
+            // Проверяем, что referer локальный (защита от open redirect)
+            if (Url.IsLocalUrl(referer))
+                ReturnUrl = referer;
+        }
+
         return Page();
     }
 
@@ -122,6 +130,14 @@ public class EditModel : PageModel
 
             _logger.LogInformation("Запись {EntityName}#{Id} успешно обновлена!", EntityName, Id);
             TempData["SuccessMessage"] = "Запись успешно обновлена!";
+
+            // 🔹 Возврат на предыдущую страницу
+            if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+            {
+                return Redirect(ReturnUrl);
+            }
+
+            // fallback
             return RedirectToPage("Index", new { entityName = EntityName });
         }
         catch (ArgumentException ex)

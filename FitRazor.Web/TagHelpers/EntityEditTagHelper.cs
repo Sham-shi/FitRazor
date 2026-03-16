@@ -28,7 +28,7 @@ namespace FitRazor.Web.TagHelpers
         public string SubmitText { get; set; } = "Сохранить";
 
         [HtmlAttributeName("cancel-page")]
-        public string CancelPage { get; set; } = "/Entities/Index";
+        public string CancelPage { get; set; }
 
         public EntityEditTagHelper(FitRazorContext context, IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
@@ -137,7 +137,12 @@ namespace FitRazor.Web.TagHelpers
             html.Append("<div class='row mt-4 pt-3 border-top'>");
             html.Append("<div class='col-12 d-flex gap-2'>");
             html.Append($"<button type='submit' class='btn btn-primary px-4'><i class='bi bi-save me-2'></i>{SubmitText}</button>");
-            html.Append($"<a href='{CancelPage}/{EntityName}' class='btn btn-outline-secondary'><i class='bi bi-x-lg me-2'></i>Отмена</a>");
+
+            var cancelUrl = !string.IsNullOrEmpty(CancelPage)
+                ? CancelPage
+                : $"/Entities/Index/{EntityName}";
+
+            html.Append($"<a href='{cancelUrl}' class='btn btn-outline-secondary'><i class='bi bi-x-lg me-2'></i>Отмена</a>");
             html.Append("</div>");
             html.Append("</div>");
 

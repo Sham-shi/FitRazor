@@ -159,9 +159,21 @@ namespace FitRazor.Web.TagHelpers
                     var displayName = meta.GetDisplayNameFunc?.Invoke(item)
                                    ?? $"{meta.PluralDisplayName} #{id}";
 
+                    var request = _httpContextAccessor.HttpContext?.Request;
+                    var returnUrl = request != null ? request.Path + request.QueryString : "";
+
                     html.Append("<td class='text-center'>");
-                    html.Append($"<a href='{DetailsPage}/{EntityName}/{id}' data-bs-toggle='tooltip' data-bs-title='Детали' class='btn btn-sm btn-info me-2'>📄</a>");
-                    html.Append($"<a href='{EditPage}/{EntityName}/{id}' data-bs-toggle='tooltip' data-bs-title='Редактировать' class='btn btn-sm btn-primary me-1'>✏️</a>");
+                    html.Append($@"
+                        <a href='{DetailsPage}/{EntityName}/{id}?returnUrl={System.Net.WebUtility.UrlEncode(returnUrl)}'
+                            data-bs-toggle='tooltip'
+                            data-bs-title='Детали' 
+                            class='btn btn-sm btn-info me-2'>📄</a>");
+
+                    html.Append($@"
+                        <a href='{EditPage}/{EntityName}/{id}?returnUrl={System.Net.WebUtility.UrlEncode(returnUrl)}'
+                            data-bs-toggle='tooltip'
+                            data-bs-title='Редактировать'
+                            class='btn btn-sm btn-primary me-1'>✏️</a>");
                     html.Append($@"
                         <button type='button' class='btn btn-sm btn-danger'
                                 data-bs-toggle='modal' data-bs-target='#deleteModal'

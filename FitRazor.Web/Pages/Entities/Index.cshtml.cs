@@ -28,6 +28,9 @@ public class IndexModel : PageModel
     [BindProperty(SupportsGet = true)]
     public string EntityName { get; set; } = "Trainers";
 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
     public void OnGet(string entityName)
     {
         EntityName = entityName ?? "Trainers";
@@ -45,7 +48,7 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostDeleteAsync(string entityName, int id)
+    public async Task<IActionResult> OnPostDeleteAsync(string entityName, int id, string? returnUrl)
     {
         var user = await _userManager.GetUserAsync(User);
 
@@ -128,6 +131,11 @@ public class IndexModel : PageModel
         {
             _logger.LogError(ex, "Критическая ошибка при удалении {EntityName}#{Id}", entityName, id);
             TempData["ErrorMessage"] = $"Ошибка при удалении: {ex.Message}";
+        }
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
         }
 
         return RedirectToPage("Index", new { entityName });

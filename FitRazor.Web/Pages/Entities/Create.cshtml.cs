@@ -1,4 +1,5 @@
-﻿using FitRazor.Data.Models;
+﻿// FitRazor.Web/Pages/Entities/Create.cshtml.cs
+using FitRazor.Data.Models;
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,11 @@ public class CreateModel : PageModel
     private readonly ILogger<CreateModel> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public CreateModel(FitRazorContext context, IWebHostEnvironment env, ILogger<CreateModel> logger, UserManager<ApplicationUser> userManager)
+    public CreateModel(
+        FitRazorContext context,
+        IWebHostEnvironment env,
+        ILogger<CreateModel> logger,
+        UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _env = env;
@@ -26,148 +31,173 @@ public class CreateModel : PageModel
     }
 
     [BindProperty(SupportsGet = true)] public string EntityName { get; set; } = "Trainers";
+    [BindProperty(SupportsGet = true)] public string? ReturnUrl { get; set; }
 
-    // Для фото (Trainer.PhotoUrl)
-    [BindProperty] public IFormFile? PhotoUrl { get; set; }
+    // 🔹 Универсальные свойства для фото (как в EditModel)
+    [BindProperty] public IFormFile? UploadedFile { get; set; }
+
+    public IActionResult OnGet()
+    {
+        if (string.IsNullOrEmpty(ReturnUrl) && Request.Headers.Referer.Any())
+        {
+            var referer = Request.Headers.Referer.ToString();
+
+            if (Url.IsLocalUrl(referer))
+                ReturnUrl = referer;
+        }
+
+        return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
         var user = await _userManager.GetUserAsync(User);
         var meta = EntityAdminRegistry.Get(EntityName);
 
-        // 🔹 Фильтрация доступа к редактированию
-        if (!await _userManager.IsInRoleAsync(user, "Admin"))
+        // 🔹 Проверка авторизации
+        if (!await CanCreateAsync(user, EntityName))
         {
-            // Клиент может редактировать только свой профиль и свои записи
-            if (await _userManager.IsInRoleAsync(user, "Client"))
-            {
-                if (EntityName == "Clients" && Id != user.ClientId)
-                    return Forbid();
-                if (EntityName == "Bookings")
-                {
-                    var booking = await _context.Bookings.FindAsync(Id);
-                    if (booking?.ClientId != user.ClientId)
-                        return Forbid();
-                }
-            }
-            // Тренер может редактировать только свой профиль
-            else if (await _userManager.IsInRoleAsync(user, "Trainer"))
-            {
-                if (EntityName == "Trainers" && Id != user.TrainerId)
-                    return Forbid();
-                // Тренер не редактирует записи напрямую
-                if (EntityName == "Bookings")
-                    return Forbid();
-            }
-            else
-            {
-                return Forbid();
-            }
+            _logger.LogWarning("Пользователь {UserId} не имеет прав на создание {EntityName}",
+                user?.Id, EntityName);
+            TempData["ErrorMessage"] = "Нет прав на создание";
+            return Forbid();
         }
-        _logger.LogInformation("Запрос на создание {EntityName}", EntityName);
 
         if (meta == null)
         {
             _logger.LogWarning("Попытка создания неизвестной сущности: {EntityName}", EntityName);
             TempData["ErrorMessage"] = "Неизвестная сущность";
-            return RedirectToPage("Create", new { entityName = EntityName });
+            return RedirectToPage("Index", new { entityName = EntityName });
         }
 
         try
         {
-            // Создаём новый экземпляр
+            // 1. Создаём экземпляр
             var entity = Activator.CreateInstance(meta.EntityType);
             if (entity == null)
+                throw new InvalidOperationException($"Не удалось создать {meta.EntityType.Name}");
+
+            // 2. Применяем значения по умолчанию из метаданных
+            if (meta.DefaultValues != null)
             {
-                _logger.LogError("Не удалось создать экземпляр типа {EntityType}", meta.EntityType.Name);
-                throw new InvalidOperationException("Не удалось создать экземпляр сущности");
+                foreach (var (propName, valueFactory) in meta.DefaultValues)
+                {
+                    var prop = entity.GetType().GetProperty(propName);
+                    if (prop?.CanWrite == true)
+                        prop.SetValue(entity, valueFactory());
+                }
             }
 
-            // Применяем значения из формы
+            // 3. Применяем данные формы
             Helper.ApplyFormValuesToEntity(entity, Request.Form);
-            _logger.LogDebug("Применены данные формы к сущности {EntityName}", EntityName);
 
-            // Специальная обработка фото (для Trainers)
-            if (EntityName == "Trainers" && entity is Trainer trainer && PhotoUrl != null && PhotoUrl.Length > 0)
-            {
-                try
-                {
-                    var newPhotoPath = await Helper.SaveImageAsync(
-                        file: PhotoUrl,
-                        env: _env,
-                        subfolder: "Trainers"
-                    // oldPath не передаём → null
-                    );
+            // 4. Обрабатываем загрузку файла (если есть конфиг)
+            await HandleFileUploadAsync(entity, meta);
 
-                    if (newPhotoPath != null)
-                    {
-                        trainer.PhotoUrl = newPhotoPath;
-                        _logger.LogInformation("Сохранено фото для тренера: {PhotoPath}", newPhotoPath);
-                    }
-                }
-                catch (ArgumentException ex)
-                {
-                    _logger.LogWarning(ex, "Неверный формат фото для сущности {EntityName}", EntityName);
-                    TempData["ErrorMessage"] = ex.Message;
-                    return Page();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Ошибка при сохранении фото для {EntityName}", EntityName);
-                    throw; // пробрасываем дальше для обработки в общем catch
-                }
-            }
+            // 5. Выполняем хук BeforeSave (пересчёт TotalPrice и т.п.)
+            if (meta.BeforeSaveAsync != null)
+                await meta.BeforeSaveAsync(_context, entity);
 
-            // Специальная логика для отдельных сущностей
-            switch (EntityName) // ← этот switch можно тоже вынести в реестр позже
-            {
-                case "Clients" when entity is Client client:
-                    client.RegistrationDate = DateOnly.FromDateTime(DateTime.Today);
-                    _logger.LogDebug("Установлена дата регистрации для клиента: {Date}", client.RegistrationDate);
-                    break;
-
-                case "Bookings" when entity is Booking booking:
-                    booking.TotalPrice = booking.UnitPrice * booking.SessionsCount;
-                    booking.CreatedDate = DateTime.Now;
-                    _logger.LogDebug("Рассчитана стоимость бронирования: {TotalPrice} руб.", booking.TotalPrice);
-                    break;
-            }
-
-            // Добавляем в контекст
+            // 6. Сохраняем
             await _context.AddAsync(entity);
-            var saveResult = await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            if (saveResult > 0)
-            {
-                // Получаем ID созданной сущности (если есть)
-                var entityId = entity.GetType().GetProperty("Id")?.GetValue(entity);
-                _logger.LogInformation("Успешно создана сущность {EntityName}, ID: {EntityId}, записей сохранено: {SaveCount}",
-                    EntityName, entityId ?? "N/A", saveResult);
+            // 7. Хук AfterCreate (опционально)
+            if (meta.AfterCreateAsync != null)
+                await meta.AfterCreateAsync(_context, entity);
 
-                TempData["SuccessMessage"] = "Запись успешно создана!";
-                return RedirectToPage("Index", new { entityName = EntityName });
-            }
-            else
+            _logger.LogInformation("Успешно создана {EntityName}", EntityName);
+            TempData["SuccessMessage"] = "Запись успешно создана!";
+
+            // 🔹 Возвращаем страницу с инструкцией для браузера вернуться назад
+            // 🔹 Если ReturnUrl не передан — берём из заголовка Referer
+            if (string.IsNullOrEmpty(ReturnUrl) && Request.Headers.Referer.Any())
             {
-                _logger.LogWarning("SaveChangesAsync вернул 0 при создании {EntityName}", EntityName);
-                TempData["ErrorMessage"] = "Не удалось сохранить запись";
-                return Page();
+                var referer = Request.Headers.Referer.ToString();
+                // Проверяем, что referer локальный (защита от open redirect)
+                if (Url.IsLocalUrl(referer))
+                    ReturnUrl = referer;
             }
+
+            if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+            {
+                return Redirect(ReturnUrl);
+            }
+
+            // fallback
+            return RedirectToPage("Index", new { entityName = EntityName });
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Ошибка валидации при создании {EntityName}", EntityName);
+            TempData["ErrorMessage"] = ex.Message;
+            return Page();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Критическая ошибка при создании сущности {EntityName}. Форма: {@FormValues}",
-                EntityName,
-                // Безопасно: не логируем пароли/токены, только мета-данные
-                new
-                {
-                    FormKeys = Request.Form.Keys,
-                    FilesCount = Request.Form.Files.Count,
-                    UserAgent = Request.Headers.UserAgent.ToString()
-                });
+            _logger.LogError(ex, "Критическая ошибка при создании {EntityName}", EntityName);
+            TempData["ErrorMessage"] = $"Ошибка: {ex.Message}";
+            return Page();
+        }
+    }
 
-            TempData["ErrorMessage"] = $"Ошибка при создании: {ex.Message}";
-            return RedirectToPage("Create", new { entityName = EntityName });
+    /// <summary>
+    /// Проверка прав на создание сущности
+    /// </summary>
+    private async Task<bool> CanCreateAsync(ApplicationUser? user, string entityName)
+    {
+        if (user == null) return false;
+
+        // Админ может создавать всё
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+            return true;
+
+        // Клиент может создавать только свои записи (Bookings)
+        if (await _userManager.IsInRoleAsync(user, "Client"))
+            return entityName == "Bookings";
+
+        // Тренер не создаёт сущности через общий интерфейс
+        if (await _userManager.IsInRoleAsync(user, "Trainer"))
+            return false;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Универсальная обработка загрузки файлов
+    /// </summary>
+    private async Task HandleFileUploadAsync(object entity, EntityAdminMetadata meta)
+    {
+        if (UploadedFile == null || UploadedFile.Length == 0)
+            return;
+
+        // Ищем свойство для загрузки фото
+        var photoProp = entity.GetType().GetProperties()
+            .FirstOrDefault(p => meta.PhotoUploadConfigs.ContainsKey(p.Name) ||
+                                 p.Name.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                                 p.Name.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                                 p.Name.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase));
+
+        if (photoProp == null || !photoProp.CanWrite)
+            return;
+
+        var config = meta.PhotoUploadConfigs.TryGetValue(photoProp.Name, out var cfg)
+            ? cfg
+            : new PhotoUploadConfig { Subfolder = "Uploads" };
+
+        var newPath = await Helper.SaveImageAsync(
+            file: UploadedFile,
+            env: _env,
+            subfolder: config.Subfolder,
+            maxSizeBytes: config.MaxSizeBytes,
+            allowedExtensions: config.AllowedExtensions
+        );
+
+        if (newPath != null)
+        {
+            photoProp.SetValue(entity, newPath);
+            _logger.LogInformation("Файл сохранён для {EntityName}: {PropertyName} = {NewPath}",
+                EntityName, photoProp.Name, newPath);
         }
     }
 }

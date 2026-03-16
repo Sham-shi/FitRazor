@@ -1,11 +1,14 @@
-﻿using FitRazor.Data.Models;
+﻿// FitRazor.Web/TagHelpers/EntityCreateTagHelper.cs
+using FitRazor.Data.Models;
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text;
 
 namespace FitRazor.Web.TagHelpers
 {
@@ -13,6 +16,7 @@ namespace FitRazor.Web.TagHelpers
     public class EntityCreateTagHelper : TagHelper
     {
         private readonly FitRazorContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         [HtmlAttributeName("entity-name")]
         public string EntityName { get; set; } = "Trainers";
@@ -21,11 +25,12 @@ namespace FitRazor.Web.TagHelpers
         public string SubmitText { get; set; } = "Создать";
 
         [HtmlAttributeName("cancel-page")]
-        public string CancelPage { get; set; } = "/Entities/Index";
+        public string CancelPage { get; set; }
 
-        public EntityCreateTagHelper(FitRazorContext context)
+        public EntityCreateTagHelper(FitRazorContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -34,31 +39,48 @@ namespace FitRazor.Web.TagHelpers
             if (meta == null)
             {
                 output.TagName = "div";
-                output.Content.SetHtmlContent("<div class='alert alert-warning'>Неизвестная сущность</div>");
+                output.Attributes.SetAttribute("class", "alert alert-warning");
+                output.Content.SetHtmlContent($"⚠️ Метаданные для '{EntityName}' не найдены");
                 return;
             }
 
-            // Тип сущности
             var modelType = meta.EntityType;
+            var properties = meta.GetEditPropertiesFunc?.Invoke(modelType)
+                           ?? Helper.GetFormProperties(modelType);
 
-            var properties = Helper.GetFormProperties(modelType);
+            // 🔹 Фильтруем скрытые свойства для создания
+            properties = properties.Where(p =>
+                !meta.HiddenProperties.Contains(p.Name) &&
+                !meta.HiddenInCreate.Contains(p.Name));
 
-            // Загрузка dropdown
+            // Загружаем dropdown
             var dropdownData = new Dictionary<string, IEnumerable<SelectListItem>>();
             foreach (var provider in meta.DropdownProviders)
             {
                 dropdownData[provider.Key] = await provider.Value(_context);
             }
 
+            output.TagName = "form";
+            output.Attributes.SetAttribute("method", "post");
+            output.Attributes.SetAttribute("enctype", "multipart/form-data");
             output.Attributes.SetAttribute("class", "entity-create-form");
-            var html = GenerateHtml(modelType, properties, dropdownData);
+
+            var html = GenerateHtml(modelType, properties, dropdownData, meta);
             output.Content.SetHtmlContent(html);
         }
 
         private string GenerateHtml(Type modelType, IEnumerable<PropertyInfo> properties,
-            Dictionary<string, IEnumerable<SelectListItem>> dropdownData)
+            Dictionary<string, IEnumerable<SelectListItem>> dropdownData, EntityAdminMetadata meta)
         {
-            var html = new System.Text.StringBuilder();
+            var html = new StringBuilder();
+
+            // 🔐 Antiforgery token
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext?.RequestServices?.GetService<IAntiforgery>() is IAntiforgery antiforgery)
+            {
+                var tokens = antiforgery.GetAndStoreTokens(httpContext);
+                html.Append($"<input name='__RequestVerificationToken' type='hidden' value='{tokens.RequestToken}' />");
+            }
 
             html.Append("<div class='row'>");
 
@@ -66,99 +88,69 @@ namespace FitRazor.Web.TagHelpers
             {
                 var displayName = prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name;
                 var isRequired = prop.GetCustomAttribute<RequiredAttribute>() != null;
-                var placeholder = prop.GetCustomAttribute<DisplayAttribute>()?.Prompt ?? "";
+                var propName = prop.Name;
 
                 html.Append("<div class='col-md-6 mb-3'>");
-                html.Append($"<label class='form-label'>");
+                html.Append($"<label class='form-label fw-semibold'>");
                 html.Append(displayName);
                 if (isRequired) html.Append(" <span class='text-danger'>*</span>");
                 html.Append("</label>");
 
-                // Определяем тип поля
-                var inputHtml = GenerateInput(prop, displayName, dropdownData);
-                html.Append(inputHtml);
+                // 🔹 Кастомный генератор или стандартный
+                if (meta.CustomInputGenerators?.TryGetValue(propName, out var generator) == true && generator != null)
+                {
+                    html.Append(generator(prop, null, displayName, dropdownData));
+                }
+                else
+                {
+                    html.Append(GenerateStandardInput(prop, dropdownData, meta));
+                }
 
-                // Валидация
-                html.Append($"<span asp-validation-for='{prop.Name}' class='text-danger'></span>");
-
+                html.Append($"<span asp-validation-for='{propName}' class='text-danger small'></span>");
                 html.Append("</div>");
             }
 
             html.Append("</div>");
 
-            // Кнопки
-            html.Append("<div class='row mt-4'>");
-            html.Append("<div class='col-12'>");
-            html.Append($"<button type='submit' class='btn btn-success'>{SubmitText}</button>");
-            html.Append($" <a href='{CancelPage}/{EntityName}' class='btn btn-secondary'>Отмена</a>");
+            // 🔹 Кнопки
+            html.Append("<div class='row mt-4 pt-3 border-top'>");
+            html.Append("<div class='col-12 d-flex gap-2'>");
+            html.Append($"<button type='submit' class='btn btn-success px-4'><i class='bi bi-plus-lg me-2'></i>{SubmitText}</button>");
+
+            var cancelUrl = !string.IsNullOrEmpty(CancelPage) && CancelPage.StartsWith("/")
+                ? CancelPage
+                : $"/Entities/Index/{EntityName}";
+
+            html.Append($"<a href='{cancelUrl}' class='btn btn-outline-secondary'><i class='bi bi-x-lg me-2'></i>Отмена</a>");
             html.Append("</div>");
             html.Append("</div>");
 
             return html.ToString();
         }
 
-        private string GenerateInput(PropertyInfo prop, string fieldName,
-            Dictionary<string, IEnumerable<SelectListItem>> dropdownData)
+        private string GenerateStandardInput(PropertyInfo prop,
+            Dictionary<string, IEnumerable<SelectListItem>> dropdownData, EntityAdminMetadata meta)
         {
             var propType = prop.PropertyType;
             var propName = prop.Name;
 
-            // ────────────────────────────────────────────────
-            // Блок для загрузки фото при создании
-            // ────────────────────────────────────────────────
-            bool isPhotoField = propName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
-                                propName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
-                                propName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase);
-
-            if (isPhotoField && (propType == typeof(string)))
+            // 🔹 Фото (используем общий метод из реестра)
+            if (meta.PhotoUploadConfigs.TryGetValue(propName, out var photoConfig) ||
+                propName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
+                propName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
+                propName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
             {
-                var sb = new System.Text.StringBuilder();
-
-                sb.Append("<div class='mb-3'>");
-                sb.Append("<label class='form-label'>Фото (jpg, png, до 5 МБ)</label>");
-
-                // Стилизованная кнопка + скрытый input
-                sb.Append($"<label class='btn btn-primary text-white d-inline-block' for='file_{propName}'>");
-                sb.Append("<i class='bi bi-image me-2'></i>Выбрать фото");
-                sb.Append($"<input type='file' name='{propName}' id='file_{propName}' accept='image/jpeg,image/png' class='d-none' onchange=\"document.getElementById('file_label_{propName}').textContent = this.files[0]?.name || 'Файл не выбран';\" />");
-                sb.Append("</label>");
-
-                // Место для имени выбранного файла
-                sb.Append($"<div class='mt-2 text-muted small' id='selected-file-{propName}'>Файл не выбран</div>");
-
-                sb.Append("</div>");
-
-                return sb.ToString();
+                var config = photoConfig ?? new PhotoUploadConfig { Subfolder = "Uploads" };
+                return EntityAdminRegistry.GeneratePhotoInputForCreate(prop, propName, config);
             }
 
-            if (propName == "Status")
-            {
-                // Определяем допустимые статусы (можно вынести в константу или конфиг)
-                var validStatuses = new[] { "Запланировано", "Перенесено", "Завершено", "Отменено" };
-
-                var sb = new System.Text.StringBuilder();
-                sb.Append($"<select name='{propName}' class='form-select'>");
-                sb.Append("<option value=''>— Выберите статус —</option>");
-
-                foreach (var status in validStatuses)
-                {
-                    // По умолчанию можно выбрать первый элемент, если нужно:
-                    // var isSelected = status == "Запланировано"; 
-                    var encodedStatus = System.Web.HttpUtility.HtmlAttributeEncode(status);
-                    sb.Append($"<option value='{encodedStatus}'>{status}</option>");
-                }
-                sb.Append("</select>");
-                return sb.ToString();
-            }
-
-            // Выпадающий список для foreign keys
+            // 🔹 Выпадающий список для FK
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))
             {
-                var options = dropdownData[propName];
-                var sb = new System.Text.StringBuilder();
+                var sb = new StringBuilder();
                 sb.Append($"<select name='{propName}' class='form-select'>");
                 sb.Append("<option value=''>— Выберите —</option>");
-                foreach (var opt in options)
+                foreach (var opt in dropdownData[propName])
                 {
                     sb.Append($"<option value='{opt.Value}'>{opt.Text}</option>");
                 }
@@ -166,73 +158,55 @@ namespace FitRazor.Web.TagHelpers
                 return sb.ToString();
             }
 
-            // Текстовые поля
+            // 🔹 Текстовые поля
             if (propType == typeof(string))
             {
-                var maxLength = prop.GetCustomAttribute<StringLengthAttribute>()?.MaximumLength ?? 500;
-                var isEmail = propName.Contains("Email", StringComparison.OrdinalIgnoreCase);
-                var isPhone = propName.Contains("Phone", StringComparison.OrdinalIgnoreCase);
-                var isUrl = propName.Contains("Url", StringComparison.OrdinalIgnoreCase) ||
-                           propName.Contains("Photo", StringComparison.OrdinalIgnoreCase);
-
-                if (isEmail)
-                {
-                    return $"<input type='email' name='{propName}' class='form-control' maxlength='{maxLength}' />";
-                }
-                if (isPhone)
-                {
-                    return $"<input type='tel' name='{propName}' class='form-control' maxlength='{maxLength}' />";
-                }
-                if (isUrl)
-                {
-                    return $"<input type='url' name='{propName}' class='form-control' maxlength='{maxLength}' />";
-                }
-
-                // Многострочное поле для длинного текста
-                if (maxLength > 200)
-                {
-                    return $"<textarea name='{propName}' class='form-control' rows='3' maxlength='{maxLength}'></textarea>";
-                }
-
-                return $"<input type='text' name='{propName}' class='form-control' maxlength='{maxLength}' />";
+                return GenerateTextInput(prop, "", "form-control", "");
             }
 
-            // Числовые поля
+            // 🔹 Числовые
             if (propType == typeof(int) || propType == typeof(int?))
             {
                 return $"<input type='number' name='{propName}' class='form-control' />";
             }
-
             if (propType == typeof(decimal) || propType == typeof(decimal?))
             {
-                var requiredAttr = prop.GetCustomAttribute<RequiredAttribute>() != null ? "required" : "";
-                // step='0.01' важен для корректной валидации в браузере
-                // placeholder помогает пользователю понять формат (точка!)
-                return $"<input type='number' name='{propName}' class='form-control' step='0.01' {requiredAttr} placeholder='0.00' />";
+                var required = prop.GetCustomAttribute<RequiredAttribute>() != null ? "required" : "";
+                return $"<input type='number' name='{propName}' class='form-control' step='0.01' {required} placeholder='0.00' />";
             }
 
-            // Дата и время
+            // 🔹 Дата
             if (propType == typeof(DateTime) || propType == typeof(DateTime?))
             {
                 return $"<input type='datetime-local' name='{propName}' class='form-control' />";
             }
-
             if (propType == typeof(DateOnly) || propType == typeof(DateOnly?))
             {
                 return $"<input type='date' name='{propName}' class='form-control' />";
             }
 
-            // По умолчанию — текст
             return $"<input type='text' name='{propName}' class='form-control' />";
         }
-    }
 
-    // Extension method для проверки на коллекцию
-    public static class TypeExtensions
-    {
-        public static bool IsCollection(this Type type)
+        private string GenerateTextInput(PropertyInfo prop, string value, string classAttr, string readOnlyAttr)
         {
-            return typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string);
+            var propName = prop.Name;
+            var maxLength = prop.GetCustomAttribute<StringLengthAttribute>()?.MaximumLength ?? 500;
+            var isEmail = propName.Contains("Email", StringComparison.OrdinalIgnoreCase);
+            var isPhone = propName.Contains("Phone", StringComparison.OrdinalIgnoreCase);
+            var isUrl = propName.Contains("Url", StringComparison.OrdinalIgnoreCase) && !propName.Contains("Photo", StringComparison.OrdinalIgnoreCase);
+
+            if (isEmail)
+                return $"<input type='email' name='{propName}' class='{classAttr}' maxlength='{maxLength}' {readOnlyAttr} />";
+            if (isPhone)
+                return $"<input type='tel' name='{propName}' class='{classAttr}' maxlength='{maxLength}' {readOnlyAttr} placeholder='+7 (___) ___-__-__' />";
+            if (isUrl)
+                return $"<input type='url' name='{propName}' class='{classAttr}' maxlength='{maxLength}' {readOnlyAttr} />";
+
+            if (maxLength > 200)
+                return $"<textarea name='{propName}' class='{classAttr}' rows='3' maxlength='{maxLength}' {readOnlyAttr}></textarea>";
+
+            return $"<input type='text' name='{propName}' class='{classAttr}' maxlength='{maxLength}' {readOnlyAttr} />";
         }
     }
 }

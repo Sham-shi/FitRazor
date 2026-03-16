@@ -42,7 +42,6 @@ namespace FitRazor.Web.TagHelpers
                 .Where(p =>
                     p.CanRead &&
                     !p.PropertyType.IsGenericType &&
-                    !p.PropertyType.IsCollection() &&
                     p.Name != "Id" &&                 // Исключаем стандартный PK
                     // 👇 Добавляем проверку на ScaffoldColumn
                     p.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold != false)

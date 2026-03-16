@@ -4,6 +4,10 @@
     ViewData["Title"] = "Кабинет тренера";
 }
 
+@{
+    var returnUrl = HttpContext.Request.Path + HttpContext.Request.QueryString;
+}
+
 <div class="container mt-4">
     @* 🔹 Шапка профиля тренера *@
     <div class="card card-dark shadow-sm mb-4">
@@ -32,7 +36,10 @@
                     </p>
                 </div>
                 <div class="col-md-3 text-md-end">
-                    <a asp-page="/Entities/Edit" asp-route-entityName="Trainers" asp-route-id="@Model.TrainerProfile?.TrainerId"
+                    <a asp-page="/Entities/Edit" 
+                       asp-route-entityName="Trainers" 
+                       asp-route-id="@Model.TrainerProfile?.TrainerId"
+                       asp-route-returnUrl="@returnUrl"
                        class="btn btn-primary">
                         <i class="bi bi-pencil-square me-1"></i> Редактировать профиль
                     </a>
@@ -161,13 +168,16 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm">
-                                            <a asp-page="/Entities/Details" asp-route-entityName="Bookings" asp-route-id="@booking.BookingId"
+                                            <a asp-page="/Entities/Details" 
+                                               asp-route-entityName="Bookings" 
+                                               asp-route-id="@booking.BookingId"
+                                               asp-route-returnUrl="@returnUrl"
                                                class="btn btn-info" title="Детали">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             @if (booking.Status == "Запланировано" || booking.Status == "Перенесено")
                                             {
-                                                <a asp-page="/Entities/Edit" asp-route-entityName="Bookings" asp-route-id="@booking.BookingId"
+                                                <a asp-page="/Entities/Edit" asp-route-entityName="Bookings" asp-route-id="@booking.BookingId" asp-route-returnUrl="@returnUrl"
                                                    class="btn btn-primary" title="Редактировать">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>

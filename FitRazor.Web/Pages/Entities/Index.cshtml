@@ -8,7 +8,10 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>@ViewData["Title"]</h1>
-        <a asp-page="Create" asp-route-entityName="@Model.EntityName" class="btn btn-success">
+        <a asp-page="Create"
+           asp-route-entityName="@Model.EntityName"
+           asp-route-returnUrl="@(HttpContext.Request.Path + HttpContext.Request.QueryString)"
+           class="btn btn-success">
             + Добавить запись
         </a>
     </div>
@@ -48,6 +51,7 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="entityName" id="hiddenEntityName" />
                     <input type="hidden" name="id" id="hiddenEntityId" />
+                    <input type="hidden" name="returnUrl" id="hiddenReturnUrl" />
                     <button type="submit" class="btn btn-danger fw-bold">🗑️ Да, удалить</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Отмена</button>
                 </form>
@@ -61,6 +65,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const modalEl = document.getElementById('deleteModal');
             if (!modalEl) return;
+
+            document.getElementById('hiddenReturnUrl').value = window.location.pathname + window.location.search;
 
             modalEl.addEventListener('show.bs.modal', event => {
                 const btn = event.relatedTarget; // кнопка 🗑️
