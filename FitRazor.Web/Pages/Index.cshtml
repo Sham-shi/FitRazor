@@ -4,450 +4,552 @@
     ViewData["Title"] = "Главная";
 }
 
-<!-- ===== HERO СЕКЦИЯ ===== -->
-<div class="hero-container d-flex flex-column justify-content-center align-items-center text-center text-white">
-    <h1 class="hero-title line-1 reveal-slam-left pb-5 d-flex align-items-center">
-        <span class="text-pains">Pains</span> — <span class="subtitle gy-4">временно</span>
-    </h1>
-    <h1 class="hero-title line-2 reveal-slam-right pb-5 d-flex align-items-center">
-        <span class="text-gains">Gains</span> — <span class="subtitle gy-4">навсегда</span>
-    </h1>
-    <h1 class="hero-title line-3 reveal-power">
-        <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span>:
-        <span class="tagline text-primary-light">Честный фитнес</span>
-    </h1>
+<div class="page-layout-container">
+    <div class="main-scroll-content">
+        <!-- ===== HERO СЕКЦИЯ ===== -->
+        <div id="hero" class="hero-container d-flex flex-column justify-content-center align-items-center text-center text-white">
+            <h1 class="hero-title line-1 reveal-slam-left pb-5 d-flex align-items-center">
+                <span class="text-pains">Pains</span> — <span class="subtitle gy-4">временно</span>
+            </h1>
+            <h1 class="hero-title line-2 reveal-slam-right pb-5 d-flex align-items-center">
+                <span class="text-gains">Gains</span> — <span class="subtitle gy-4">навсегда</span>
+            </h1>
+            <h1 class="hero-title line-3 reveal-power">
+                <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span>:
+                <span class="tagline text-primary-light">Честный фитнес</span>
+            </h1>
+        </div>
+
+        <!-- ===== ФИЛОСОФИЯ СЕКЦИЯ ===== -->
+        <section id="philosophy" class="philosophy-section section-spacing bg-gradient-dark">
+            <h2 class="section-title philosophy-main-title reveal-up text-center mb-5">
+                <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
+                это не просто зал.<br class="d-none d-md-block">Это философия
+            </h2>
+
+            <div class="philosophy-grid-wrapper">
+                <div class="row g-0 philosophy-grid mx-auto">
+
+                    <!-- Левая карточка -->
+                    <div class="col-md-6">
+                        <div class="card-dark philosophy-card left-card reveal-left h-100">
+                            <div class="overlay-dark"></div>
+                            <div class="card-content p-4 p-md-5">
+                                <div class="card-text">
+                                    <p>Здесь нет места для легких путей. Сюда приходят за настоящими изменениями.</p>
+                                    <p>
+                                        Каждый грамм силы и сантиметр прогресса оплачен решимостью —
+                                        <span class="text-highlight">сдаться или прорваться</span>.
+                                    </p>
+                                    <p>
+                                        Мы не верим в волшебные таблетки. Мы верим в пот, характер и
+                                        <span class="text-highlight">последнее повторение</span>, сделанное на пределе.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Правая карточка -->
+                    <div class="col-md-6">
+                        <div class="card-dark philosophy-card right-card reveal-right h-100">
+                            <div class="overlay-dark"></div>
+                            <div class="card-content p-4 p-md-5">
+                                <div class="card-text">
+                                    <p>Наша истина проста:</p>
+                                    <p class="truth-statement"><span class="text-gains">Боль</span> — это валюта роста.</p>
+                                    <p class="truth-statement"><span class="text-pains">Усталость</span> — плата за выносливость.</p>
+                                    <p class="truth-statement"><span class="text-gains">Дискомфорт</span> — фундамент новой уверенности.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ЗОНЫ СЕКЦИЯ ===== -->
+        <section id="zones" class="zones-section section-spacing bg-gradient-dark text-white">
+            <div class="container">
+                <h2 class="section-title zones-title text-center mb-5">
+                    И мы создали пространство,<br class="d-none d-md-block">где эта философия <span class="text-gains">оживает</span>
+                </h2>
+
+                <div id="zonesCarousel" class="carousel carousel-dark carousel-fade slide" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-inner">
+
+                        <!-- Слайд 1: Профессиональное железо -->
+                        <div class="carousel-item active">
+                            <div class="zone-slide" style="background-image: url('/Images/zone-iron.png');">
+                                <div class="overlay-dark"></div>
+                                <div class="zone-content container">
+                                    <div class="zone-text-wrapper text-center">
+                                        <h3 class="section-title zone-title-item text-uppercase">
+                                            <span class="text-gains">Профессиональное железо</span>
+                                        </h3>
+                                        <p class="card-text">
+                                            Наши грифы и тренажеры — это инструменты, которые задают тебе тот самый вопрос:
+                                            <span class="text-highlight">«Насколько ты этого хочешь?»</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Слайд 2: Зоны для настоящей работы -->
+                        <div class="carousel-item">
+                            <div class="zone-slide" style="background-image: url('/Images/zone-work.png');">
+                                <div class="overlay-dark"></div>
+                                <div class="zone-content container">
+                                    <div class="zone-text-wrapper text-center">
+                                        <h3 class="section-title zone-title-item text-uppercase">
+                                            <span class="text-pains">Зоны для настоящей работы</span>
+                                        </h3>
+                                        <p class="card-text">
+                                            Просторные кардио- и силовые залы, где нет места лишним словам.
+                                            <span class="text-highlight">Только ты и твоя работа.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Слайд 3: Команда, которая понимает -->
+                        <div class="carousel-item">
+                            <div class="zone-slide" style="background-image: url('/Images/zone-team.jpg');">
+                                <div class="overlay-dark"></div>
+                                <div class="zone-content container">
+                                    <div class="zone-text-wrapper text-center">
+                                        <h3 class="section-title zone-title-item text-uppercase">
+                                            <span class="text-gains">Команда, которая понимает</span>
+                                        </h3>
+                                        <p class="card-text">
+                                            Наши тренеры прошли через это сами. Они не будут тебя жалеть.
+                                            Они будут грамотно направлять твою боль в рост, помогая превращать
+                                            <span class="text-highlight">Pains в твои личные Gains.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Слайд 4: Атмосфера поддержки -->
+                        <div class="carousel-item">
+                            <div class="zone-slide" style="background-image: url('/Images/zone-atmosphere.png');">
+                                <div class="overlay-dark"></div>
+                                <div class="zone-content container">
+                                    <div class="zone-text-wrapper text-center">
+                                        <h3 class="section-title zone-title-item text-uppercase">
+                                            <span class="text-pains">Атмосфера поддержки</span>
+                                        </h3>
+                                        <p class="card-text">
+                                            Ты окружишь себя такими же целеустремленными людьми. Здесь не ждут легких путей.
+                                            <span class="text-highlight">Здесь ценят не слова, а пот на полу.</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Управление: стрелки -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#zonesCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Предыдущая зона</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#zonesCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Следующая зона</span>
+                    </button>
+                </div>
+
+                <!-- Финальные заголовки -->
+                <div class="zones-final section-spacing text-center">
+                    <h2 class="section-title zones-final-title text-uppercase mb-4">
+                        Прими свой вызов.<br class="d-none d-md-block">
+                        Уважай свой путь.<br class="d-none d-md-block">
+                        <span class="text-gains">Заработай свой результат</span><br class="d-none d-md-block">
+                        в месте, созданном для преодоления.
+                    </h2>
+                    <h3 class="zones-final-slogan text-uppercase text-muted">
+                        <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
+                        честный фитнес для сильных духом.
+                    </h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ТРЕНЕРЫ СЕКЦИЯ ===== -->
+        <section id="trainers" class="trainers-section section-spacing bg-gradient-dark text-white">
+            <div class="container">
+                <h2 class="section-title text-center mb-5">
+                    Команда, которая <span class="text-gains">направляет</span>
+                </h2>
+
+                <div class="row g-4 justify-content-center">
+
+                    @foreach (var trainer in Model.Trainers)
+                    {
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="card-dark trainer-card">
+
+                                <!-- ===== ПЕРЕДНЯЯ СТОРОНА ===== -->
+                                <div class="trainer-card-front">
+                                    <div class="trainer-photo"
+                                         style="background-image: url('@(!string.IsNullOrEmpty(trainer.PhotoUrl) ? trainer.PhotoUrl : "/Images/Trainers/no-photo.jpg")');">
+                                    </div>
+                                    <div class="overlay-dark"></div>
+                                    <div class="card-content trainer-info-front">
+                                        <h3 class="card-name text-uppercase">
+                                            <span class="trainer-nickname text-gains">@trainer.FullName</span>
+                                        </h3>
+                                        <div class="card-words">
+                                            <span>@trainer.Slogan</span>
+                                        </div>
+                                        <p class="card-direction text-uppercase">@trainer.Specialization</p>
+                                        <p class="card-motto">@trainer.Motto</p>
+                                    </div>
+                                </div>
+
+                                <!-- ===== ЗАДНЯЯ СТОРОНА (появляется при наведении) ===== -->
+                                <div class="trainer-card-back">
+                                    <div class="trainer-info-back text-center">
+                                        <div class="trainer-details">
+
+                                            <div class="detail-item">
+                                                <span class="detail-icon">🏆</span>
+                                                <p><strong>@trainer.SportsAchievements</strong><br>@trainer.WorkExperience</p>
+                                            </div>
+
+                                            <div class="detail-item">
+                                                <span class="detail-icon">🎯</span>
+                                                <p><strong>@trainer.Specialization</strong><br>@trainer.SpecializationDescription</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== АБОНЕМЕНТЫ СЕКЦИЯ ===== -->
+        <section id="pricing" class="pricing-section section-spacing bg-gradient-dark-reverse text-white">
+            <div class="container">
+                <h2 class="section-title text-center mb-5">
+                    Выбери свой <span class="text-gains">путь</span>
+                </h2>
+
+                <div class="row g-4 justify-content-center">
+
+                    <!-- Гостевой визит -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card-dark h-100 p-3">
+                            <div class="card-header-dark">
+                                <h3 class="section-title--card text-uppercase">Гостевой визит</h3>
+                                <p class="pricing-desc">Попробуй перед решением</p>
+                            </div>
+                            <div class="card-body-dark">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Доступ в зал на 1 день</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Инструктаж по технике</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Душ и раздевалка</li>
+                                    <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Групповые занятия</li>
+                                    <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Заморозка</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer-dark">
+                                <div class="price-block">
+                                    <span class="price-currency">₽</span>
+                                    <span class="price-value">500</span>
+                                    <span class="price-period">/раз</span>
+                                </div>
+                                <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Попробовать</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1 месяц -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card-dark h-100 p-3">
+                            <div class="card-header-dark">
+                                <h3 class="section-title--card text-uppercase">1 месяц</h3>
+                                <p class="pricing-desc">Отличный старт</p>
+                            </div>
+                            <div class="card-body-dark">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 3 дней</li>
+                                    <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Персональная тренировка</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer-dark">
+                                <div class="price-block">
+                                    <span class="price-currency">₽</span>
+                                    <span class="price-value">3 900</span>
+                                    <span class="price-period">/мес</span>
+                                </div>
+                                <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3 месяца (ПОПУЛЯРНО) -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card-dark card-dark--popular h-100 p-3">
+                            <div class="badge-popular">Популярно</div>
+                            <div class="card-header-dark">
+                                <h3 class="section-title--card text-uppercase">3 месяца</h3>
+                                <p class="pricing-desc">Для тех, кто настроен серьёзно</p>
+                            </div>
+                            <div class="card-body-dark">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование + план</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 10 дней</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 10% на персоналки</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer-dark">
+                                <div class="price-block">
+                                    <span class="price-currency">₽</span>
+                                    <span class="price-value">10 500</span>
+                                    <span class="price-period">/3 мес</span>
+                                </div>
+                                <span class="price-save">Экономия 1 200 ₽</span>
+                                <a href="#contact" class="btn btn-primary-glow w-100 text-uppercase">Выбрать</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6 месяцев -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card-dark h-100 p-3">
+                            <div class="card-header-dark">
+                                <h3 class="section-title--card text-uppercase">6 месяцев</h3>
+                                <p class="pricing-desc">Для тех, кто строит результат</p>
+                            </div>
+                            <div class="card-body-dark">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план тренировок</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 21 дня</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 15% на персоналки</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer-dark">
+                                <div class="price-block">
+                                    <span class="price-currency">₽</span>
+                                    <span class="price-value">19 900</span>
+                                    <span class="price-period">/6 мес</span>
+                                </div>
+                                <span class="price-save">Экономия 3 500 ₽</span>
+                                <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1 год -->
+                    <div class="col-md-6 col-lg-4 col-xl-3">
+                        <div class="card-dark h-100 p-3">
+                            <div class="card-header-dark">
+                                <h3 class="section-title--card text-uppercase">1 год</h3>
+                                <p class="pricing-desc">Максимальная выгода</p>
+                            </div>
+                            <div class="card-body-dark">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план + контроль</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 45 дней</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 20% на персоналки</li>
+                                    <li class="list-item-dark"><span class="check-icon">✓</span> Бесплатная консультация нутрициолога</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer-dark">
+                                <div class="price-block">
+                                    <span class="price-currency">₽</span>
+                                    <span class="price-value">35 900</span>
+                                    <span class="price-period">/год</span>
+                                </div>
+                                <span class="price-save">Экономия 10 900 ₽</span>
+                                <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== КОНТАКТЫ СЕКЦИЯ ===== -->
+        <section id="contact" class="contact-section section-spacing bg-gradient-dark text-white">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-xl-6">
+
+                        <div class="contact-wrapper text-center mb-5">
+                            <h2 class="section-title text-uppercase mb-3">
+                                Готов начать <span class="text-gains">сейчас</span>?
+                            </h2>
+                            <p class="section-subtitle">
+                                Оставь заявку — мы свяжемся в течение 15 минут.
+                                Никаких звонков «просто так». Только дело.
+                            </p>
+                        </div>
+
+                        <form class="form-dark" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-4">
+                                <label for="name" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                                    Твоё имя
+                                </label>
+                                <input type="text"
+                                       id="name"
+                                       name="Name"
+                                       class="form-dark-input form-control-lg w-100"
+                                       placeholder="Максим"
+                                       required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="phone" class="form-dark-label text-start text-uppercase small fw-bold d-block">
+                                    Телефон для связи
+                                </label>
+                                <input type="tel"
+                                       id="phone"
+                                       name="Phone"
+                                       class="form-dark-input form-control-lg w-100"
+                                       placeholder="+7 (___) ___-__-__"
+                                       required>
+                                <small class="form-dark-text d-block mt-2">Формат: +7 (999) 999-99-99</small>
+                            </div>
+
+                            <div class="form-check mb-4 text-start">
+                                <input class="form-check-input form-dark-check" type="checkbox" id="consent" required>
+                                <label class="form-check-label small" for="consent">
+                                    Согласен на обработку персональных данных и хочу стать сильнее
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
+                                Отправить заявку
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Боковая навигация (Stick Sidebar) -->
+    <nav class="side-navigation">
+        <ul class="side-nav-list">
+            <li>
+                <a href="#hero" class="side-nav-link" data-target="hero">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Главная</span>
+                </a>
+            </li>
+            <li>
+                <a href="#philosophy" class="side-nav-link" data-target="philosophy">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Философия</span>
+                </a>
+            </li>
+            <li>
+                <a href="#zones" class="side-nav-link" data-target="zones">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Зоны</span>
+                </a>
+            </li>
+            <li>
+                <a href="#trainers" class="side-nav-link" data-target="trainers">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Тренеры</span>
+                </a>
+            </li>
+            <li>
+                <a href="#pricing" class="side-nav-link" data-target="pricing">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Цены</span>
+                </a>
+            </li>
+            <li>
+                <a href="#contact" class="side-nav-link" data-target="contact">
+                    <span class="nav-line"></span>
+                    <span class="nav-label">Контакты</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
-<!-- ===== ФИЛОСОФИЯ СЕКЦИЯ ===== -->
-<section class="philosophy-section section-spacing bg-gradient-dark">
-    <h2 class="section-title philosophy-main-title reveal-up text-center mb-5">
-        <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
-        это не просто зал.<br class="d-none d-md-block">Это философия
-    </h2>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('section, #hero'); // Выбираем все секции по ID
+            const navLinks = document.querySelectorAll('.side-nav-link');
 
-    <div class="philosophy-grid-wrapper">
-        <div class="row g-0 philosophy-grid mx-auto">
+            // Настройки для определения видимости секции
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '-50% 0px -50% 0px', // Секция считается активной, когда она в центре экрана
+                threshold: 0
+            };
 
-            <!-- Левая карточка -->
-            <div class="col-md-6">
-                <div class="card-dark philosophy-card left-card reveal-left h-100">
-                    <div class="overlay-dark"></div>
-                    <div class="card-content p-4 p-md-5">
-                        <div class="card-text">
-                            <p>Здесь нет места для легких путей. Сюда приходят за настоящими изменениями.</p>
-                            <p>
-                                Каждый грамм силы и сантиметр прогресса оплачен решимостью —
-                                <span class="text-highlight">сдаться или прорваться</span>.
-                            </p>
-                            <p>
-                                Мы не верим в волшебные таблетки. Мы верим в пот, характер и
-                                <span class="text-highlight">последнее повторение</span>, сделанное на пределе.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Удаляем active у всех
+                        navLinks.forEach(link => link.classList.remove('active'));
 
-            <!-- Правая карточка -->
-            <div class="col-md-6">
-                <div class="card-dark philosophy-card right-card reveal-right h-100">
-                    <div class="overlay-dark"></div>
-                    <div class="card-content p-4 p-md-5">
-                        <div class="card-text">
-                            <p>Наша истина проста:</p>
-                            <p class="truth-statement"><span class="text-gains">Боль</span> — это валюта роста.</p>
-                            <p class="truth-statement"><span class="text-pains">Усталость</span> — плата за выносливость.</p>
-                            <p class="truth-statement"><span class="text-gains">Дискомфорт</span> — фундамент новой уверенности.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        // Находим ссылку, соответствующую этой секции
+                        const activeLink = document.querySelector(`.side-nav-link[data-target="${entry.target.id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('active');
+                        }
+                    }
+                });
+            }, observerOptions);
 
-        </div>
-    </div>
-</section>
+            sections.forEach(section => {
+                observer.observe(section);
+            });
 
-<!-- ===== ЗОНЫ СЕКЦИЯ ===== -->
-<section class="zones-section section-spacing bg-gradient-dark text-white">
-    <div class="container">
-        <h2 class="section-title zones-title text-center mb-5">
-            И мы создали пространство,<br class="d-none d-md-block">где эта философия <span class="text-gains">оживает</span>
-        </h2>
+            // Плавный скролл при клике (если стандартного поведения bootstrap недостаточно)
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
 
-        <div id="zonesCarousel" class="carousel carousel-dark carousel-fade slide" data-bs-ride="carousel" data-bs-interval="5000">
-            <div class="carousel-inner">
+                    if (targetSection) {
+                        // Учитываем высоту фиксированного хедера, если нужно
+                        const headerOffset = 100;
+                        const elementPosition = targetSection.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-                <!-- Слайд 1: Профессиональное железо -->
-                <div class="carousel-item active">
-                    <div class="zone-slide" style="background-image: url('/Images/zone-iron.png');">
-                        <div class="overlay-dark"></div>
-                        <div class="zone-content container">
-                            <div class="zone-text-wrapper text-center">
-                                <h3 class="section-title zone-title-item text-uppercase">
-                                    <span class="text-gains">Профессиональное железо</span>
-                                </h3>
-                                <p class="card-text">
-                                    Наши грифы и тренажеры — это инструменты, которые задают тебе тот самый вопрос:
-                                    <span class="text-highlight">«Насколько ты этого хочешь?»</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Слайд 2: Зоны для настоящей работы -->
-                <div class="carousel-item">
-                    <div class="zone-slide" style="background-image: url('/Images/zone-work.png');">
-                        <div class="overlay-dark"></div>
-                        <div class="zone-content container">
-                            <div class="zone-text-wrapper text-center">
-                                <h3 class="section-title zone-title-item text-uppercase">
-                                    <span class="text-pains">Зоны для настоящей работы</span>
-                                </h3>
-                                <p class="card-text">
-                                    Просторные кардио- и силовые залы, где нет места лишним словам.
-                                    <span class="text-highlight">Только ты и твоя работа.</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Слайд 3: Команда, которая понимает -->
-                <div class="carousel-item">
-                    <div class="zone-slide" style="background-image: url('/Images/zone-team.jpg');">
-                        <div class="overlay-dark"></div>
-                        <div class="zone-content container">
-                            <div class="zone-text-wrapper text-center">
-                                <h3 class="section-title zone-title-item text-uppercase">
-                                    <span class="text-gains">Команда, которая понимает</span>
-                                </h3>
-                                <p class="card-text">
-                                    Наши тренеры прошли через это сами. Они не будут тебя жалеть.
-                                    Они будут грамотно направлять твою боль в рост, помогая превращать
-                                    <span class="text-highlight">Pains в твои личные Gains.</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Слайд 4: Атмосфера поддержки -->
-                <div class="carousel-item">
-                    <div class="zone-slide" style="background-image: url('/Images/zone-atmosphere.png');">
-                        <div class="overlay-dark"></div>
-                        <div class="zone-content container">
-                            <div class="zone-text-wrapper text-center">
-                                <h3 class="section-title zone-title-item text-uppercase">
-                                    <span class="text-pains">Атмосфера поддержки</span>
-                                </h3>
-                                <p class="card-text">
-                                    Ты окружишь себя такими же целеустремленными людьми. Здесь не ждут легких путей.
-                                    <span class="text-highlight">Здесь ценят не слова, а пот на полу.</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Управление: стрелки -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#zonesCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Предыдущая зона</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#zonesCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Следующая зона</span>
-            </button>
-        </div>
-
-        <!-- Финальные заголовки -->
-        <div class="zones-final section-spacing text-center">
-            <h2 class="section-title zones-final-title text-uppercase mb-4">
-                Прими свой вызов.<br class="d-none d-md-block">
-                Уважай свой путь.<br class="d-none d-md-block">
-                <span class="text-gains">Заработай свой результат</span><br class="d-none d-md-block">
-                в месте, созданном для преодоления.
-            </h2>
-            <h3 class="zones-final-slogan text-uppercase text-muted">
-                <span class="text-gains">Gains</span> & <span class="text-pains">Pains</span> —
-                честный фитнес для сильных духом.
-            </h3>
-        </div>
-    </div>
-</section>
-
-<!-- ===== ТРЕНЕРЫ СЕКЦИЯ ===== -->
-<section class="trainers-section section-spacing bg-gradient-dark text-white">
-    <div class="container">
-        <h2 class="section-title text-center mb-5">
-            Команда, которая <span class="text-gains">направляет</span>
-        </h2>
-
-        <div class="row g-4 justify-content-center">
-
-            @foreach (var trainer in Model.Trainers)
-            {
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="card-dark trainer-card">
-
-                        <!-- ===== ПЕРЕДНЯЯ СТОРОНА ===== -->
-                        <div class="trainer-card-front">
-                            <div class="trainer-photo"
-                                 style="background-image: url('@(!string.IsNullOrEmpty(trainer.PhotoUrl) ? trainer.PhotoUrl : "/Images/Trainers/no-photo.jpg")');">
-                            </div>
-                            <div class="overlay-dark"></div>
-                            <div class="card-content trainer-info-front">
-                                <h3 class="card-name text-uppercase">
-                                    <span class="trainer-nickname text-gains">@trainer.FullName</span>
-                                </h3>
-                                <div class="card-words">
-                                    <span>@trainer.Slogan</span>
-                                </div>
-                                <p class="card-direction text-uppercase">@trainer.Specialization</p>
-                                <p class="card-motto">@trainer.Motto</p>
-                            </div>
-                        </div>
-
-                        <!-- ===== ЗАДНЯЯ СТОРОНА (появляется при наведении) ===== -->
-                        <div class="trainer-card-back">
-                            <div class="trainer-info-back text-center">
-                                <div class="trainer-details">
-
-                                    <div class="detail-item">
-                                        <span class="detail-icon">🏆</span>
-                                        <p><strong>@trainer.SportsAchievements</strong><br>@trainer.WorkExperience</p>
-                                    </div>
-
-                                    <div class="detail-item">
-                                        <span class="detail-icon">🎯</span>
-                                        <p><strong>@trainer.Specialization</strong><br>@trainer.SpecializationDescription</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            }
-
-        </div>
-    </div>
-</section>
-
-<!-- ===== АБОНЕМЕНТЫ СЕКЦИЯ ===== -->
-<section class="pricing-section section-spacing bg-gradient-dark-reverse text-white">
-    <div class="container">
-        <h2 class="section-title text-center mb-5">
-            Выбери свой <span class="text-gains">путь</span>
-        </h2>
-
-        <div class="row g-4 justify-content-center">
-
-            <!-- Гостевой визит -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card-dark h-100 p-3">
-                    <div class="card-header-dark">
-                        <h3 class="section-title--card text-uppercase">Гостевой визит</h3>
-                        <p class="pricing-desc">Попробуй перед решением</p>
-                    </div>
-                    <div class="card-body-dark">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Доступ в зал на 1 день</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Инструктаж по технике</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Душ и раздевалка</li>
-                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Групповые занятия</li>
-                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Заморозка</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer-dark">
-                        <div class="price-block">
-                            <span class="price-currency">₽</span>
-                            <span class="price-value">500</span>
-                            <span class="price-period">/раз</span>
-                        </div>
-                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Попробовать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 1 месяц -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card-dark h-100 p-3">
-                    <div class="card-header-dark">
-                        <h3 class="section-title--card text-uppercase">1 месяц</h3>
-                        <p class="pricing-desc">Отличный старт</p>
-                    </div>
-                    <div class="card-body-dark">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 3 дней</li>
-                            <li class="list-item-dark list-item-dark--disabled"><span class="check-icon">✗</span> Персональная тренировка</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer-dark">
-                        <div class="price-block">
-                            <span class="price-currency">₽</span>
-                            <span class="price-value">3 900</span>
-                            <span class="price-period">/мес</span>
-                        </div>
-                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3 месяца (ПОПУЛЯРНО) -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card-dark card-dark--popular h-100 p-3">
-                    <div class="badge-popular">Популярно</div>
-                    <div class="card-header-dark">
-                        <h3 class="section-title--card text-uppercase">3 месяца</h3>
-                        <p class="pricing-desc">Для тех, кто настроен серьёзно</p>
-                    </div>
-                    <div class="card-body-dark">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Фитнес-тестирование + план</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 10 дней</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 10% на персоналки</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer-dark">
-                        <div class="price-block">
-                            <span class="price-currency">₽</span>
-                            <span class="price-value">10 500</span>
-                            <span class="price-period">/3 мес</span>
-                        </div>
-                        <span class="price-save">Экономия 1 200 ₽</span>
-                        <a href="#contact" class="btn btn-primary-glow w-100 text-uppercase">Выбрать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6 месяцев -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card-dark h-100 p-3">
-                    <div class="card-header-dark">
-                        <h3 class="section-title--card text-uppercase">6 месяцев</h3>
-                        <p class="pricing-desc">Для тех, кто строит результат</p>
-                    </div>
-                    <div class="card-body-dark">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план тренировок</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 21 дня</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 15% на персоналки</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer-dark">
-                        <div class="price-block">
-                            <span class="price-currency">₽</span>
-                            <span class="price-value">19 900</span>
-                            <span class="price-period">/6 мес</span>
-                        </div>
-                        <span class="price-save">Экономия 3 500 ₽</span>
-                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 1 год -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="card-dark h-100 p-3">
-                    <div class="card-header-dark">
-                        <h3 class="section-title--card text-uppercase">1 год</h3>
-                        <p class="pricing-desc">Максимальная выгода</p>
-                    </div>
-                    <div class="card-body-dark">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Неограниченный доступ</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Все групповые занятия</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Персональный план + контроль</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Заморозка до 45 дней</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Скидка 20% на персоналки</li>
-                            <li class="list-item-dark"><span class="check-icon">✓</span> Бесплатная консультация нутрициолога</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer-dark">
-                        <div class="price-block">
-                            <span class="price-currency">₽</span>
-                            <span class="price-value">35 900</span>
-                            <span class="price-period">/год</span>
-                        </div>
-                        <span class="price-save">Экономия 10 900 ₽</span>
-                        <a href="#contact" class="btn btn-outline-primary-glow w-100 text-uppercase">Выбрать</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ===== КОНТАКТЫ СЕКЦИЯ ===== -->
-<section class="contact-section section-spacing bg-gradient-dark text-white">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-xl-6">
-
-                <div class="contact-wrapper text-center mb-5">
-                    <h2 class="section-title text-uppercase mb-3">
-                        Готов начать <span class="text-gains">сейчас</span>?
-                    </h2>
-                    <p class="section-subtitle">
-                        Оставь заявку — мы свяжемся в течение 15 минут.
-                        Никаких звонков «просто так». Только дело.
-                    </p>
-                </div>
-
-                <form class="form-dark" method="post">
-                    @Html.AntiForgeryToken()
-
-                    <div class="mb-4">
-                        <label for="name" class="form-dark-label text-start text-uppercase small fw-bold d-block">
-                            Твоё имя
-                        </label>
-                        <input type="text"
-                               id="name"
-                               name="Name"
-                               class="form-dark-input form-control-lg w-100"
-                               placeholder="Максим"
-                               required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="phone" class="form-dark-label text-start text-uppercase small fw-bold d-block">
-                            Телефон для связи
-                        </label>
-                        <input type="tel"
-                               id="phone"
-                               name="Phone"
-                               class="form-dark-input form-control-lg w-100"
-                               placeholder="+7 (___) ___-__-__"
-                               required>
-                        <small class="form-dark-text d-block mt-2">Формат: +7 (999) 999-99-99</small>
-                    </div>
-
-                    <div class="form-check mb-4 text-start">
-                        <input class="form-check-input form-dark-check" type="checkbox" id="consent" required>
-                        <label class="form-check-label small" for="consent">
-                            Согласен на обработку персональных данных и хочу стать сильнее
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary-glow btn-lg w-100 text-uppercase fw-bold">
-                        Отправить заявку
-                    </button>
-                </form>
-
-            </div>
-        </div>
-    </div>
-</section>
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
