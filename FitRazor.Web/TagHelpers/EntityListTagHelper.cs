@@ -87,7 +87,7 @@ namespace FitRazor.Web.TagHelpers
                 }
             }
 
-            var data = await meta.QueryFactory(_context).ToListAsync();
+            var data = await query.ToListAsync();
 
             output.TagName = "div";
             output.Attributes.SetAttribute("class", "entity-list-container");

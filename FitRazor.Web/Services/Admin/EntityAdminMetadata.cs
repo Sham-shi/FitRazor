@@ -440,7 +440,8 @@ public static class EntityAdminRegistry
             // ✅ Явно указываем свойства для отображения
             GetDisplayPropertiesFunc = type =>
                 Helper.GetFormProperties(type)
-                    .Where(p => p.Name != "CreatedDate"),
+                    .Where(p => p.Name != "CreatedDate")
+                    .Concat(type.GetProperty("TotalPrice") != null ? new[] { type.GetProperty("TotalPrice")! } : Array.Empty<PropertyInfo>()),
 
             GetDisplayNameFunc = entity =>
             {
@@ -537,12 +538,25 @@ public static class EntityAdminRegistry
             {
                 if (entity is Booking booking)
                 {
+                    if (booking.TrainerServiceId > 0)
+                    {
+                        // Загружаем TrainerService вместе с Service
+                        var trainerService = await ctx.TrainerServices
+                            .Include(ts => ts.Service)
+                            .FirstOrDefaultAsync(ts => ts.TrainerServiceId == booking.TrainerServiceId);
+
+                        if (trainerService != null)
+                        {
+                            booking.UnitPrice = trainerService.Service.BasePrice;
+                        }
+                    }
+
                     // Пересчитываем общую стоимость
                     booking.TotalPrice = booking.UnitPrice * booking.SessionsCount;
 
-                    // Опционально: можно обновить UnitPrice из связанной услуги, если нужно
-                    // if (booking.TrainerService?.Service?.BasePrice is decimal basePrice)
-                    //     booking.UnitPrice = basePrice;
+                //Опционально: можно обновить UnitPrice из связанной услуги, если нужно
+                     if (booking.TrainerService?.Service?.BasePrice is decimal basePrice)
+                        booking.UnitPrice = basePrice;
                 }
                 await Task.CompletedTask;
             },
