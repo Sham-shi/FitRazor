@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitRazor.Web.Pages.Entities;
 
@@ -91,30 +92,66 @@ public class CreateModel : PageModel
             // 3. Применяем данные формы
             Helper.ApplyFormValuesToEntity(entity, Request.Form);
 
-            // 4. Обрабатываем загрузку файла (если есть конфиг)
+            // 4. 🔹 ВАЖНО: РУЧНАЯ ВАЛИДАЦИЯ АТРИБУТОВ
+            // Так как мы используем рефлексию и динамический объект, стандартный биндинг ModelState не сработал автоматически.
+            var validationContext = new ValidationContext(entity, serviceProvider: null, items: null);
+            var validationResults = new List<ValidationResult>();
+
+            // validateAllProperties: true — проверяет все свойства с атрибутами
+            bool isValid = Validator.TryValidateObject(entity, validationContext, validationResults, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                // Переносим ошибки в ModelState, чтобы TagHelper мог их отобразить
+                foreach (var validationResult in validationResults)
+                {
+                    if (validationResult.MemberNames.Any())
+                    {
+                        foreach (var memberName in validationResult.MemberNames)
+                        {
+                            ModelState.AddModelError(memberName, validationResult.ErrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        // Глобальная ошибка (не привязана к полю)
+                        ModelState.AddModelError(string.Empty, validationResult.ErrorMessage);
+                    }
+                }
+            }
+
+            // 5. 🔹 ПРОВЕРКА: Если есть ошибки, возвращаем форму заново
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Валидация не пройдена при создании {EntityName}. Ошибок: {ErrorCount}",
+                    EntityName, ModelState.ErrorCount);
+
+                // Возвращаем Page(), чтобы отрисовать форму с ошибками
+                return Page();
+            }
+
+            // 6. Обрабатываем загрузку файла (если есть конфиг)
             await HandleFileUploadAsync(entity, meta);
 
-            // 5. Выполняем хук BeforeSave (пересчёт TotalPrice и т.п.)
+            // 7. Выполняем хук BeforeSave
             if (meta.BeforeSaveAsync != null)
                 await meta.BeforeSaveAsync(_context, entity);
 
-            // 6. Сохраняем
+            // 8. Сохраняем в БД
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            // 7. Хук AfterCreate (опционально)
+            // 9. Хук AfterCreate
             if (meta.AfterCreateAsync != null)
                 await meta.AfterCreateAsync(_context, entity);
 
             _logger.LogInformation("Успешно создана {EntityName}", EntityName);
             TempData["SuccessMessage"] = "Запись успешно создана!";
 
-            // 🔹 Возвращаем страницу с инструкцией для браузера вернуться назад
-            // 🔹 Если ReturnUrl не передан — берём из заголовка Referer
+            // Обработка ReturnUrl
             if (string.IsNullOrEmpty(ReturnUrl) && Request.Headers.Referer.Any())
             {
                 var referer = Request.Headers.Referer.ToString();
-                // Проверяем, что referer локальный (защита от open redirect)
                 if (Url.IsLocalUrl(referer))
                     ReturnUrl = referer;
             }
@@ -124,19 +161,19 @@ public class CreateModel : PageModel
                 return Redirect(ReturnUrl);
             }
 
-            // fallback
             return RedirectToPage("Index", new { entityName = EntityName });
         }
         catch (ArgumentException ex)
         {
+            // Ошибки аргументов (например, неверный файл) добавляем в ModelState
+            ModelState.AddModelError(string.Empty, ex.Message);
             _logger.LogWarning(ex, "Ошибка валидации при создании {EntityName}", EntityName);
-            TempData["ErrorMessage"] = ex.Message;
             return Page();
         }
         catch (Exception ex)
         {
+            ModelState.AddModelError(string.Empty, $"Критическая ошибка: {ex.Message}");
             _logger.LogError(ex, "Критическая ошибка при создании {EntityName}", EntityName);
-            TempData["ErrorMessage"] = $"Ошибка: {ex.Message}";
             return Page();
         }
     }

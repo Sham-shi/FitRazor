@@ -149,8 +149,8 @@
                             {
                                 <tr>
                                     <td>@booking.BookingDateTime.ToString("dd.MM.yyyy HH:mm")</td>
-                                    <td>@booking.Client?.FullName ?? "—"</td>
-                                    <td>@booking.TrainerService?.Service?.ServiceName ?? "—"</td>
+                                    <td>@booking.Client?.FullName</td>
+                                    <td>@booking.TrainerService?.Service?.ServiceName</td>
                                     <td>@booking.SessionsCount</td>
                                     <td class="text-success fw-bold">@booking.TotalPrice?.ToString("N2") ₽</td>
                                     <td>

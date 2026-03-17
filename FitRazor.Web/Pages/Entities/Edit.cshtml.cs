@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitRazor.Web.Pages.Entities;
 
@@ -111,18 +112,55 @@ public class EditModel : PageModel
             Helper.ApplyFormValuesToEntity(entity, Request.Form);
 
             // 2. Обрабатываем загрузку файла (если есть конфиг в метаданных)
+            var validationContext = new ValidationContext(entity, serviceProvider: null, items: null);
+            var validationResults = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(entity, validationContext, validationResults, validateAllProperties: true);
+
+            if (!isValid)
+            {
+                // Переносим ошибки из ValidationResult в ModelState, чтобы TagHelper их увидел
+                foreach (var validationResult in validationResults)
+                {
+                    // Если ошибка относится к конкретному полю
+                    if (validationResult.MemberNames.Any())
+                    {
+                        foreach (var memberName in validationResult.MemberNames)
+                        {
+                            ModelState.AddModelError(memberName, validationResult.ErrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        // Глобальная ошибка
+                        ModelState.AddModelError(string.Empty, validationResult.ErrorMessage);
+                    }
+                }
+            }
+
+            // 3. 🔹 ПРОВЕРКА: Если есть ошибки, прерываем выполнение и возвращаем форму
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Валидация не пройдена для {EntityName}#{Id}. Ошибок: {ErrorCount}",
+                    EntityName, Id, ModelState.ErrorCount);
+
+                // Возвращаем Page(), чтобы отрисовать форму заново с ошибками.
+                // TagHelper считает ошибки из ModelState и отобразит их.
+                return Page();
+            }
+
+            // 4. Обрабатываем загрузку файла (если есть конфиг в метаданных)
             await HandleFileUploadAsync(entity, meta);
 
-            // 3. Выполняем хук BeforeSave (пересчёт TotalPrice и т.п.)
+            // 5. Выполняем хук BeforeSave (пересчёт TotalPrice и т.п.)
             if (meta.BeforeSaveAsync != null)
             {
                 await meta.BeforeSaveAsync(_context, entity);
             }
 
-            // 4. Сохраняем
+            // 6. Сохраняем в БД
             await _context.SaveChangesAsync();
 
-            // 5. Хук AfterSave (опционально)
+            // 7. Хук AfterSave
             if (meta.AfterSaveAsync != null)
             {
                 await meta.AfterSaveAsync(_context, entity);
@@ -137,19 +175,19 @@ public class EditModel : PageModel
                 return Redirect(ReturnUrl);
             }
 
-            // fallback
             return RedirectToPage("Index", new { entityName = EntityName });
         }
         catch (ArgumentException ex)
         {
+            // Логические ошибки (например, неверный формат файла) добавляем в ModelState
+            ModelState.AddModelError(string.Empty, ex.Message);
             _logger.LogWarning(ex, "Ошибка валидации данных для {EntityName}#{Id}", EntityName, Id);
-            TempData["ErrorMessage"] = ex.Message;
             return Page();
         }
         catch (Exception ex)
         {
+            ModelState.AddModelError(string.Empty, $"Критическая ошибка: {ex.Message}");
             _logger.LogError(ex, "Критическая ошибка при обновлении {EntityName}#{Id}", EntityName, Id);
-            TempData["ErrorMessage"] = $"Ошибка: {ex.Message}";
             return Page();
         }
     }

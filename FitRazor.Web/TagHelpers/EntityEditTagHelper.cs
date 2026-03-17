@@ -3,6 +3,7 @@ using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,10 @@ namespace FitRazor.Web.TagHelpers
         private readonly FitRazorContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
+        [ViewContext]
+        [HtmlAttributeNotBound]
+        public ViewContext? ViewContext { get; set; }
 
         [HtmlAttributeName("entity-name")]
         public string EntityName { get; set; } = "Trainers";
@@ -127,7 +132,17 @@ namespace FitRazor.Web.TagHelpers
                 }
 
                 // Валидация (для Razor Pages)
-                html.Append($"<span asp-validation-for='{propName}' class='text-danger small'></span>");
+                var errorMsg = "";
+                // Проверка ModelState
+                if (ViewContext?.ModelState.TryGetValue(propName, out var state) == true && state.Errors.Count > 0)
+                {
+                    errorMsg = state.Errors[0].ErrorMessage;
+                }
+
+                if (!string.IsNullOrEmpty(errorMsg))
+                {
+                    html.Append($"<div class='text-danger small mt-1'><i class='bi bi-exclamation-triangle-fill'></i> {errorMsg}</div>");
+                }
                 html.Append("</div>");
             }
 
@@ -221,22 +236,42 @@ namespace FitRazor.Web.TagHelpers
         {
             var propName = prop.Name;
             var maxLength = prop.GetCustomAttribute<StringLengthAttribute>()?.MaximumLength ?? 500;
+            var isRequired = prop.GetCustomAttribute<RequiredAttribute>() != null;
+
+            // Сбор атрибутов валидации
+            var sbAttrs = new StringBuilder();
+            sbAttrs.Append(readOnlyAttr);
+
+            if (isRequired)
+            {
+                sbAttrs.Append(" required data-val='true' data-val-required='Это поле обязательно'");
+            }
+
+            if (maxLength < 500) // Если есть ограничение
+            {
+                sbAttrs.Append($" maxlength='{maxLength}' data-val-length-max='{maxLength}'");
+            }
+
             var isEmail = propName.Contains("Email", StringComparison.OrdinalIgnoreCase);
             var isPhone = propName.Contains("Phone", StringComparison.OrdinalIgnoreCase);
-            var isUrl = propName.Contains("Url", StringComparison.OrdinalIgnoreCase) && !propName.Contains("Photo", StringComparison.OrdinalIgnoreCase);
 
             if (isEmail)
-                return $"<input type='email' name='{propName}' class='{classAttr}' value='{value}' maxlength='{maxLength}' {readOnlyAttr} />";
+            {
+                sbAttrs.Append(" data-val-email='Неверный формат Email'");
+                return $"<input type='email' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' {sbAttrs} />";
+            }
+
             if (isPhone)
-                return $"<input type='tel' name='{propName}' class='{classAttr}' value='{value}' maxlength='{maxLength}' {readOnlyAttr} placeholder='+7 (___) ___-__-__' />";
-            if (isUrl)
-                return $"<input type='url' name='{propName}' class='{classAttr}' value='{value}' maxlength='{maxLength}' {readOnlyAttr} />";
+            {
+                sbAttrs.Append(" data-val-phone='Неверный формат телефона'");
+                return $"<input type='tel' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' placeholder='+7 (___) ___-__-__' {sbAttrs} />";
+            }
 
-            // Многострочное поле для длинного текста
+            // Многострочное поле
             if (maxLength > 200)
-                return $"<textarea name='{propName}' class='{classAttr}' rows='3' maxlength='{maxLength}' {readOnlyAttr}>{value}</textarea>";
+                return $"<textarea name='{propName}' class='{classAttr}' rows='3' maxlength='{maxLength}' {sbAttrs}>{System.Web.HttpUtility.HtmlEncode(value)}</textarea>";
 
-            return $"<input type='text' name='{propName}' class='{classAttr}' value='{value}' maxlength='{maxLength}' {readOnlyAttr} />";
+            return $"<input type='text' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' {sbAttrs} />";
         }
 
         private string GenerateSelectInput(string propName, object? currentValue,

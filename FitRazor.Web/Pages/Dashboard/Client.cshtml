@@ -66,8 +66,8 @@
                             {
                                 <tr>
                                     <td>@booking.BookingDateTime.ToString("dd.MM.yyyy HH:mm")</td>
-                                    <td>@booking.TrainerService?.Trainer?.FullName ?? "—"</td>
-                                    <td>@booking.TrainerService?.Service?.ServiceName ?? "—"</td>
+                                    <td>@booking.TrainerService?.Trainer?.FullName</td>
+                                    <td>@booking.TrainerService?.Service?.ServiceName</td>
                                     <td>@booking.SessionsCount</td>
                                     <td class="text-success fw-bold">@booking.TotalPrice?.ToString("N2") ₽</td>
                                     <td>
@@ -126,13 +126,13 @@
             </div>
             <div class="modal-body">
                 <p>Вы уверены, что хотите удалить запись?</p>
-                <p class="small text-muted"><strong id="deleteEntityDisplay">...</strong></p>
+                <p class="small"><strong id="deleteEntityDisplay">...</strong></p>
                 <div class="alert alert-warning mb-0">
                     <i class="bi bi-exclamation-triangle-fill"></i> Это действие нельзя отменить!
                 </div>
             </div>
             <div class="modal-footer">
-                <form id="deleteConfirmForm" method="post" asp-page="/Entities/Index" asp-page-handler="Delete">
+                <form id="deleteConfirmForm" method="post" asp-route-returnUrl="@returnUrl">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="entityName" id="hiddenEntityName" />
                     <input type="hidden" name="id" id="hiddenEntityId" />
