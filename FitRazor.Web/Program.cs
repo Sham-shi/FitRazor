@@ -1,6 +1,8 @@
 ﻿using FitRazor.Data;
 using FitRazor.Data.Models;
+using FitRazor.Endpoints;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Events;
 
@@ -58,7 +60,17 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Pains & Gains API",
+        Version = "v1",
+        Description = "REST API для фитнес-центра Pains & Gains"
+    });
+});
 
 var app = builder.Build();
 
@@ -90,8 +102,20 @@ app.UseRouting();
 app.UseAuthentication();   // ← обязательно перед UseAuthorization
 app.UseAuthorization();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pains & Gains API V1");
+        options.RoutePrefix = "swagger";
+    });
+}
+
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+app.MapTrainerEndpoints();
 
 app.Run();
