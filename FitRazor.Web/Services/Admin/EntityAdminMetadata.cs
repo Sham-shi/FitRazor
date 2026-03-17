@@ -1,14 +1,9 @@
-﻿using FitRazor.Data;
-using FitRazor.Data.Models;
+﻿using FitRazor.Data.Models;
 using FitRazor.Web.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FitRazor.Web.Services.Admin;
 
