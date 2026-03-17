@@ -2,13 +2,14 @@
 using FitRazor.Web.Helpers;
 using FitRazor.Web.Services.Admin;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace FitRazor.Web.TagHelpers
 {
@@ -18,6 +19,8 @@ namespace FitRazor.Web.TagHelpers
         private readonly FitRazorContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHtmlGenerator _htmlGenerator;
+        private readonly IModelMetadataProvider _metadataProvider;
 
         [ViewContext]
         [HtmlAttributeNotBound]
@@ -35,11 +38,18 @@ namespace FitRazor.Web.TagHelpers
         [HtmlAttributeName("cancel-page")]
         public string CancelPage { get; set; }
 
-        public EntityEditTagHelper(FitRazorContext context, IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public EntityEditTagHelper(
+            FitRazorContext context,
+            IWebHostEnvironment env,
+            IHttpContextAccessor httpContextAccessor,
+            IHtmlGenerator htmlGenerator,
+            IModelMetadataProvider metadataProvider)
         {
             _context = context;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
+            _htmlGenerator = htmlGenerator;
+            _metadataProvider = metadataProvider;
         }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -107,6 +117,18 @@ namespace FitRazor.Web.TagHelpers
 
             html.Append("<div class='row'>");
 
+            var summary = _htmlGenerator.GenerateValidationSummary(
+                ViewContext!,
+                excludePropertyErrors: false,
+                message: "",
+                headerTag: null,
+                htmlAttributes: new { @class = "text-danger mb-3" }
+            );
+
+            html.Insert(0, GetHtml(summary));
+
+            var modelExplorer = _metadataProvider.GetModelExplorerForType(modelType, entity);
+
             foreach (var prop in properties)
             {
                 var displayName = prop.GetCustomAttribute<DisplayAttribute>()?.Name ?? prop.Name;
@@ -128,21 +150,21 @@ namespace FitRazor.Web.TagHelpers
                 else
                 {
                     // 🔹 Стандартная генерация инпута
-                    html.Append(GenerateStandardInput(prop, currentValue, dropdownData, meta));
+                    var inputTag = GenerateInput(modelExplorer, prop, currentValue, dropdownData, meta);
+                    html.Append(GetHtml(inputTag));
                 }
 
                 // Валидация (для Razor Pages)
-                var errorMsg = "";
-                // Проверка ModelState
-                if (ViewContext?.ModelState.TryGetValue(propName, out var state) == true && state.Errors.Count > 0)
-                {
-                    errorMsg = state.Errors[0].ErrorMessage;
-                }
+                var validation = _htmlGenerator.GenerateValidationMessage(
+                    ViewContext!,
+                    modelExplorer.GetExplorerForProperty(prop.Name),
+                    prop.Name,
+                    message: null,
+                    tag: null,
+                    htmlAttributes: new { @class = "text-danger small mt-1" }
+                );
+                html.Append(GetHtml(validation));
 
-                if (!string.IsNullOrEmpty(errorMsg))
-                {
-                    html.Append($"<div class='text-danger small mt-1'><i class='bi bi-exclamation-triangle-fill'></i> {errorMsg}</div>");
-                }
                 html.Append("</div>");
             }
 
@@ -164,133 +186,114 @@ namespace FitRazor.Web.TagHelpers
             return html.ToString();
         }
 
-        private string GenerateStandardInput(PropertyInfo prop, object? currentValue,
-            Dictionary<string, IEnumerable<SelectListItem>> dropdownData, EntityAdminMetadata meta)
+        private string GetHtml(TagBuilder tag)
         {
-            var propType = prop.PropertyType;
+            using var writer = new StringWriter();
+            tag.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
+        }
+
+        private TagBuilder GenerateInput(
+            ModelExplorer modelExplorer,
+            PropertyInfo prop,
+            object? currentValue,
+            Dictionary<string, IEnumerable<SelectListItem>> dropdownData,
+            EntityAdminMetadata meta)
+        {
             var propName = prop.Name;
+            var explorer = modelExplorer.GetExplorerForProperty(propName);
+
             var isReadOnly = meta.ReadOnlyProperties.Contains(propName);
-            var readOnlyAttr = isReadOnly ? "readonly" : "";
-            var classAttr = isReadOnly ? "form-control bg-light" : "form-control";
 
-            // 🔹 Обработка фото (если есть конфиг)
-            if (meta.PhotoUploadConfigs.TryGetValue(propName, out var photoConfig) ||
-                propName.EndsWith("PhotoUrl", StringComparison.OrdinalIgnoreCase) ||
-                propName.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase) ||
-                propName.EndsWith("AvatarUrl", StringComparison.OrdinalIgnoreCase))
+            var htmlAttributes = new Dictionary<string, object>
             {
-                var config = photoConfig ?? new PhotoUploadConfig { Subfolder = "Uploads" };
-                return GeneratePhotoInput(prop, currentValue, propName, config);
-            }
+                ["class"] = isReadOnly ? "form-control bg-light" : "form-control"
+            };
 
-            // 🔹 Выпадающий список для FK
+            if (isReadOnly)
+                htmlAttributes["readonly"] = "readonly";
+
+            // 🔹 SELECT (FK)
             if (propName.EndsWith("Id") && dropdownData.ContainsKey(propName))
             {
-                return GenerateSelectInput(propName, currentValue, dropdownData[propName], isReadOnly);
+                return _htmlGenerator.GenerateSelect(
+                    ViewContext!,
+                    explorer,
+                    optionLabel: "— Выберите —",
+                    expression: propName,
+                    selectList: dropdownData[propName],
+                    allowMultiple: false,
+                    htmlAttributes: new { @class = "form-select" }
+                );
             }
 
-            // 🔹 Текстовые поля
-            if (propType == typeof(string))
+            // 🔹 STRING
+            if (prop.PropertyType == typeof(string))
             {
-                return GenerateTextInput(prop, currentValue?.ToString() ?? "", classAttr, readOnlyAttr);
+                return _htmlGenerator.GenerateTextBox(
+                    ViewContext!,
+                    explorer,
+                    propName,
+                    currentValue,
+                    format: null,
+                    htmlAttributes
+                );
             }
 
-            // 🔹 Числовые поля
-            if (propType == typeof(int) || propType == typeof(int?))
+            // 🔹 INT / DECIMAL
+            if (prop.PropertyType == typeof(int) || prop.PropertyType == typeof(int?) ||
+                prop.PropertyType == typeof(decimal) || prop.PropertyType == typeof(decimal?))
             {
-                var value = currentValue?.ToString() ?? "0";
-                return $"<input type='number' name='{propName}' class='{classAttr}' value='{value}' {readOnlyAttr} />";
+                htmlAttributes["type"] = "number";
+
+                return _htmlGenerator.GenerateTextBox(
+                    ViewContext!,
+                    explorer,
+                    propName,
+                    currentValue,
+                    format: null,
+                    htmlAttributes
+                );
             }
 
-            if (propType == typeof(decimal) || propType == typeof(decimal?))
+            // 🔹 DATETIME
+            if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
             {
-                var value = currentValue is decimal d
-                    ? d.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)
-                    : "0.00";
-                return $"<input type='number' name='{propName}' class='{classAttr}' value='{value}' step='0.01' {readOnlyAttr} />";
+                htmlAttributes["type"] = "datetime-local";
+
+                return _htmlGenerator.GenerateTextBox(
+                    ViewContext!,
+                    explorer,
+                    propName,
+                    currentValue,
+                    format: "{0:yyyy-MM-ddTHH:mm}",
+                    htmlAttributes
+                );
             }
 
-            // 🔹 Дата и время
-            if (propType == typeof(DateTime) || propType == typeof(DateTime?))
+            if (prop.PropertyType == typeof(DateOnly) || prop.PropertyType == typeof(DateOnly?))
             {
-                var value = currentValue != null
-                    ? ((DateTime)currentValue).ToString("yyyy-MM-ddTHH:mm")
-                    : "";
-                return $"<input type='datetime-local' name='{propName}' class='{classAttr}' value='{value}' {readOnlyAttr} />";
+                htmlAttributes["type"] = "date";
+
+                return _htmlGenerator.GenerateTextBox(
+                    ViewContext!,
+                    explorer,
+                    propName,
+                    currentValue,
+                    format: "{0:yyyy-MM-dd}",
+                    htmlAttributes
+                );
             }
 
-            if (propType == typeof(DateOnly) || propType == typeof(DateOnly?))
-            {
-                var value = currentValue != null
-                    ? ((DateOnly)currentValue).ToString("yyyy-MM-dd")
-                    : "";
-                return $"<input type='date' name='{propName}' class='{classAttr}' value='{value}' {readOnlyAttr} />";
-            }
-
-            // 🔹 По умолчанию
-            var defaultValue = currentValue?.ToString() ?? "";
-            return $"<input type='text' name='{propName}' class='{classAttr}' value='{defaultValue}' {readOnlyAttr} />";
-        }
-
-        private string GenerateTextInput(PropertyInfo prop, string value, string classAttr, string readOnlyAttr)
-        {
-            var propName = prop.Name;
-            var maxLength = prop.GetCustomAttribute<StringLengthAttribute>()?.MaximumLength ?? 500;
-            var isRequired = prop.GetCustomAttribute<RequiredAttribute>() != null;
-
-            // Сбор атрибутов валидации
-            var sbAttrs = new StringBuilder();
-            sbAttrs.Append(readOnlyAttr);
-
-            if (isRequired)
-            {
-                sbAttrs.Append(" required data-val='true' data-val-required='Это поле обязательно'");
-            }
-
-            if (maxLength < 500) // Если есть ограничение
-            {
-                sbAttrs.Append($" maxlength='{maxLength}' data-val-length-max='{maxLength}'");
-            }
-
-            var isEmail = propName.Contains("Email", StringComparison.OrdinalIgnoreCase);
-            var isPhone = propName.Contains("Phone", StringComparison.OrdinalIgnoreCase);
-
-            if (isEmail)
-            {
-                sbAttrs.Append(" data-val-email='Неверный формат Email'");
-                return $"<input type='email' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' {sbAttrs} />";
-            }
-
-            if (isPhone)
-            {
-                sbAttrs.Append(" data-val-phone='Неверный формат телефона'");
-                return $"<input type='tel' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' placeholder='+7 (___) ___-__-__' {sbAttrs} />";
-            }
-
-            // Многострочное поле
-            if (maxLength > 200)
-                return $"<textarea name='{propName}' class='{classAttr}' rows='3' maxlength='{maxLength}' {sbAttrs}>{System.Web.HttpUtility.HtmlEncode(value)}</textarea>";
-
-            return $"<input type='text' name='{propName}' class='{classAttr}' value='{System.Web.HttpUtility.HtmlAttributeEncode(value)}' {sbAttrs} />";
-        }
-
-        private string GenerateSelectInput(string propName, object? currentValue,
-            IEnumerable<SelectListItem> options, bool isReadOnly)
-        {
-            var sb = new StringBuilder();
-            var disabledAttr = isReadOnly ? "disabled" : "";
-            var hiddenInput = isReadOnly ? $"<input type='hidden' name='{propName}' value='{currentValue}' />" : "";
-
-            sb.Append($"<select name='{propName}' class='form-select' {disabledAttr}>");
-            sb.Append("<option value=''>— Выберите —</option>");
-            foreach (var opt in options)
-            {
-                var selected = currentValue?.ToString() == opt.Value ? "selected" : "";
-                sb.Append($"<option value='{opt.Value}' {selected}>{opt.Text}</option>");
-            }
-            sb.Append("</select>");
-            sb.Append(hiddenInput); // для отправки значения при readonly
-            return sb.ToString();
+            // 🔹 DEFAULT
+            return _htmlGenerator.GenerateTextBox(
+                ViewContext!,
+                explorer,
+                propName,
+                currentValue,
+                format: null,
+                htmlAttributes
+            );
         }
 
         public static string GeneratePhotoInput(PropertyInfo prop, object? currentValue,

@@ -225,6 +225,10 @@ public static class EntityAdminRegistry
                     $"<textarea name='{prop.Name}' class='form-control' rows='4' maxlength='1000'>{value?.ToString()}</textarea>",
                 ["SportsAchievements"] = (prop, value, fieldName, dropdowns) =>
                     $"<textarea name='{prop.Name}' class='form-control' rows='3' maxlength='1000'>{value?.ToString()}</textarea>",
+                ["Email"] = (prop, value, fieldName, dropdowns) =>
+                    $"<input type='email' name='{prop.Name}' class='form-control' value='{value?.ToString()}' maxlength='100' />",
+                ["Phone"] = (prop, value, fieldName, dropdowns) =>
+                    $"<input type='text' name='{prop.Name}' class='form-control phone-mask' value='{value?.ToString()}' maxlength='20' autocomplete='off' />",
             },
 
             // Конфигурация загрузки фото (дублируется для удобства в тег-хелпере)
@@ -316,7 +320,7 @@ public static class EntityAdminRegistry
                 ["Email"] = (prop, value, fieldName, dropdowns) =>
                     $"<input type='email' name='{prop.Name}' class='form-control' value='{value?.ToString()}' maxlength='100' />",
                 ["Phone"] = (prop, value, fieldName, dropdowns) =>
-                    $"<input type='tel' name='{prop.Name}' class='form-control' value='{value?.ToString()}' maxlength='20' placeholder='+7 (___) ___-__-__' />",
+                    $"<input type='text' name='{prop.Name}' class='form-control phone-mask' value='{value?.ToString()}' maxlength='20' autocomplete='off' />",
             },
 
             PhotoUploadConfigs =

@@ -3,6 +3,30 @@
 
 // Write your JavaScript code.
 document.addEventListener('DOMContentLoaded', function () {
+    // ==== Скрипт для телефона ====
+    const elements = document.querySelectorAll(".phone-mask");
+
+    elements.forEach(el => {
+        // Удаляем старую маску, если она была (на случай повторной инициализации)
+        if (el._mask) el._mask.destroy();
+
+        el._mask = IMask(el, {
+            mask: '+{7} (000) 000-00-00', // Фиксируем 7, остальные 0 - места для цифр
+            lazy: false, // Показывать маску сразу (не ждать ввода)
+            placeholder: ' ', // Пустой плейсхолдер, так как маска видна всегда
+            definitions: {
+                '#': /[0-9]/ // Разрешаем только цифры
+            },
+            prepare: (str, mask) => {
+                // Если пользователь вставил номер начиная с 8, заменяем на 7
+                if (str.startsWith('8') && mask.normalizedValue === '') {
+                    return '7';
+                }
+                return str;
+            }
+        });
+    });
+
     // ==== Скрипт для переключения видимости пароля ====
     const togglePassword = document.getElementById('togglePassword');
     const inputPassword = document.getElementById('loginPassword');

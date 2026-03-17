@@ -23,7 +23,11 @@ public partial class Client
     public string FullName { get; set; } = null!;
 
     [Required(ErrorMessage = "Телефон обязателен")]
-    [Phone(ErrorMessage = "Неверный формат телефона")]
+    [Phone(ErrorMessage = "Некорректный формат телефона")]
+    [RegularExpression(
+        @"^(\+7|8)\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$",
+        ErrorMessage = "Введите номер в формате +7XXXXXXXXXX или 8 (XXX) XXX-XX-XX"
+    )]
     [StringLength(20)]
     [Display(Name = "Телефон")]
     public string Phone { get; set; } = null!;
